@@ -1,0 +1,35 @@
+{
+  "name": "birdworks-site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/main.css",
+    "watch:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/main.css --watch",
+    "eleventy": "eleventy --serve",
+    "dev": "npm-run-all --parallel watch:css eleventy",
+    "start": "npm run dev",
+    "build": "npm run build:css && eleventy"
+  },
+  "keywords": [
+    "birds",
+    "birdnet",
+    "bird watching",
+    "bird detections",
+    "eleventy"
+  ],
+  "author": "Wasatch BirdWorks",
+  "license": "ISC",
+  "description": "Live bird detections and species data from the Wasatch Front, powered by BirdNET-Pi",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "@11ty/eleventy-fetch": "^5.1.0",
+    "@11ty/eleventy-img": "^6.0.4",
+    "autoprefixer": "^10.4.21",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.13"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}

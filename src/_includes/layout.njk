@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>{{ title }} | Glasstone Homes</title>
+
+  {% if description %}
+    <meta name="description" content="{{ description }}">
+  {% else %}
+    <meta name="description" content="{{ site.description }}">
+  {% endif %}
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{{ title }} | {{ site.name }}">
+  <meta property="og:description" content="{{ description or site.description }}">
+  <meta property="og:image" content="{{ site.url }}{{ ogImage or site.defaultOgImage }}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
+  <meta name="twitter:title" content="{{ title }} | {{ site.name }}">
+  <meta name="twitter:description" content="{{ description or site.description }}">
+  <meta name="twitter:image" content="{{ site.url }}{{ ogImage or site.defaultOgImage }}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+  <link href="/styles/main.css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --color-teal:#58A6A8;         /* Primary teal */
+      --color-deep-teal:#3B7B7D;    /* Darker teal */
+      --color-bright-teal:#4FC3C6;  /* Brighter, more vibrant teal accent */
+      --color-ocean:#2C8A8D;        /* Deep ocean teal for contrast */
+      --color-aqua:#7BCFD1;         /* Light aqua for highlights */
+      --color-charcoal:#1E293B;     /* Text */
+      --color-gray-light:#F8FAFB;   /* Very light blue-gray bg */
+      --color-offwhite:#FFFFFF;     /* Pure white */
+    }
+    .btn-accent{background-color:var(--color-bright-teal); color:#fff; font-weight:700;}
+    .btn-accent:hover{background-color:var(--color-ocean);} /* deep ocean on hover */
+    .badge-after{background-color:var(--color-bright-teal); color:#fff;}
+
+    /* Reviews carousel fix */
+    #reviewsCarousel {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+    #reviewsCarousel > div {
+      flex: 0 0 100%;
+      width: 100%;
+    }
+
+    /* Mobile menu animations */
+    #mobileMenu {
+      position: relative;
+      z-index: 50;
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      transform-origin: top;
+    }
+    #mobileMenu.hidden {
+      opacity: 0;
+      transform: scaleY(0.95);
+      pointer-events: none;
+    }
+    #mobileMenu:not(.hidden) {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    /* Mobile menu overlay fade */
+    #mobileMenuOverlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+    #mobileMenuOverlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #mobileMenuOverlay:not(.hidden) {
+      opacity: 1;
+    }
+  </style>
+
+  <!-- Schema.org LocalBusiness Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HomeAndConstructionBusiness",
+    "name": "Glasstone Homes",
+    "image": "{{ site.url }}/images/glasstone_logo.png",
+    "description": "Home remodeling and renovation specialists in the Greater Salt Lake Area. Expert craftsmanship, quality materials, and personalized service for complete home transformations.",
+    "telephone": "+1-801-979-1004",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Salt Lake City",
+      "addressRegion": "UT",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "40.7608",
+      "longitude": "-111.8910"
+    },
+    "url": "{{ site.url }}",
+    "priceRange": "$$$$",
+    "areaServed": {
+      "@type": "GeoCircle",
+      "geoMidpoint": {
+        "@type": "GeoCoordinates",
+        "latitude": "40.7608",
+        "longitude": "-111.8910"
+      },
+      "geoRadius": "50000"
+    },
+    "openingHours": "Mo-Fr 08:00-17:00",
+    "sameAs": [],
+    "hasCredential": {
+      "@type": "EducationalOccupationalCredential",
+      "credentialCategory": "license",
+      "recognizedBy": {
+        "@type": "Organization",
+        "name": "Utah Division of Occupational and Professional Licensing"
+      },
+      "name": "Utah Contractor License #360331-5501"
+    }{% if portfolio.reviews and portfolio.reviews.length > 0 %},
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{% set totalRating = 0 %}{% for review in portfolio.reviews %}{% set totalRating = totalRating + review.rating %}{% endfor %}{{ (totalRating / portfolio.reviews.length) | round(1) }}",
+      "reviewCount": "{{ portfolio.reviews.length }}",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "review": [
+      {% for review in portfolio.reviews %}
+      {
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": "{{ review.reviewer_name }}"
+        },
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "{{ review.rating }}",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "reviewBody": "{{ review.review_text | escape }}"{% if review.created_at %},
+        "datePublished": "{{ review.created_at }}"{% endif %}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]{% endif %}
+  }
+  </script>
+
+  <!-- Plausible Analytics -->
+  <script defer data-domain="glasstonehomes.com" src="https://analytics.wasatchbitworks.com/js/script.js"></script>
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans antialiased scroll-smooth">
+
+  <header class="text-white py-4 shadow-lg sticky top-0 z-40" style="background-color:var(--color-deep-teal);">
+    <nav class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <img src="/images/glasstone_logo.png" alt="Glasstone Homes" class="h-16 w-auto">
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex space-x-8 text-lg">
+          <a href="#services" class="hover:opacity-80 transition">Services</a>
+          <a href="#about" class="hover:opacity-80 transition">About</a>
+          <a href="#projects" class="hover:opacity-80 transition">Projects</a>
+          <a href="#contact" class="hover:opacity-80 transition">Contact</a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 hover:opacity-80 transition" aria-label="Toggle mobile menu" aria-expanded="false">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 space-y-3">
+        <a href="#services" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Services</a>
+        <a href="#about" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">About</a>
+        <a href="#projects" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Projects</a>
+        <a href="#contact" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Contact</a>
+        <a href="tel:+18019791004" class="block py-3 px-4 text-center font-bold rounded btn-accent">Call (801) 979-1004</a>
+      </div>
+    </nav>
+  </header>
+  <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-40 md:hidden hidden z-30"></div>
+
+  <!-- Banner Section -->
+  <div class="text-white py-3 px-4" style="background-color:var(--color-teal);">
+    <div class="max-w-7xl mx-auto flex justify-center items-center text-center">
+      <div class="flex items-center text-sm">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span>Licensed & Insured • Utah License #360331-5501</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  <footer class="text-white py-8" style="background-color:var(--color-deep-teal);">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="mb-2">&copy; 2025 Glasstone Homes - Licensed & Insured</p>
+      <p class="text-sm text-gray-300">Building quality homes with integrity and craftsmanship</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden items-center justify-center p-4">
+    <button id="closeLightbox" class="absolute top-4 right-4 text-white hover:opacity-80 transition">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+    <img id="lightboxImage" src="" alt="" class="max-w-[95vw] max-h-[95vh] object-contain">
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+      if (mobileMenuBtn && mobileMenu) {
+        const firstMobileLink = mobileMenu.querySelector('a');
+
+        function setMenuState(open) {
+          if (open) {
+            // Opening: remove hidden first, then animate
+            mobileMenu.classList.remove('hidden');
+            mobileMenuOverlay && mobileMenuOverlay.classList.remove('hidden');
+            // Force reflow to ensure transition plays
+            void mobileMenu.offsetHeight;
+          } else {
+            // Closing: let animation finish, then add hidden
+            setTimeout(() => {
+              mobileMenu.classList.add('hidden');
+              mobileMenuOverlay && mobileMenuOverlay.classList.add('hidden');
+            }, 300); // Match transition duration
+          }
+
+          mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+          // Prevent body scroll when menu is open
+          document.body.style.overflow = open ? 'hidden' : '';
+
+          if (open && firstMobileLink) {
+            // Delay focus slightly to ensure menu is visible
+            setTimeout(() => firstMobileLink.focus(), 50);
+          }
+        }
+
+        mobileMenuBtn.addEventListener('click', function() {
+          const isOpen = !mobileMenu.classList.contains('hidden');
+          setMenuState(!isOpen);
+        });
+
+        mobileMenuBtn.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') setMenuState(false);
+        });
+
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') setMenuState(false);
+        });
+
+        if (mobileMenuOverlay) {
+          mobileMenuOverlay.addEventListener('click', () => setMenuState(false));
+        }
+
+        // Close mobile menu when clicking a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            setMenuState(false);
+          });
+        });
+
+        // Close menu if resized to desktop
+        window.addEventListener('resize', function() {
+          if (window.innerWidth >= 768) {
+            setMenuState(false);
+          }
+        });
+      }
+
+      // Carousel functionality
+      const carousel = document.getElementById('carousel');
+      const carouselWrapper = document.getElementById('carouselWrapper');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const dotsContainer = document.getElementById('dotsContainer');
+
+      if (!carousel || !carouselWrapper || !dotsContainer) return;
+
+      const items = carousel.children;
+      let currentIndex = 0;
+      let itemsPerView = 1;
+
+      // Calculate items per view based on screen size
+      function calculateItemsPerView() {
+        const width = window.innerWidth;
+        if (width >= 1024) return 3; // lg breakpoint
+        if (width >= 768) return 2;  // md breakpoint
+        return 1;
+      }
+
+      // Create dot indicators
+      function createDots() {
+        dotsContainer.innerHTML = '';
+        const totalSlides = Math.ceil(items.length / itemsPerView);
+
+        for (let i = 0; i < totalSlides; i++) {
+          const dot = document.createElement('button');
+          dot.className = 'w-4 h-4 md:w-3 md:h-3 rounded-full transition-colors duration-300 touch-manipulation';
+          dot.addEventListener('click', () => goToSlide(i));
+          dotsContainer.appendChild(dot);
+        }
+        updateDots();
+      }
+
+      // Update dot indicators
+      function updateDots() {
+        const dots = dotsContainer.children;
+        const currentSlide = Math.floor(currentIndex / itemsPerView);
+
+        for (let i = 0; i < dots.length; i++) {
+          if (i === currentSlide) {
+            dots[i].className = 'w-3 h-3 rounded-full transition-colors duration-300'; dots[i].style.backgroundColor = 'var(--color-teal)';
+          } else {
+            dots[i].className = 'w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-400 transition-colors duration-300';
+          }
+        }
+      }
+
+      // Update carousel position
+      function updateCarousel() {
+        const itemWidth = 100 / itemsPerView;
+        const translateX = -(currentIndex * itemWidth);
+        carousel.style.transform = `translateX(${translateX}%)`;
+        updateDots();
+      }
+
+      // Go to specific slide
+      function goToSlide(slideIndex) {
+        currentIndex = slideIndex * itemsPerView;
+        const maxIndex = Math.max(0, items.length - itemsPerView);
+        currentIndex = Math.min(currentIndex, maxIndex);
+        updateCarousel();
+      }
+
+      // Next slide
+      function nextSlide() {
+        if (currentIndex < items.length - itemsPerView) {
+          currentIndex += itemsPerView;
+        } else {
+          currentIndex = 0; // Loop back to start
+        }
+        updateCarousel();
+      }
+
+      // Previous slide
+      function prevSlide() {
+        if (currentIndex > 0) {
+          currentIndex -= itemsPerView;
+        } else {
+          currentIndex = Math.max(0, items.length - itemsPerView); // Loop to end
+        }
+        updateCarousel();
+      }
+
+      // Event listeners (buttons may not exist on mobile)
+      if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+      if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+      // Handle resize
+      function handleResize() {
+        const newItemsPerView = calculateItemsPerView();
+        if (newItemsPerView !== itemsPerView) {
+          itemsPerView = newItemsPerView;
+          currentIndex = 0; // Reset to start on layout change
+          createDots();
+          updateCarousel();
+        }
+      }
+
+      window.addEventListener('resize', handleResize);
+
+      // Initialize
+      itemsPerView = calculateItemsPerView();
+      createDots();
+      updateCarousel();
+
+      // Swipe support for gallery carousel (attached to wrapper to avoid transform issues)
+      (function attachSwipe(element, onLeft, onRight) {
+        let startX = 0;
+        let startY = 0;
+        let isHorizontalSwipe = false;
+        const threshold = 50;
+
+        element.addEventListener('touchstart', function(e) {
+          const touch = e.touches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+          isHorizontalSwipe = false;
+        }, { passive: true });
+
+        element.addEventListener('touchmove', function(e) {
+          if (!isHorizontalSwipe && e.touches.length === 1) {
+            const touch = e.touches[0];
+            const dx = Math.abs(touch.clientX - startX);
+            const dy = Math.abs(touch.clientY - startY);
+
+            // Determine if this is a horizontal swipe
+            if (dx > 10 || dy > 10) {
+              isHorizontalSwipe = dx > dy;
+              if (isHorizontalSwipe) {
+                e.preventDefault(); // Prevent page scroll for horizontal swipes
+              }
+            }
+          } else if (isHorizontalSwipe) {
+            e.preventDefault();
+          }
+        }, { passive: false }); // Not passive so we can preventDefault
+
+        element.addEventListener('touchend', function(e) {
+          if (isHorizontalSwipe) {
+            const touch = e.changedTouches[0];
+            const dx = touch.clientX - startX;
+            if (Math.abs(dx) > threshold) {
+              dx < 0 ? onLeft() : onRight();
+            }
+          }
+        }, { passive: true });
+      })(carouselWrapper, nextSlide, prevSlide);
+
+      // Keyboard navigation
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+        }
+      });
+
+      // Lightbox functionality
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const closeLightbox = document.getElementById('closeLightbox');
+
+      if (lightbox && lightboxImage && closeLightbox) {
+        // Add click handlers to all gallery carousel images
+        const galleryImages = carousel.querySelectorAll('img');
+        galleryImages.forEach(img => {
+          img.style.cursor = 'pointer';
+          img.addEventListener('click', function() {
+            lightboxImage.src = this.src;
+            lightboxImage.alt = this.alt;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+          });
+        });
+
+        // Add click handlers to before/after images
+        const beforeAfterGallery = document.getElementById('beforeAfterGallery');
+        if (beforeAfterGallery) {
+          const beforeAfterImages = beforeAfterGallery.querySelectorAll('img');
+          beforeAfterImages.forEach(img => {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() {
+              // Get the largest image from srcset if available
+              let largestSrc = this.src;
+              if (this.srcset) {
+                const srcsetArray = this.srcset.split(',').map(s => s.trim());
+                // Get the last item (usually the largest)
+                const lastSrcset = srcsetArray[srcsetArray.length - 1];
+                const srcMatch = lastSrcset.match(/^(\S+)/);
+                if (srcMatch) {
+                  largestSrc = srcMatch[1];
+                }
+              }
+              lightboxImage.src = largestSrc;
+              lightboxImage.alt = this.alt;
+              lightbox.classList.remove('hidden');
+              lightbox.classList.add('flex');
+            });
+          });
+        }
+
+        // Close lightbox handlers
+        closeLightbox.addEventListener('click', function() {
+          lightbox.classList.add('hidden');
+          lightbox.classList.remove('flex');
+        });
+
+        lightbox.addEventListener('click', function(e) {
+          if (e.target === lightbox) {
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+          }
+        });
+
+        // ESC key to close lightbox
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
