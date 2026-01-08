@@ -26,14 +26,14 @@ module.exports = async function() {
     console.log(`✅ Bird data fetched successfully:`);
     console.log(`   - ${todayData.detections?.length || 0} detections today (${todayData.date || 'unknown'})`);
     console.log(`   - ${species.species?.length || 0} species`);
-    console.log(`   - ${daily.daily_counts?.length || 0} days of data`);
+    console.log(`   - ${daily.daily?.length || 0} days of data`);
     console.log(`   - Generated at: ${generatedAt}`);
 
     return {
       today: todayData.detections || [],
       todayDate: todayData.date || null,
       species: species.species || [],
-      daily: daily.daily_counts || [],
+      daily: daily.daily || [],  // API returns .daily not .daily_counts
       generatedAt,
       apiBase: API_BASE
     };
