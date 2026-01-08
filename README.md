@@ -1,39 +1,89 @@
-# Glasstone Homes Website
+# Wasatch BirdWorks Frontend
 
-Glasstone Homes website built with Eleventy and Tailwind CSS. Features home remodeling services with optimized image management via S3.
+Public Eleventy static site for wasatchbirdworks.com. Displays live bird detections, species data, and bird photography powered by BirdNET-Pi AI and the Bitworks CMS.
 
-**Note**: Using Tailwind CSS v3.4.13 (not v4) for better IntelliSense/autocomplete compatibility in VS Code.
+**See:** [BIRDWORKS.md](./BIRDWORKS.md) for project guardrails and [FRONTEND.md](./FRONTEND.md) for detailed architecture.
 
-## Getting Started
+## Tech Stack
+
+- **Generator:** Eleventy v3.1.2 (static site generator)
+- **Styling:** Tailwind CSS v3.4.13
+- **Hosting:** Netlify
+- **Data Source:** Bitworks CMS public API
+- **Analytics:** Plausible (self-hosted at analytics.wasatchbitworks.com)
+
+## Quick Start
 
 ```bash
+# Install dependencies
 npm install
-npm run dev
+
+# Start development server (CSS watch + Eleventy serve)
+npm start
+
+# Production build
+npm run build
 ```
 
 ## Development Commands
 
-- `npm run dev` - Start development server with CSS watching and live reload
-- `npm start` - Alias for dev command
-- `npm run build` - Production build with image optimization
+- `npm start` or `npm run dev` - Development server with live reload
+- `npm run build` - Production build (CSS + static site)
+- `npm run build:css` - Build Tailwind CSS only
+- `npm run watch:css` - Watch CSS changes only
 
-## Image Management
+## Site Structure
 
-Images are fetched from S3 at build time and optimized automatically:
-
-```nunjucks
-{% beforeAfterImage "https://wasatch-bitworks.s3.us-east-2.amazonaws.com/path/to/image.jpg", "Alt text" %}
+```
+/                  → Homepage (stats, recent detections, BirdNET intro)
+/live              → Live detections feed
+/species           → Species index with detection counts
+/about             → About BirdNET-Pi and how it works
+/404.html          → 404 page
 ```
 
-Benefits:
-- WebP conversion for smaller file sizes
-- Multiple responsive breakpoints (600px, 1200px)
-- Local caching in `.cache/` for faster rebuilds
-- Easy updates - just change S3 URL and rebuild
+## Data Flow
 
-## Branch Workflow
+**Build-time:** Eleventy fetches data from CMS API during build
+- `src/_data/birds.js` - Fetches latest detections, species list, daily counts
+- `src/_data/site.js` - Site metadata
 
-- **main** - Production site (custom home building)
-- **version-a** - Client preview (remodeling focus)
+**API Endpoints:**
+- `GET /api/birds/wasatch-bitworks/latest` - Recent detections
+- `GET /api/birds/wasatch-bitworks/species` - Species list with counts
+- `GET /api/birds/wasatch-bitworks/daily` - Daily aggregation
 
-Create new feature branches for additional client versions and enable them in Netlify branch deploys settings.
+**Environment Variables:**
+- `BIRDS_API_BASE` - API base URL (default: https://cms.wasatchbitworks.com/api/birds)
+
+## Project Status
+
+**Phase 3 Complete** (January 7, 2026)
+- ✅ Birds layout with forest green theme
+- ✅ Homepage with stats and recent detections
+- ✅ Live detections page with confidence indicators
+- ✅ Species index page
+- ✅ About page with technical details
+- ✅ Empty state handling for zero data
+- ✅ All Glasstone artifacts removed
+- ✅ Build optimized (~0.60s, down from 1.10s)
+
+## Build Performance
+
+- Build time: ~0.60s
+- Data fetch: Birds API only (~530ms)
+- Files generated: 6 pages
+- No unused data fetching
+
+## What is BirdNET?
+
+BirdNET is an AI-powered bird identification system developed by Cornell Lab of Ornithology. Our BirdNET-Pi installation continuously monitors audio from the Wasatch Front in Utah, identifying birds in real-time and building a database of local bird activity.
+
+## Related Repositories
+
+- **Bitworks CMS:** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS` - Backend API and admin interface
+- **BirdNET-Pi Device:** Raspberry Pi 5 at 192.168.86.137 (see BIRDNET_PI.md in CMS repo)
+
+## Contributing
+
+This is the production Birds frontend. See BIRDWORKS.md for development guardrails.

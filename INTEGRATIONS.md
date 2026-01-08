@@ -1,6 +1,8 @@
 # Third-Party Integrations Guide
 
-This document provides detailed setup instructions for optional third-party services integrated into this template.
+This document provides detailed setup instructions for optional third-party services integrated into the BirdWorks frontend.
+
+**Note:** This site currently uses Plausible Analytics. Other integrations (Turnstile, Netlify Forms) are documented here for reference but not currently active.
 
 ---
 
@@ -72,13 +74,13 @@ PLAUSIBLE_DOMAIN=yourdomain.com
 PLAUSIBLE_URL=https://plausible.io/js/script.js
 ```
 
-**Template Code:**
+**BirdWorks Implementation:**
 
-The Plausible script is loaded in `src/_includes/layout.njk`:
+The Plausible script is loaded in `src/_includes/layout-birds.njk`:
 
 ```html
 <!-- Plausible Analytics -->
-<script defer data-domain="glasstonehomes.com" src="https://analytics.wasatchbitworks.com/js/script.js"></script>
+<script defer data-domain="wasatchbirdworks.com" src="https://analytics.wasatchbitworks.com/js/script.js"></script>
 ```
 
 **To make it conditional (recommended for templates):**
@@ -473,5 +475,5 @@ This prevents:
 
 ---
 
-**Last Updated:** December 9, 2025
-**Template Version:** 1.0
+**Last Updated:** January 7, 2026
+**Project:** Wasatch BirdWorks Frontend
