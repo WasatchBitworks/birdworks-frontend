@@ -1,0 +1,168 @@
+---
+layout: layout-birds.njk
+title: About BirdNET-Pi
+description: Learn how our BirdNET-Pi system uses AI to identify birds by their calls and songs in real-time.
+---
+
+<!-- Page Header -->
+<section class="bg-gradient-to-r from-purple-700 to-purple-600 text-white py-12">
+  <div class="max-w-7xl mx-auto px-4">
+    <h1 class="text-4xl font-bold mb-4">About BirdNET-Pi</h1>
+    <p class="text-lg text-purple-100">Real-time bird identification using artificial intelligence</p>
+  </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-12 bg-gray-50">
+  <div class="max-w-4xl mx-auto px-4">
+
+    <!-- What is BirdNET -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">What is BirdNET?</h2>
+      <div class="prose prose-lg text-gray-700">
+        <p class="mb-4">
+          BirdNET is a research platform that uses deep learning and artificial intelligence to identify bird species
+          by their vocalizations. Developed jointly by the Cornell Lab of Ornithology and Chemnitz University of Technology,
+          BirdNET can recognize over 6,000 bird species from around the world.
+        </p>
+        <p class="mb-4">
+          The system analyzes audio recordings and compares them against a massive database of bird calls and songs,
+          providing identification with a confidence score. This technology makes it possible to monitor bird populations
+          continuously and non-invasively.
+        </p>
+      </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">How Our System Works</h2>
+      <div class="space-y-6">
+        <!-- Step 1 -->
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">
+            1
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Continuous Audio Monitoring</h3>
+            <p class="text-gray-600">
+              A microphone captures ambient audio from our location on the Wasatch Front, Utah. The system records
+              15-second audio segments continuously throughout the day and night.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+            2
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">AI Analysis</h3>
+            <p class="text-gray-600">
+              Each audio segment is analyzed by the BirdNET neural network running on a Raspberry Pi 5.
+              The AI identifies potential bird calls and songs, comparing them against its trained model of thousands of species.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+            3
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Confidence Scoring</h3>
+            <p class="text-gray-600">
+              When a bird is detected, the system assigns a confidence score (0-100%) indicating how certain the AI is
+              about the identification. Higher scores generally indicate more reliable detections.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 font-bold">
+            4
+          </div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Data Storage & Display</h3>
+            <p class="text-gray-600">
+              Detection data is synced to our database every 5 minutes. This website displays the latest detections,
+              species statistics, and historical trends.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Technical Details</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-2">Hardware</h3>
+          <ul class="text-gray-600 space-y-1 text-sm">
+            <li>• Raspberry Pi 5</li>
+            <li>• USB Microphone</li>
+            <li>• Debian 12 (Bookworm)</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-2">Software</h3>
+          <ul class="text-gray-600 space-y-1 text-sm">
+            <li>• BirdNET-Pi (Nachtzuster fork)</li>
+            <li>• BirdNET 6K Global Model v2.4</li>
+            <li>• PostgreSQL Database</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-2">Location</h3>
+          <ul class="text-gray-600 space-y-1 text-sm">
+            <li>• Wasatch Front, Utah</li>
+            <li>• ~40.56°N, 111.85°W</li>
+            <li>• Elevation: ~4,500 ft</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-2">Detection Settings</h3>
+          <ul class="text-gray-600 space-y-1 text-sm">
+            <li>• Confidence threshold: 70%</li>
+            <li>• Sensitivity: 1.25</li>
+            <li>• Audio format: FLAC</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accuracy Note -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded">
+      <h3 class="font-semibold text-gray-900 mb-2">Note on Accuracy</h3>
+      <p class="text-gray-700 text-sm">
+        While BirdNET is highly accurate, it's not perfect. Factors like background noise, overlapping calls,
+        and similar-sounding species can affect identification accuracy. Confidence scores help indicate
+        how reliable each detection is. For scientific research or rare species confirmation, expert verification
+        is recommended.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- Links -->
+<section class="py-12 bg-white">
+  <div class="max-w-4xl mx-auto px-4 text-center">
+    <h2 class="text-2xl font-bold mb-6">Learn More</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <a href="https://birdnet.cornell.edu/" target="_blank" rel="noopener" class="block p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:shadow-md transition">
+        <h3 class="font-semibold text-gray-900 mb-2">BirdNET Project</h3>
+        <p class="text-sm text-gray-600">Official BirdNET research project by Cornell Lab</p>
+        <span class="text-green-600 text-sm mt-2 inline-block">Visit site →</span>
+      </a>
+      <a href="https://github.com/Nachtzuster/BirdNET-Pi" target="_blank" rel="noopener" class="block p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:shadow-md transition">
+        <h3 class="font-semibold text-gray-900 mb-2">BirdNET-Pi</h3>
+        <p class="text-sm text-gray-600">Open source Raspberry Pi implementation</p>
+        <span class="text-green-600 text-sm mt-2 inline-block">View on GitHub →</span>
+      </a>
+    </div>
+  </div>
+</section>

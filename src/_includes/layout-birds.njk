@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>{{ title }} | {{ site.name }}</title>
+
+  {% if description %}
+    <meta name="description" content="{{ description }}">
+  {% else %}
+    <meta name="description" content="{{ site.description }}">
+  {% endif %}
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:title" content="{{ title }} | {{ site.name }}">
+  <meta property="og:description" content="{{ description or site.description }}">
+  <meta property="og:image" content="{{ site.url }}{{ ogImage or site.defaultOgImage }}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
+  <meta name="twitter:title" content="{{ title }} | {{ site.name }}">
+  <meta name="twitter:description" content="{{ description or site.description }}">
+  <meta name="twitter:image" content="{{ site.url }}{{ ogImage or site.defaultOgImage }}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+  <link href="/styles/main.css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --color-forest:#2D5016;       /* Deep forest green */
+      --color-leaf:#4A7C2C;         /* Fresh leaf green */
+      --color-sky:#7BB3E8;          /* Sky blue */
+      --color-earth:#8B6F47;        /* Earth brown */
+      --color-sun:#F4A261;          /* Warm sun orange */
+      --color-charcoal:#1E293B;     /* Text */
+      --color-gray-light:#F8FAFB;   /* Light bg */
+      --color-offwhite:#FFFFFF;     /* Pure white */
+    }
+    .btn-primary{background-color:var(--color-leaf); color:#fff; font-weight:700;}
+    .btn-primary:hover{background-color:var(--color-forest);}
+    .badge-live{background-color:var(--color-sun); color:#fff;}
+
+    /* Mobile menu animations */
+    #mobileMenu {
+      position: relative;
+      z-index: 50;
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      transform-origin: top;
+    }
+    #mobileMenu.hidden {
+      opacity: 0;
+      transform: scaleY(0.95);
+      pointer-events: none;
+    }
+    #mobileMenu:not(.hidden) {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+
+    #mobileMenuOverlay {
+      transition: opacity 0.3s ease-in-out;
+    }
+    #mobileMenuOverlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #mobileMenuOverlay:not(.hidden) {
+      opacity: 1;
+    }
+  </style>
+
+  <!-- Plausible Analytics -->
+  <script defer data-domain="wasatchbirdworks.com" src="https://analytics.wasatchbitworks.com/js/script.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans antialiased scroll-smooth">
+
+  <header class="text-white py-4 shadow-lg sticky top-0 z-40" style="background-color:var(--color-forest);">
+    <nav class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <a href="/" class="text-2xl font-bold flex items-center gap-2">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
+            <span>BirdWorks</span>
+          </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex space-x-8 text-lg">
+          <a href="/" class="hover:opacity-80 transition">Home</a>
+          <a href="/live" class="hover:opacity-80 transition">Live</a>
+          <a href="/species" class="hover:opacity-80 transition">Species</a>
+          <a href="/about" class="hover:opacity-80 transition">About</a>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="md:hidden p-2 hover:opacity-80 transition" aria-label="Toggle mobile menu" aria-expanded="false">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 space-y-3">
+        <a href="/" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Home</a>
+        <a href="/live" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Live</a>
+        <a href="/species" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Species</a>
+        <a href="/about" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">About</a>
+      </div>
+    </nav>
+  </header>
+  <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-40 md:hidden hidden z-30"></div>
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  <footer class="text-white py-8 mt-12" style="background-color:var(--color-forest);">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="mb-2">&copy; 2026 Wasatch BirdWorks</p>
+      <p class="text-sm text-gray-300">Live bird detections powered by BirdNET-Pi</p>
+      {% if birds.generatedAt %}
+      <p class="text-xs text-gray-400 mt-2">Data last updated: {{ birds.generatedAt }}</p>
+      {% endif %}
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+      if (mobileMenuBtn && mobileMenu) {
+        const firstMobileLink = mobileMenu.querySelector('a');
+
+        function setMenuState(open) {
+          if (open) {
+            mobileMenu.classList.remove('hidden');
+            mobileMenuOverlay && mobileMenuOverlay.classList.remove('hidden');
+            void mobileMenu.offsetHeight;
+          } else {
+            setTimeout(() => {
+              mobileMenu.classList.add('hidden');
+              mobileMenuOverlay && mobileMenuOverlay.classList.add('hidden');
+            }, 300);
+          }
+
+          mobileMenuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          document.body.style.overflow = open ? 'hidden' : '';
+
+          if (open && firstMobileLink) {
+            setTimeout(() => firstMobileLink.focus(), 50);
+          }
+        }
+
+        mobileMenuBtn.addEventListener('click', function() {
+          const isOpen = !mobileMenu.classList.contains('hidden');
+          setMenuState(!isOpen);
+        });
+
+        mobileMenuBtn.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') setMenuState(false);
+        });
+
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') setMenuState(false);
+        });
+
+        if (mobileMenuOverlay) {
+          mobileMenuOverlay.addEventListener('click', () => setMenuState(false));
+        }
+
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            setMenuState(false);
+          });
+        });
+
+        window.addEventListener('resize', function() {
+          if (window.innerWidth >= 768) {
+            setMenuState(false);
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>
