@@ -3,6 +3,8 @@
 This document defines the goals, constraints, and guardrails for converting
 the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
 
+**See also:** [FRONTEND.md](./FRONTEND.md) for detailed architecture, API contracts, and implementation phases.
+
 Claude MUST:
 - Treat this document as the primary source of truth
 - Preserve existing Eleventy, Tailwind, PostCSS, and Netlify infrastructure
