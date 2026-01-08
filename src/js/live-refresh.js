@@ -74,11 +74,8 @@
       // Check if any detections have audio
       const hasAudio = allDetections.some(d => d.audio_url);
 
-      console.log(`Live refresh: Loaded ${allDetections.length} detections, hasAudio: ${hasAudio}`);
-
       // Re-render if pagination needed OR if audio column should be added
       if (allDetections.length > ITEMS_PER_PAGE || hasAudio) {
-        console.log('Live refresh: Re-rendering table with pagination/audio');
         updateDetectionsTable();
       }
     }
@@ -89,8 +86,6 @@
       autoRefreshToggle.checked = true;
       startAutoRefresh();
     }
-
-    console.log('Live refresh initialized');
   }
 
   /**
@@ -269,13 +264,10 @@
     const detections = getPaginatedDetections();
     const hasAudio = allDetections.some(d => d.audio_url);
 
-    console.log(`updateDetectionsTable: ${detections.length} detections on page, hasAudio: ${hasAudio}`);
-
     // Update table header with/without audio column
     const tableHeader = document.querySelector('#detectionsTableContainer thead tr');
     if (tableHeader) {
       const audioHeader = tableHeader.querySelector('.audio-header');
-      console.log(`Table header found, audioHeader exists: ${!!audioHeader}`);
 
       if (hasAudio && !audioHeader) {
         // Add audio header if not present
@@ -283,14 +275,10 @@
         th.className = 'audio-header px-6 py-4 text-left text-sm font-semibold text-gray-700';
         th.textContent = 'Audio';
         tableHeader.appendChild(th);
-        console.log('Audio header added to table');
       } else if (!hasAudio && audioHeader) {
         // Remove audio header if no audio available
         audioHeader.remove();
-        console.log('Audio header removed from table');
       }
-    } else {
-      console.warn('Table header not found!');
     }
 
     // Clear existing rows
@@ -441,7 +429,6 @@
       // audio_url is already a full path like "/api/birds/wasatch-bitworks/audio/123"
       const apiOrigin = new URL(apiBase).origin; // Get just https://cms.wasatchbitworks.com
       const fullUrl = `${apiOrigin}${audioUrl}`;
-      console.log(`Fetching audio from: ${fullUrl}`);
       const response = await fetch(fullUrl);
 
       if (!response.ok) {

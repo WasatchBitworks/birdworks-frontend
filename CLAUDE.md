@@ -53,26 +53,32 @@ This is the **Wasatch BirdWorks** public site showcasing:
 // src/_data/birds.js
 - Fetches from CMS API: /api/birds/wasatch-bitworks/{latest,species,daily}
 - Caches with @11ty/eleventy-fetch (1m for latest, 5m for species/daily)
-- Returns: {latest, species, daily, generatedAt, apiBase}
+- Returns: {today, todayDate, species, daily, generatedAt, apiBase}
 ```
 
 **Environment variables:**
 - `BIRDS_API_BASE` - API base URL (default: https://cms.wasatchbitworks.com/api/birds)
 
 **Available in templates:**
-- `{{ birds.latest }}` - Array of recent detections
+- `{{ birds.today }}` - Array of today's detections (includes id, audio_url, preserved)
+- `{{ birds.todayDate }}` - Date string for today in Mountain Time
 - `{{ birds.species }}` - Array of species with counts
 - `{{ birds.daily }}` - Array of daily aggregations
 - `{{ birds.generatedAt }}` - ISO timestamp of when data was fetched
 - `{{ site.name }}` - "Wasatch BirdWorks"
 - `{{ site.url }}` - "https://wasatchbirdworks.com"
 
+**Client-side features:**
+- Live refresh: Fetches latest detections on demand
+- Audio playback: Fetches pre-signed S3 URLs from `/api/birds/:slug/audio/:id`
+- Pagination: Client-side (20 detections per page)
+
 ### Build Process
 
-1. Tailwind scans `./src/**/*.{html,njk,md}` for utility classes
+1. Tailwind scans `./src/**/*.{html,njk,md,js}` for utility classes (includes JavaScript!)
 2. CSS compiled from `src/styles/tailwind.css` to `src/styles/main.css`
 3. Eleventy fetches Birds data from CMS API
-4. Eleventy processes Nunjucks templates
+4. Eleventy processes Nunjucks templates with filters (JSON, Mountain Time)
 5. Static files output to `_site/`
 
 ### Design System
@@ -144,19 +150,35 @@ Detection confidence shown with color-coded badges:
   - `/wasatch-bitworks/latest?limit=20` - Recent detections (limited)
   - `/wasatch-bitworks/detections/species` - Species with detection counts (**use this for detection data**)
   - `/wasatch-bitworks/daily?days=30` - Daily aggregation
+  - `/wasatch-bitworks/audio/:id` - Pre-signed S3 URL for audio file (CORS enabled)
   - `/wasatch-bitworks/species` - Species with photo counts (for photo galleries, not detections)
 
-**Response format:**
+**Detection response format:**
 ```json
 {
   "detections": [{
+    "id": 9189,
     "common_name": "Black-capped Chickadee",
     "scientific_name": "Poecile atricapillus",
     "confidence": 0.8477,
-    "detected_at": "2026-01-07T15:31:40Z"
+    "detected_at": "2026-01-07T15:31:40Z",
+    "preserved": true,
+    "audio_url": "/api/birds/wasatch-bitworks/audio/9189"
   }],
   "count": 20,
+  "date": "2026-01-08",
   "generated_at": "2026-01-07T23:47:54Z"
+}
+```
+
+**Audio endpoint response:**
+```json
+{
+  "url": "https://s3.amazonaws.com/...(pre-signed URL)",
+  "expires_in": 3600,
+  "detection_id": 9189,
+  "common_name": "Black-capped Chickadee",
+  "detected_at": "2026-01-08T16:34:25+00:00"
 }
 ```
 
@@ -209,20 +231,28 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 
 **Important:** Never manually calculate UTC offsets. Use browser's built-in timezone database via `toLocaleString()` for proper DST handling.
 
-## Current Status (January 7, 2026)
+## Current Status (January 8, 2026)
 
-**Phase 3 Complete** - Production ready
+**Phase 4 In Progress** - Audio & Pagination Complete
 - ✅ All Glasstone artifacts removed
 - ✅ Birds layout and pages implemented
-- ✅ API integration working (fixed Jan 7 - was using wrong endpoint)
+- ✅ API integration working (detection + audio endpoints)
 - ✅ Empty states handled
 - ✅ Build optimized (0.60s)
 - ✅ Mountain Time display for all timestamps
-- ⏳ Charts not yet implemented (future)
-- ⏳ Photo integration pending (when CMS endpoints ready)
-- ⏳ Live refresh widget optional (future enhancement)
+- ✅ **Pagination (20 detections per page)**
+- ✅ **Audio playback with play/pause controls**
+- ✅ **Preserved badge for permanent recordings**
+- ✅ **Dynamic audio column (shows when audio available)**
+- ✅ **One-at-a-time audio playback**
+- ⏳ Charts not yet implemented (Phase 4 next priority)
+- ⏳ Photo integration pending (CMS redirect endpoints needed)
 
-**Jan 7, 2026 Fixes:**
-- Changed species endpoint from `/species` (photo counts) to `/detections/species` (detection counts)
-- CMS API fixed to use symbol keys for client lookup
-- Added Mountain Time formatting for all timestamps (Eleventy filters + client-side JS)
+**Jan 8, 2026 Updates:**
+- Added client-side pagination to /live page (20 per page)
+- Implemented audio playback with on-demand S3 URL fetching
+- Added CORS headers to audio API endpoint (backend)
+- Updated Tailwind config to scan JavaScript files for dynamic classes
+- Added JSON filter to Eleventy for data serialization
+- Pagination resets to page 1 on live refresh
+- Audio column dynamically appears when audio is available

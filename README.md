@@ -58,15 +58,19 @@ npm run build
 
 ## Project Status
 
-**Phase 3 Complete** (January 7, 2026)
+**Phase 4 In Progress** (January 8, 2026)
 - ✅ Birds layout with forest green theme
 - ✅ Homepage with stats and recent detections
 - ✅ Live detections page with confidence indicators
+- ✅ Pagination (20 detections per page)
+- ✅ Audio playback with play/pause controls
 - ✅ Species index page
 - ✅ About page with technical details
 - ✅ Empty state handling for zero data
 - ✅ All Glasstone artifacts removed
-- ✅ Build optimized (~0.60s, down from 1.10s)
+- ✅ Build optimized (~0.60s)
+- ⏳ Charts (timeline + top species distribution)
+- ⏳ Photo integration (pending CMS redirect endpoints)
 
 ## Build Performance
 
