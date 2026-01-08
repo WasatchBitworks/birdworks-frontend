@@ -198,5 +198,10 @@
     });
   </script>
 
+  <!-- Charts enhancement (homepage only) -->
+  {% if page.url == '/' %}
+  <script src="/js/charts.js"></script>
+  {% endif %}
+
 </body>
 </html>

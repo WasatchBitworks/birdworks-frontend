@@ -71,6 +71,90 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
   </div>
 </section>
 
+<!-- Trends Section -->
+<section class="py-12 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-slate-800 mb-4">Trends</h2>
+      <p class="text-lg text-gray-600">Detection activity over time</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+
+      <!-- Daily Detections Card -->
+      <div class="bg-white rounded-lg shadow-md">
+        <div class="p-6 border-b">
+          <h3 class="text-xl font-bold text-gray-900">Daily Detections</h3>
+          <p class="text-sm text-gray-600 mt-1">Last 14 days</p>
+        </div>
+        <div class="p-6" data-chart="daily">
+          {% set last14Days = birds.daily | slice(0, 14) | reverse %}
+          {% if last14Days.length > 0 %}
+            <div class="space-y-2">
+              {% for day in last14Days %}
+                <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <span class="text-sm text-gray-700">{{ day.date }}</span>
+                  <span class="font-semibold text-gray-900">{{ day.count }}</span>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="mt-4 pt-4 border-t text-center">
+              <div class="text-sm text-gray-600">
+                Total: <span class="font-bold text-gray-900">
+                  {% set total14 = 0 %}
+                  {% for day in last14Days %}
+                    {% set total14 = total14 + day.count %}
+                  {% endfor %}
+                  {{ total14 }}
+                </span> detections
+              </div>
+            </div>
+          {% else %}
+            <div class="text-center py-8">
+              <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <p class="text-gray-600">No daily data available yet</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Top Species Card -->
+      <div class="bg-white rounded-lg shadow-md">
+        <div class="p-6 border-b">
+          <h3 class="text-xl font-bold text-gray-900">Top Species</h3>
+          <p class="text-sm text-gray-600 mt-1">Most detected birds</p>
+        </div>
+        <div class="p-6" data-chart="species">
+          {% set top10Species = birds.species | slice(0, 10) %}
+          {% if top10Species.length > 0 %}
+            <div class="space-y-2">
+              {% for species in top10Species %}
+                <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <div class="flex-1 min-w-0 pr-4">
+                    <div class="text-sm font-medium text-gray-900 truncate">{{ species.common_name }}</div>
+                    <div class="text-xs text-gray-500 italic truncate">{{ species.scientific_name }}</div>
+                  </div>
+                  <span class="font-semibold text-gray-900 flex-shrink-0">{{ species.detection_count }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-8">
+              <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <p class="text-gray-600">No species data available yet</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- Recent Detections -->
 <section class="py-12 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4">
