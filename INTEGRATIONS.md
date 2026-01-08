@@ -159,13 +159,15 @@ Cloudflare's CAPTCHA alternative. Free, privacy-friendly, better UX than reCAPTC
 
 1. Go to **Site settings → Environment variables**
 2. Add:
-   ```
-   TURNSTILE_SITE_KEY=0x4AAAA...
-   TURNSTILE_SECRET_KEY=0x4AAAA...
-   ```
+  ```
+  # Add your Turnstile keys in the Netlify dashboard (do NOT commit secrets)
+  TURNSTILE_SITE_KEY=your_site_key_here
+  TURNSTILE_SECRET_KEY=your_secret_key_here
+  ```
 
 **For local development (.env file):**
 ```bash
+# Local development: add values to a local .env file (do NOT commit)
 TURNSTILE_SITE_KEY=your_site_key_here
 TURNSTILE_SECRET_KEY=your_secret_key_here
 ```
