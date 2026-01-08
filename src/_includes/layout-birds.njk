@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-api-base="{{ birds.apiBase }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -201,6 +201,11 @@
   <!-- Charts enhancement (homepage only) -->
   {% if page.url == '/' %}
   <script src="/js/charts.js"></script>
+  {% endif %}
+
+  <!-- Live refresh (live page only) -->
+  {% if page.url == '/live/' %}
+  <script src="/js/live-refresh.js"></script>
   {% endif %}
 
 </body>
