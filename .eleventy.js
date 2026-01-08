@@ -56,6 +56,11 @@ module.exports = function(eleventyConfig) {
     }
   });
 
+  // JSON stringify filter for data attributes
+  eleventyConfig.addFilter("json", function(value) {
+    return JSON.stringify(value);
+  });
+
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
   eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png

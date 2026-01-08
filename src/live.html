@@ -84,7 +84,7 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
             </thead>
             <tbody class="divide-y divide-gray-200" id="detectionsTableBody">
               {% for detection in birds.today %}
-              <tr class="hover:bg-gray-50 transition">
+              <tr class="hover:bg-gray-50 transition" data-detection='{{ detection | json | safe }}'>
                 <td class="px-6 py-4">
                   <div class="font-semibold text-gray-900">{{ detection.common_name }}</div>
                   <div class="text-sm text-gray-500 italic">{{ detection.scientific_name }}</div>
@@ -114,6 +114,38 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
           </table>
         </div>
       </div>
+
+      <!-- Pagination Controls -->
+      {% if birds.today.length > 20 %}
+      <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white rounded-lg shadow p-4">
+        <!-- Pagination Info -->
+        <div class="text-sm text-gray-600" id="paginationInfo">
+          Showing 1-20 of {{ birds.today.length }}
+        </div>
+
+        <!-- Pagination Buttons -->
+        <div class="flex items-center gap-4">
+          <button
+            id="prevPageBtn"
+            class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            disabled
+            aria-label="Previous page">
+            ← Previous
+          </button>
+
+          <div class="text-sm font-semibold text-gray-700" id="pageNumber">
+            Page 1 of {{ (birds.today.length / 20) | round(0, 'ceil') }}
+          </div>
+
+          <button
+            id="nextPageBtn"
+            class="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            aria-label="Next page">
+            Next →
+          </button>
+        </div>
+      </div>
+      {% endif %}
 
     {% else %}
       <!-- Empty State -->
