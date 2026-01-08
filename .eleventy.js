@@ -1,6 +1,61 @@
 const Image = require("@11ty/eleventy-img");
 
 module.exports = function(eleventyConfig) {
+  // ==========================================
+  // Date/Time Filters for Mountain Time
+  // ==========================================
+
+  // Convert UTC timestamp to Mountain Time display
+  eleventyConfig.addFilter("toMountainTime", function(dateString) {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    } catch (e) {
+      return dateString; // Return original if parsing fails
+    }
+  });
+
+  // Short time format (just time, no date)
+  eleventyConfig.addFilter("toMountainTimeShort", function(dateString) {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    } catch (e) {
+      return dateString;
+    }
+  });
+
+  // Date only format
+  eleventyConfig.addFilter("toMountainDate", function(dateString) {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    } catch (e) {
+      return dateString;
+    }
+  });
+
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
   eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png

@@ -34,7 +34,7 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
           <span id="statusText">Ready</span>
         </div>
         <div id="lastUpdated" class="text-gray-500">
-          Last updated: <span id="lastUpdatedTime">{{ birds.generatedAt }}</span>
+          Last updated: <span id="lastUpdatedTime">{{ birds.generatedAt | toMountainTime }} MT</span>
         </div>
       </div>
     </div>
@@ -106,7 +106,7 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
                   </div>
                 </td>
                 <td class="px-6 py-4 text-gray-600">
-                  <div class="text-sm">{{ detection.detected_at }}</div>
+                  <div class="text-sm">{{ detection.detected_at | toMountainTime }}</div>
                 </td>
               </tr>
               {% endfor %}

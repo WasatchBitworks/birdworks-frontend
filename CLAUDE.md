@@ -141,8 +141,9 @@ Detection confidence shown with color-coded badges:
 - Slug: `wasatch-bitworks`
 - Endpoints:
   - `/wasatch-bitworks/latest?limit=20` - Recent detections
-  - `/wasatch-bitworks/species` - Species list with counts
+  - `/wasatch-bitworks/detections/species` - Species with detection counts (**use this for detection data**)
   - `/wasatch-bitworks/daily?days=30` - Daily aggregation
+  - `/wasatch-bitworks/species` - Species with photo counts (for photo galleries, not detections)
 
 **Response format:**
 ```json
@@ -160,12 +161,14 @@ Detection confidence shown with color-coded badges:
 
 ## Related Services
 
-- **Bitworks CMS:** Backend at `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS`
+- **Bitworks CMS (Backend):** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS`
   - Admin UI: `https://cms.wasatchbitworks.com/admin/birds`
   - Public API: `https://cms.wasatchbitworks.com/api/birds`
+  - Key docs: `BIRDS.md`, `BIRD_PHOTOS.md`, `BIRDNET_PI.md`
 - **BirdNET-Pi Device:** Raspberry Pi 5 at `192.168.86.137`
   - Detects birds 24/7 using AI
   - Syncs to CMS every 5 minutes
+  - See `BIRDNET_PI.md` and `BIRDNET_COMMANDS.md` in CMS repo
 - **Plausible Analytics:** Self-hosted at `https://analytics.wasatchbitworks.com`
 
 ## Code Guidelines
@@ -178,14 +181,32 @@ Detection confidence shown with color-coded badges:
 - Maintain mobile-first responsive design
 - Add comments for complex template logic
 
+## Timezone Handling
+
+All timestamps from the API are in UTC. Use these filters to display in Mountain Time:
+
+```njk
+{{ detection.detected_at | toMountainTime }}     → "Jan 7, 2026, 4:34 PM"
+{{ detection.detected_at | toMountainTimeShort }} → "4:34 PM"
+{{ detection.detected_at | toMountainDate }}      → "Jan 7, 2026"
+```
+
+For client-side JavaScript (e.g., live-refresh.js), use the `formatMountainTime()` function.
+
 ## Current Status (January 7, 2026)
 
 **Phase 3 Complete** - Production ready
 - ✅ All Glasstone artifacts removed
 - ✅ Birds layout and pages implemented
-- ✅ API integration working
+- ✅ API integration working (fixed Jan 7 - was using wrong endpoint)
 - ✅ Empty states handled
 - ✅ Build optimized (0.60s)
+- ✅ Mountain Time display for all timestamps
 - ⏳ Charts not yet implemented (future)
 - ⏳ Photo integration pending (when CMS endpoints ready)
 - ⏳ Live refresh widget optional (future enhancement)
+
+**Jan 7, 2026 Fixes:**
+- Changed species endpoint from `/species` (photo counts) to `/detections/species` (detection counts)
+- CMS API fixed to use symbol keys for client lookup
+- Added Mountain Time formatting for all timestamps (Eleventy filters + client-side JS)

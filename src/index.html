@@ -193,7 +193,7 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
                   </span>
                 </td>
                 <td class="px-4 py-3 text-sm text-gray-600">
-                  {{ detection.detected_at }}
+                  {{ detection.detected_at | toMountainTime }}
                 </td>
               </tr>
               {% endfor %}

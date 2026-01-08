@@ -130,7 +130,7 @@
       <p class="mb-2">&copy; 2026 Wasatch BirdWorks</p>
       <p class="text-sm text-gray-300">Live bird detections powered by BirdNET-Pi</p>
       {% if birds.generatedAt %}
-      <p class="text-xs text-gray-400 mt-2">Data last updated: {{ birds.generatedAt }}</p>
+      <p class="text-xs text-gray-400 mt-2">Data last updated: {{ birds.generatedAt | toMountainTime }} MT</p>
       {% endif %}
     </div>
   </footer>

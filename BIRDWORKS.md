@@ -74,9 +74,14 @@ Charts
 - Tailwind styles the container/cards; chart rendering should be modular (e.g., assets/js/charts.js).
 
 Constraints:
-- Don’t introduce a heavy framework (no React, no Next).
+- Don't introduce a heavy framework (no React, no Next).
 - Avoid breaking Netlify deploy.
 - Prefer minimal diffs and incremental steps.
-- If you’re unsure whether a file is infrastructure or client-specific, keep it and mark it for review.
+- If you're unsure whether a file is infrastructure or client-specific, keep it and mark it for review.
 - Progressive enhancement required: pages must remain useful with JS disabled.
-Proceed now.
+
+## Related Documentation
+
+- **[FRONTEND.md](./FRONTEND.md)** - Detailed architecture and API contracts
+- **[CLAUDE.md](./CLAUDE.md)** - Development commands and quick reference
+- **CMS Backend:** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS` (see `BIRDS.md`)

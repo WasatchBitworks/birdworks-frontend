@@ -50,7 +50,7 @@ npm run build
 
 **API Endpoints:**
 - `GET /api/birds/wasatch-bitworks/latest` - Recent detections
-- `GET /api/birds/wasatch-bitworks/species` - Species list with counts
+- `GET /api/birds/wasatch-bitworks/detections/species` - Species list with detection counts
 - `GET /api/birds/wasatch-bitworks/daily` - Daily aggregation
 
 **Environment Variables:**
@@ -81,8 +81,12 @@ BirdNET is an AI-powered bird identification system developed by Cornell Lab of 
 
 ## Related Repositories
 
-- **Bitworks CMS:** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS` - Backend API and admin interface
-- **BirdNET-Pi Device:** Raspberry Pi 5 at 192.168.86.137 (see BIRDNET_PI.md in CMS repo)
+- **Bitworks CMS (Backend):** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS`
+  - Admin UI: https://cms.wasatchbitworks.com/admin/birds
+  - Public API: https://cms.wasatchbitworks.com/api/birds
+  - Key docs: `BIRDS.md`, `BIRD_PHOTOS.md`, `BIRDNET_PI.md`, `BIRDNET_COMMANDS.md`
+- **BirdNET-Pi Device:** Raspberry Pi 5 at `192.168.86.137`
+  - Documentation in CMS repo: `BIRDNET_PI.md`, `BIRDNET_COMMANDS.md`
 
 ## Contributing
 

@@ -128,9 +128,9 @@
       // Update stats
       updateStats(detections);
 
-      // Update timestamp
+      // Update timestamp (formatted to Mountain Time)
       const now = new Date().toISOString();
-      lastUpdatedTime.textContent = now;
+      lastUpdatedTime.textContent = formatMountainTime(now) + ' MT';
 
       // Success status
       setStatus('Updated successfully', 'text-green-600');
@@ -217,7 +217,7 @@
         </div>
       </td>
       <td class="px-6 py-4 text-gray-600">
-        <div class="text-sm">${escapeHtml(detection.detected_at || '')}</div>
+        <div class="text-sm">${formatMountainTime(detection.detected_at)}</div>
       </td>
     `;
 
@@ -255,6 +255,27 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+  }
+
+  /**
+   * Format UTC timestamp to Mountain Time
+   */
+  function formatMountainTime(dateString) {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        timeZone: "America/Denver",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    } catch (e) {
+      return dateString;
+    }
   }
 
 })();

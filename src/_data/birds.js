@@ -7,7 +7,7 @@ module.exports = async function() {
 
   const endpoints = {
     latest: `${API_BASE}/${SLUG}/latest?limit=20`,
-    species: `${API_BASE}/${SLUG}/species`,
+    species: `${API_BASE}/${SLUG}/detections/species`,  // Detection species, not photo species
     daily: `${API_BASE}/${SLUG}/daily?days=30`
   };
 

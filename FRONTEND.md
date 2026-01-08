@@ -309,3 +309,27 @@ This endpoint:
 - Photo gallery pages with stable URLs
 - Lightbox implementation
 - Responsive image display
+
+---
+
+## Related Documentation
+
+**This Repository (Frontend):**
+- **[CLAUDE.md](CLAUDE.md)** - Development commands and quick reference
+- **[BIRDWORKS.md](BIRDWORKS.md)** - Project guardrails and constraints
+- **[README.md](README.md)** - Project overview and setup
+
+**CMS Repository (Backend):** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS`
+- **BIRDS.md** - Backend architecture, API contracts, sync strategy
+- **BIRD_PHOTOS.md** - Photo system architecture and implementation
+- **BIRDNET_PI.md** - Device documentation (services, config, queries)
+- **BIRDNET_COMMANDS.md** - Quick reference for Pi commands
+
+**Live URLs:**
+- Frontend: https://wasatchbirdworks.com
+- Admin UI: https://cms.wasatchbitworks.com/admin/birds
+- Public API: https://cms.wasatchbitworks.com/api/birds
+
+---
+
+*Last Updated: January 7, 2026*
