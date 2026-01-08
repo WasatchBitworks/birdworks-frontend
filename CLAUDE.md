@@ -184,7 +184,11 @@ Detection confidence shown with color-coded badges:
 
 ## Timezone Handling
 
-All timestamps from the API are in UTC. Use these filters to display in Mountain Time:
+**See canonical reference:** CMS repo `BIRDS.md` → "Timezone Handling (Canonical Reference)"
+
+### Quick Reference
+
+**API returns UTC, frontend displays Mountain Time:**
 
 ```njk
 {{ detection.detected_at | toMountainTime }}     → "Jan 7, 2026, 4:34 PM"
@@ -192,7 +196,18 @@ All timestamps from the API are in UTC. Use these filters to display in Mountain
 {{ detection.detected_at | toMountainDate }}      → "Jan 7, 2026"
 ```
 
-For client-side JavaScript (e.g., live-refresh.js), use the `formatMountainTime()` function.
+**Client-side JavaScript:**
+```javascript
+formatMountainTime(detection.detected_at)  // In live-refresh.js
+```
+
+**Implementation:**
+- **Eleventy filters:** Defined in `.eleventy.js` using `toLocaleString()` with `timeZone: "America/Denver"`
+- **Client-side:** Same approach in `src/js/live-refresh.js`
+- **Input:** UTC ISO 8601 timestamps from API (e.g., `"2026-01-07T16:34:25+00:00"`)
+- **Output:** Mountain Time formatted strings (e.g., `"Jan 7, 2026, 4:34 PM"`)
+
+**Important:** Never manually calculate UTC offsets. Use browser's built-in timezone database via `toLocaleString()` for proper DST handling.
 
 ## Current Status (January 7, 2026)
 
