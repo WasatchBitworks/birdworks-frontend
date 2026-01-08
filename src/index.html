@@ -29,17 +29,17 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
 <section class="py-12 bg-white">
   <div class="max-w-7xl mx-auto px-4">
     <div class="grid md:grid-cols-3 gap-6">
-      <!-- Total Detections -->
+      <!-- Today's Detections -->
       <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
         <div class="text-4xl font-bold text-green-800 mb-2">
-          {% if birds.latest.length > 0 %}
-            {{ birds.latest.length }}
+          {% if birds.today.length > 0 %}
+            {{ birds.today.length }}
           {% else %}
             0
           {% endif %}
         </div>
-        <div class="text-gray-700 font-medium">Recent Detections</div>
-        <div class="text-sm text-gray-600 mt-1">Last 24 hours</div>
+        <div class="text-gray-700 font-medium">Detections Today</div>
+        <div class="text-sm text-gray-600 mt-1">{{ birds.todayDate | toMountainDate }}</div>
       </div>
 
       <!-- Species Count -->
@@ -58,7 +58,7 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
       <!-- Status -->
       <div class="text-center p-6 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100">
         <div class="text-4xl font-bold text-orange-800 mb-2">
-          {% if birds.latest.length > 0 %}
+          {% if birds.today.length > 0 %}
             ✓ Live
           {% else %}
             ○ Ready
@@ -155,15 +155,15 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
   </div>
 </section>
 
-<!-- Recent Detections -->
+<!-- Detections Today -->
 <section class="py-12 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-8">
-      <h2 class="text-3xl font-bold text-slate-800 mb-4">Recent Detections</h2>
-      <p class="text-lg text-gray-600">Latest birds identified by our BirdNET-Pi system</p>
+      <h2 class="text-3xl font-bold text-slate-800 mb-4">Detections Today</h2>
+      <p class="text-lg text-gray-600">Birds identified on {{ birds.todayDate | toMountainDate }}</p>
     </div>
 
-    {% if birds.latest.length > 0 %}
+    {% if birds.today.length > 0 %}
       <div class="bg-white rounded-lg shadow-md overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -175,7 +175,7 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
               </tr>
             </thead>
             <tbody>
-              {% for detection in birds.latest | slice(0, 10) %}
+              {% for detection in birds.today | slice(0, 10) %}
               <tr class="border-b hover:bg-gray-50">
                 <td class="px-4 py-3">
                   <div class="font-medium text-gray-900">{{ detection.common_name }}</div>
@@ -200,17 +200,19 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
             </tbody>
           </table>
         </div>
+        {% if birds.today.length > 10 %}
         <div class="px-4 py-3 bg-gray-50 text-center">
-          <a href="/live" class="text-green-700 hover:text-green-900 font-medium">View all detections →</a>
+          <a href="/live" class="text-green-700 hover:text-green-900 font-medium">View all {{ birds.today.length }} detections →</a>
         </div>
+        {% endif %}
       </div>
     {% else %}
       <div class="bg-white rounded-lg shadow-md p-12 text-center">
         <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
         </svg>
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">No detections yet</h3>
-        <p class="text-gray-600">The system is ready and monitoring. Check back soon for bird activity!</p>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">No detections today yet</h3>
+        <p class="text-gray-600">The system is actively monitoring. Birds detected today will appear here!</p>
       </div>
     {% endif %}
   </div>

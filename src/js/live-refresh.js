@@ -12,7 +12,7 @@
 
   // Get API base from data attribute
   const apiBase = document.documentElement.dataset.apiBase || 'https://cms.wasatchbitworks.com/api/birds';
-  const apiUrl = `${apiBase}/${API_SLUG}/latest?limit=20`;
+  const apiUrl = `${apiBase}/${API_SLUG}/latest?date=today`;  // All detections for today (Mountain Time)
 
   // State
   let autoRefreshTimer = null;

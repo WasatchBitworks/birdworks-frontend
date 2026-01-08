@@ -1,14 +1,14 @@
 ---
 layout: layout-birds.njk
-title: Live Detections
-description: Real-time bird detection feed from the Wasatch Front. See the latest birds identified by our BirdNET-Pi system.
+title: Detections Today
+description: Today's bird detections from the Wasatch Front. See all birds identified by our BirdNET-Pi system.
 ---
 
 <!-- Page Header -->
 <section class="bg-gradient-to-r from-green-700 to-green-600 text-white py-12">
   <div class="max-w-7xl mx-auto px-4">
-    <h1 class="text-4xl font-bold mb-4">Live Bird Detections</h1>
-    <p class="text-lg text-green-100">Real-time feed of birds identified by our BirdNET-Pi system</p>
+    <h1 class="text-4xl font-bold mb-4">Detections Today</h1>
+    <p class="text-lg text-green-100">All birds identified on {{ birds.todayDate | toMountainDate }}</p>
   </div>
 </section>
 
@@ -39,12 +39,12 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
       </div>
     </div>
 
-    {% if birds.latest.length > 0 %}
+    {% if birds.today.length > 0 %}
       <!-- Stats Summary -->
       <div class="grid md:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          <div class="text-2xl font-bold text-green-700">{{ birds.latest.length }}</div>
-          <div class="text-sm text-gray-600">Recent Detections</div>
+          <div class="text-2xl font-bold text-green-700">{{ birds.today.length }}</div>
+          <div class="text-sm text-gray-600">Detections Today</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
           <div class="text-2xl font-bold text-blue-700">{{ birds.species.length }}</div>
@@ -53,7 +53,7 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
         <div class="bg-white rounded-lg shadow p-4 text-center">
           <div class="text-2xl font-bold text-orange-700">
             {% set highConfidence = 0 %}
-            {% for det in birds.latest %}
+            {% for det in birds.today %}
               {% if det.confidence >= 0.9 %}
                 {% set highConfidence = highConfidence + 1 %}
               {% endif %}
@@ -83,7 +83,7 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200" id="detectionsTableBody">
-              {% for detection in birds.latest %}
+              {% for detection in birds.today %}
               <tr class="hover:bg-gray-50 transition">
                 <td class="px-6 py-4">
                   <div class="font-semibold text-gray-900">{{ detection.common_name }}</div>
@@ -121,13 +121,13 @@ description: Real-time bird detection feed from the Wasatch Front. See the lates
         <svg class="w-24 h-24 mx-auto mb-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
         </svg>
-        <h2 class="text-2xl font-bold text-gray-800 mb-3">No Detections Yet</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-3">No Detections Today Yet</h2>
         <p class="text-gray-600 mb-6 max-w-md mx-auto">
-          The BirdNET-Pi system is active and listening. Check back soon as birds start calling!
+          The BirdNET-Pi system is active and listening. Birds detected today will appear here!
         </p>
         <div class="inline-block px-4 py-2 bg-green-100 text-green-800 rounded-lg">
           <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
-          System Ready
+          System Active
         </div>
       </div>
     {% endif %}

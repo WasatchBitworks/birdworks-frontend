@@ -140,7 +140,8 @@ Detection confidence shown with color-coded badges:
 - Base URL: `https://cms.wasatchbitworks.com/api/birds`
 - Slug: `wasatch-bitworks`
 - Endpoints:
-  - `/wasatch-bitworks/latest?limit=20` - Recent detections
+  - `/wasatch-bitworks/latest?date=today` - All detections for today (Mountain Time)
+  - `/wasatch-bitworks/latest?limit=20` - Recent detections (limited)
   - `/wasatch-bitworks/detections/species` - Species with detection counts (**use this for detection data**)
   - `/wasatch-bitworks/daily?days=30` - Daily aggregation
   - `/wasatch-bitworks/species` - Species with photo counts (for photo galleries, not detections)

@@ -6,7 +6,7 @@ module.exports = async function() {
   const SLUG = 'wasatch-bitworks';
 
   const endpoints = {
-    latest: `${API_BASE}/${SLUG}/latest?limit=20`,
+    today: `${API_BASE}/${SLUG}/latest?date=today`,  // All detections for current day (Mountain Time)
     species: `${API_BASE}/${SLUG}/detections/species`,  // Detection species, not photo species
     daily: `${API_BASE}/${SLUG}/daily?days=30`
   };
@@ -15,8 +15,8 @@ module.exports = async function() {
 
   try {
     // Fetch all endpoints in parallel
-    const [latest, species, daily] = await Promise.all([
-      fetchWithCache(endpoints.latest, '1m'),
+    const [todayData, species, daily] = await Promise.all([
+      fetchWithCache(endpoints.today, '1m'),
       fetchWithCache(endpoints.species, '5m'),
       fetchWithCache(endpoints.daily, '5m')
     ]);
@@ -24,13 +24,14 @@ module.exports = async function() {
     const generatedAt = new Date().toISOString();
 
     console.log(`✅ Bird data fetched successfully:`);
-    console.log(`   - ${latest.detections?.length || 0} recent detections`);
+    console.log(`   - ${todayData.detections?.length || 0} detections today (${todayData.date || 'unknown'})`);
     console.log(`   - ${species.species?.length || 0} species`);
     console.log(`   - ${daily.daily_counts?.length || 0} days of data`);
     console.log(`   - Generated at: ${generatedAt}`);
 
     return {
-      latest: latest.detections || [],
+      today: todayData.detections || [],
+      todayDate: todayData.date || null,
       species: species.species || [],
       daily: daily.daily_counts || [],
       generatedAt,
@@ -42,7 +43,8 @@ module.exports = async function() {
     console.log('⚠️  Using empty fallback data');
 
     return {
-      latest: [],
+      today: [],
+      todayDate: null,
       species: [],
       daily: [],
       generatedAt: new Date().toISOString(),
