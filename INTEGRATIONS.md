@@ -125,6 +125,25 @@ See [Plausible docs](https://plausible.io/docs) for more.
 
 ---
 
+## 📈 Data Visualization (In-Repo Charts)
+
+**Status:** Active (no third-party service).
+
+Charts are rendered by the in-repo module `src/js/charts.js` and progressively
+enhanced on the client. The Explore page (`/explore`) uses this module to render:
+
+- Daily detections summary (bar ranking + hourly heatmap)
+- 30-day timeline
+- Hourly activity
+- Day-of-week patterns
+- Top species activity (top 15)
+
+**Notes:**
+- All charts include table fallbacks for no-JS environments.
+- No external charting library is used or required.
+
+---
+
 ## 🛡️ Cloudflare Turnstile
 
 ### What is Turnstile?

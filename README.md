@@ -38,6 +38,7 @@ npm run build
 /                  → Homepage (stats, recent detections, BirdNET intro)
 /live              → Live detections feed
 /species           → Species index with detection counts
+/explore           → Advanced data exploration (multi-chart dashboard)
 /about             → About BirdNET-Pi and how it works
 /404.html          → 404 page
 ```
@@ -70,13 +71,14 @@ npm run build
 - ✅ All Glasstone artifacts removed
 - ✅ Build optimized (~0.60s)
 - ✅ Charts (daily detections timeline + top species distribution)
+- ✅ Explore page with 5 advanced charts and table fallbacks
 - ⏳ Photo integration (pending CMS redirect endpoints)
 
 ## Build Performance
 
 - Build time: ~0.60s
 - Data fetch: Birds API only (~530ms)
-- Files generated: 6 pages
+- Files generated: 7 pages
 - No unused data fetching
 
 ## What is BirdNET?

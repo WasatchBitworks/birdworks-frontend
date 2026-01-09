@@ -9,7 +9,7 @@ the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
 ## Current State
 
 - Project has been fully rebranded from the duplicated Glasstone template.
-- Core pages implemented: Home, Live, Species, About, and 404.
+- Core pages implemented: Home, Live, Species, Explore, About, and 404.
 - Build-time data fetching is implemented via src/_data/birds.js against the CMS public API.
 - Empty-state handling is implemented for zero/partial data.
 
@@ -31,7 +31,14 @@ the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
    - Chronological ordering (oldest left, newest right)
    - Added `slice` and `reverse` Eleventy filters
 
-3) Photo integration + lightbox - **NEXT PRIORITY**
+3) ✅ **Explore Page (Complete - Jan 9, 2026)**
+   - Five interactive charts for deeper data analysis
+   - Daily detections summary (bar ranking + hourly heatmap)
+   - 30-day timeline, hourly activity, day-of-week patterns
+   - Extended top species view (top 15)
+   - Table fallbacks for all charts
+
+4) Photo integration + lightbox - **NEXT PRIORITY**
    - Waiting on CMS photo file delivery endpoints
 
 **See also:** [FRONTEND.md](./FRONTEND.md) for detailed architecture, API contracts, and implementation phases.

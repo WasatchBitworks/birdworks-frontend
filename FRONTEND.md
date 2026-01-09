@@ -56,6 +56,7 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 - Species detail: detection stats + charts + photo strip (audio optional)
 - Photos: gallery with filters (species, featured)
 - Photo detail: image, metadata, species link
+- Explore: advanced data exploration with multi-chart dashboard
 - About/How it works: project + pipeline summary
 
 **Optional pages**
@@ -110,6 +111,7 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 - Daily detections timeline (line/area)
 - Species distribution (bar chart, top N with “view all”)
 - Hourly activity heatmap (24-hour grid)
+- Day-of-week averages (weekday bars)
 - Seasonal trends (monthly aggregation)
 - Photo coverage by species (bar or stacked bar: photos vs detections)
 
@@ -117,6 +119,7 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 - Home: 1–2 hero charts + “latest detections” widget
 - Species index: sortable table + sparkline per species
 - Species detail: timeline + hourly activity + photos gallery
+- Explore: daily summary + extended timeline + hourly + weekday + top species
 - Photos: filterable gallery with species-level counts
 
 **Data + photos**
@@ -126,6 +129,7 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 **Implementation notes**
 - Prefer build-time rendering for charts (SVG from pre-aggregated data → static + fast).
 - If interactive tooltips/filters are needed, add minimal client-side JS on top of static SVG.
+- Explore page charts can be client-rendered as long as table fallbacks remain intact.
 
 ## Build & Deploy (Glasstone workflow)
 - Use Netlify build hooks configured in CMS (`/admin/portfolio` flow already supports this)
