@@ -130,6 +130,7 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 - Prefer build-time rendering for charts (SVG from pre-aggregated data → static + fast).
 - If interactive tooltips/filters are needed, add minimal client-side JS on top of static SVG.
 - Explore page charts can be client-rendered as long as table fallbacks remain intact.
+- Day-of-week chart reads daily data from a `data-daily` attribute (avoid scraping a table that may be replaced by SVG).
 
 ## Build & Deploy (Glasstone workflow)
 - Use Netlify build hooks configured in CMS (`/admin/portfolio` flow already supports this)
