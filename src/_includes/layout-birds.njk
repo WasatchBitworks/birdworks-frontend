@@ -99,6 +99,7 @@
           <a href="/" class="hover:opacity-80 transition">Home</a>
           <a href="/live" class="hover:opacity-80 transition">Live</a>
           <a href="/species" class="hover:opacity-80 transition">Species</a>
+          <a href="/explore" class="hover:opacity-80 transition">Explore</a>
           <a href="/about" class="hover:opacity-80 transition">About</a>
         </div>
 
@@ -115,6 +116,7 @@
         <a href="/" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Home</a>
         <a href="/live" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Live</a>
         <a href="/species" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Species</a>
+        <a href="/explore" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">Explore</a>
         <a href="/about" class="block py-2 px-4 hover:bg-white hover:bg-opacity-10 rounded transition">About</a>
       </div>
     </nav>
@@ -198,8 +200,8 @@
     });
   </script>
 
-  <!-- Charts enhancement (homepage only) -->
-  {% if page.url == '/' %}
+  <!-- Charts enhancement (homepage and explore page) -->
+  {% if page.url == '/' or page.url == '/explore/' %}
   <script src="/js/charts.js"></script>
   {% endif %}
 
