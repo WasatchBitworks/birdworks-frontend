@@ -1,6 +1,6 @@
 # BirdWorks Frontend Specification (AUTHORITATIVE)
 
-Status: Phase 4 in progress (Jan 8, 2026). Pagination and audio complete.
+Status: Phase 4 complete (Jan 9, 2026). Charts, pagination, and audio implemented.
 
 This document defines the goals, constraints, and guardrails for converting
 the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
@@ -13,7 +13,7 @@ the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
 - Build-time data fetching is implemented via src/_data/birds.js against the CMS public API.
 - Empty-state handling is implemented for zero/partial data.
 
-## Phase 4 Priorities
+## Phase 4 Complete (Jan 9, 2026)
 
 1) ✅ **Pagination and Audio (Complete - Jan 8, 2026)**
    - Client-side pagination (20 detections per page)
@@ -24,12 +24,14 @@ the duplicated Glasstone Eleventy project into the BirdWorks public frontend.
    - Preserved badge for permanent recordings
    - CORS enabled on audio API endpoint
 
-2) Charts MVP (homepage Trends section) - **NEXT PRIORITY**
-   - Daily detections timeline (last 14 days)
-   - Top species distribution (top 10)
-   - Prefer progressive enhancement: server-rendered fallback lists + client-side SVG charts (no heavy deps).
+2) ✅ **Charts MVP (Complete - Jan 9, 2026)**
+   - Daily detections timeline (last 14 days, vertical bars)
+   - Top species distribution (top 10, horizontal bars)
+   - Progressive enhancement: server-rendered lists + client-side SVG charts
+   - Chronological ordering (oldest left, newest right)
+   - Added `slice` and `reverse` Eleventy filters
 
-3) Photo integration + lightbox (blocked on CMS redirect endpoints)
+3) Photo integration + lightbox - **NEXT PRIORITY**
    - Waiting on CMS photo file delivery endpoints
 
 **See also:** [FRONTEND.md](./FRONTEND.md) for detailed architecture, API contracts, and implementation phases.

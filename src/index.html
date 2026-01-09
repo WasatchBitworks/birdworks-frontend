@@ -89,14 +89,13 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
         </div>
         <div class="p-6" data-chart="daily">
           {% if birds.daily.length > 0 %}
+            {% set last14Days = birds.daily | slice(0, 14) | reverse %}
             <div class="space-y-2">
-              {% for day in birds.daily %}
-                {% if loop.index0 < 14 %}
-                  <div class="flex justify-between items-center py-2 border-b last:border-b-0">
-                    <span class="text-sm text-gray-700">{{ day.date }}</span>
-                    <span class="font-semibold text-gray-900">{{ day.count }}</span>
-                  </div>
-                {% endif %}
+              {% for day in last14Days %}
+                <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                  <span class="text-sm text-gray-700">{{ day.date }}</span>
+                  <span class="font-semibold text-gray-900">{{ day.count }}</span>
+                </div>
               {% endfor %}
             </div>
           {% else %}

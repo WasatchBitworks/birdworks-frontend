@@ -61,6 +61,18 @@ module.exports = function(eleventyConfig) {
     return JSON.stringify(value);
   });
 
+  // Slice filter for arrays (like JavaScript's array.slice())
+  eleventyConfig.addFilter("slice", function(array, start, end) {
+    if (!Array.isArray(array)) return [];
+    return array.slice(start, end);
+  });
+
+  // Reverse filter for arrays
+  eleventyConfig.addFilter("reverse", function(array) {
+    if (!Array.isArray(array)) return [];
+    return [...array].reverse(); // Create a copy to avoid mutating original
+  });
+
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
   eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png

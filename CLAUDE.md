@@ -231,9 +231,9 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 
 **Important:** Never manually calculate UTC offsets. Use browser's built-in timezone database via `toLocaleString()` for proper DST handling.
 
-## Current Status (January 8, 2026)
+## Current Status (January 9, 2026)
 
-**Phase 4 In Progress** - Audio & Pagination Complete
+**Phase 4 Complete** - Charts, Audio & Pagination
 - ✅ All Glasstone artifacts removed
 - ✅ Birds layout and pages implemented
 - ✅ API integration working (detection + audio endpoints)
@@ -245,14 +245,13 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 - ✅ **Preserved badge for permanent recordings**
 - ✅ **Dynamic audio column (shows when audio available)**
 - ✅ **One-at-a-time audio playback**
-- ⏳ Charts not yet implemented (Phase 4 next priority)
+- ✅ **Charts MVP (Daily Detections + Top Species)**
 - ⏳ Photo integration pending (CMS redirect endpoints needed)
 
-**Jan 8, 2026 Updates:**
-- Added client-side pagination to /live page (20 per page)
-- Implemented audio playback with on-demand S3 URL fetching
-- Added CORS headers to audio API endpoint (backend)
-- Updated Tailwind config to scan JavaScript files for dynamic classes
-- Added JSON filter to Eleventy for data serialization
-- Pagination resets to page 1 on live refresh
-- Audio column dynamically appears when audio is available
+**Jan 9, 2026 Updates:**
+- Implemented homepage charts with progressive enhancement
+- Daily detections timeline (14 days, vertical bars)
+- Top species distribution (top 10, horizontal bars)
+- Added `slice` and `reverse` Eleventy filters
+- Charts render as SVG with fallback to server-rendered lists
+- Daily chart shows chronological order (oldest left, newest right)
