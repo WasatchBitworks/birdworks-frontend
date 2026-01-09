@@ -80,12 +80,23 @@
     // Initialize day of week chart (explore page)
     const dayOfWeekContainer = document.querySelector('[data-chart="day-of-week"]');
     if (dayOfWeekContainer) {
-      // Need to get daily data from DOM
-      const dailyDataForWeek = extractTableData(document.querySelector('[data-chart="timeline-extended"]'));
-      if (dailyDataForWeek.length > 0) {
-        const weekData = aggregateByDayOfWeek(dailyDataForWeek);
-        if (weekData.length > 0) {
-          renderDayOfWeek(dayOfWeekContainer, weekData);
+      const dailyJson = dayOfWeekContainer.getAttribute('data-daily');
+      if (dailyJson) {
+        try {
+          const dailyData = JSON.parse(dailyJson);
+          if (dailyData.length > 0) {
+            // Convert to format expected by aggregateByDayOfWeek
+            const dailyFormatted = dailyData.map(d => ({
+              label: d.date,
+              value: d.count
+            }));
+            const weekData = aggregateByDayOfWeek(dailyFormatted);
+            if (weekData.length > 0) {
+              renderDayOfWeek(dayOfWeekContainer, weekData);
+            }
+          }
+        } catch (e) {
+          console.error('Failed to parse daily data for day-of-week:', e);
         }
       }
     }

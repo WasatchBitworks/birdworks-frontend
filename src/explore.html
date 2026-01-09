@@ -118,7 +118,7 @@ description: Interactive charts and visualizations exploring bird detection patt
           <h2 class="text-2xl font-bold text-gray-900">Day of Week Patterns</h2>
           <p class="text-sm text-gray-600 mt-1">Average detections by day of week</p>
         </div>
-        <div class="p-6" data-chart="day-of-week">
+        <div class="p-6" data-chart="day-of-week" data-daily="{{ birds.daily | json }}">
           {% if birds.daily.length > 0 %}
             <p class="text-sm text-gray-600 text-center py-8">
               Chart will load with weekly patterns...
