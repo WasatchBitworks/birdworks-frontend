@@ -8,17 +8,21 @@ module.exports = async function() {
   const endpoints = {
     today: `${API_BASE}/${SLUG}/latest?date=today`,  // All detections for current day (Mountain Time)
     species: `${API_BASE}/${SLUG}/detections/species`,  // Detection species, not photo species
-    daily: `${API_BASE}/${SLUG}/daily?days=30`
+    daily: `${API_BASE}/${SLUG}/daily?days=30`,
+    photos: `${API_BASE}/${SLUG}/photos?limit=50`,  // Recent photos (all, not just featured)
+    featuredPhotos: `${API_BASE}/${SLUG}/photos/featured`  // Featured photos only
   };
 
   console.log(`🐦 Fetching bird data from: ${API_BASE}/${SLUG}`);
 
   try {
     // Fetch all endpoints in parallel
-    const [todayData, species, daily] = await Promise.all([
+    const [todayData, species, daily, photos, featuredPhotos] = await Promise.all([
       fetchWithCache(endpoints.today, '1m'),
       fetchWithCache(endpoints.species, '5m'),
-      fetchWithCache(endpoints.daily, '5m')
+      fetchWithCache(endpoints.daily, '5m'),
+      fetchWithCache(endpoints.photos, '5m'),
+      fetchWithCache(endpoints.featuredPhotos, '5m')
     ]);
 
     const generatedAt = new Date().toISOString();
@@ -27,6 +31,8 @@ module.exports = async function() {
     console.log(`   - ${todayData.detections?.length || 0} detections today (${todayData.date || 'unknown'})`);
     console.log(`   - ${species.species?.length || 0} species`);
     console.log(`   - ${daily.daily?.length || 0} days of data`);
+    console.log(`   - ${photos.photos?.length || 0} photos`);
+    console.log(`   - ${featuredPhotos.photos?.length || 0} featured photos`);
     console.log(`   - Generated at: ${generatedAt}`);
 
     return {
@@ -34,6 +40,8 @@ module.exports = async function() {
       todayDate: todayData.date || null,
       species: species.species || [],
       daily: daily.daily || [],  // API returns .daily not .daily_counts
+      photos: photos.photos || [],
+      featuredPhotos: featuredPhotos.photos || [],
       generatedAt,
       apiBase: API_BASE
     };
@@ -47,6 +55,8 @@ module.exports = async function() {
       todayDate: null,
       species: [],
       daily: [],
+      photos: [],
+      featuredPhotos: [],
       generatedAt: new Date().toISOString(),
       apiBase: API_BASE,
       error: error.message

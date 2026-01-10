@@ -144,6 +144,51 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
   </div>
 </section>
 
+<!-- Featured Photos -->
+{% if birds.featuredPhotos.length > 0 %}
+<section class="py-12 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-slate-800 mb-4">Featured Photos</h2>
+      <p class="text-lg text-gray-600">Beautiful bird photography from the Wasatch Front</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {% for photo in birds.featuredPhotos | slice(0, 6) %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+          <a href="{{ photo.variants.large.url }}" target="_blank" class="block">
+            <div class="aspect-square bg-gray-100">
+              <img
+                src="{{ photo.variants.medium.url }}"
+                alt="{{ photo.species.common_name if photo.species else 'Bird photo' }}"
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            </div>
+          </a>
+          <div class="p-4">
+            {% if photo.species %}
+              <h3 class="text-lg font-bold text-gray-900 mb-1">
+                {{ photo.species.common_name }}
+              </h3>
+              {% if photo.species.scientific_name %}
+                <p class="text-sm text-gray-600 italic">{{ photo.species.scientific_name }}</p>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center">
+      <a href="/photos" class="text-green-700 hover:text-green-900 font-medium text-lg">
+        View Full Gallery ({{ birds.photos.length }} photos) →
+      </a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- Detections Today -->
 <section class="py-12 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4">
