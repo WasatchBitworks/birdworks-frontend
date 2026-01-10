@@ -73,6 +73,22 @@ module.exports = function(eleventyConfig) {
     return [...array].reverse(); // Create a copy to avoid mutating original
   });
 
+  // Find photo by species name - prioritizes featured photos
+  eleventyConfig.addFilter("findPhotoBySpecies", function(photos, speciesName) {
+    if (!Array.isArray(photos) || !speciesName) return null;
+
+    // Filter photos for this species
+    const speciesPhotos = photos.filter(photo =>
+      photo.species && photo.species.common_name === speciesName
+    );
+
+    if (speciesPhotos.length === 0) return null;
+
+    // Return featured photo first if available
+    const featuredPhoto = speciesPhotos.find(photo => photo.is_featured === true);
+    return featuredPhoto || speciesPhotos[0];
+  });
+
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
   eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png
