@@ -51,20 +51,33 @@ This is the **Wasatch BirdWorks** public site showcasing:
 **Build-time data fetching:**
 ```javascript
 // src/_data/birds.js
-- Fetches from CMS API: /api/birds/wasatch-bitworks/{latest,species,daily}
-- Caches with @11ty/eleventy-fetch (1m for latest, 5m for species/daily)
-- Returns: {today, todayDate, species, daily, generatedAt, apiBase}
+- Fetches from CMS API:
+  - /api/birds/wasatch-bitworks/latest?date=today (1m cache)
+  - /api/birds/wasatch-bitworks/detections/species (5m cache)
+  - /api/birds/wasatch-bitworks/daily?days=30 (5m cache)
+  - /api/birds/wasatch-bitworks/photos?limit=50 (5m cache) [NEW]
+  - /api/birds/wasatch-bitworks/photos/featured (5m cache) [NEW]
+- Returns: {today, todayDate, species, daily, photos, featuredPhotos, generatedAt, apiBase}
 ```
 
 **Environment variables:**
 - `BIRDS_API_BASE` - API base URL (default: https://cms.wasatchbitworks.com/api/birds)
 
-**Available in templates:**
+**Available in templates (Detections):**
 - `{{ birds.today }}` - Array of today's detections (includes id, audio_url, preserved)
 - `{{ birds.todayDate }}` - Date string for today in Mountain Time
-- `{{ birds.species }}` - Array of species with counts
+- `{{ birds.species }}` - Array of species with detection counts
 - `{{ birds.daily }}` - Array of daily aggregations
 - `{{ birds.generatedAt }}` - ISO timestamp of when data was fetched
+
+**Available in templates (Photos - NEW):**
+- `{{ birds.photos }}` - Array of all photos with metadata and S3 URLs
+  - Each photo includes: id, species, caption, is_featured, taken_at, uploaded_at, variants (large/medium/thumbnail with .url)
+  - Variants include: url (pre-signed S3 URL), width, height, format, size_bytes
+- `{{ birds.featuredPhotos }}` - Array of featured photos only (subset of photos)
+  - Same structure as birds.photos
+
+**Available in templates (Site):**
 - `{{ site.name }}` - "Wasatch BirdWorks"
 - `{{ site.url }}` - "https://wasatchbirdworks.com"
 
@@ -99,12 +112,19 @@ This is the **Wasatch BirdWorks** public site showcasing:
 ### Page Structure
 
 ```
-/ (index.html)         → Homepage with stats, recent detections, BirdNET intro
+/ (index.html)         → Homepage with stats, featured photos, trends, recent detections, BirdNET intro
+/photos                → Photo gallery with featured and recent photos, species counts [NEW]
 /live                  → Live feed with all detections, confidence indicators
 /species               → Species index grid with detection counts
+/explore               → Advanced data exploration with charts and filters
 /about                 → About BirdNET-Pi, how it works, technical details
 /404.html              → 404 error page
 ```
+
+**Pages with Photos (NEW - Jan 10, 2026):**
+- `index.html` - Featured photos section (up to 6 photos) between trends and detections
+- `photos.html` - Full photo gallery page with featured and recent sections
+- Future: Species detail pages, photo detail pages
 
 ## Development Notes
 

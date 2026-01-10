@@ -148,26 +148,69 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - Netlify Forms (from Glasstone)
 - Netlify build hooks + CMS trigger workflow
 
-## Implementation Phases
-**Phase 0: Template alignment**
+## Implementation Status
+
+### ✅ COMPLETED (January 9-10, 2026)
+
+**Phase 1: Photo Gallery Integration**
+- ✅ Data fetching: `src/_data/birds.js` updated to fetch `/photos` and `/photos/featured` endpoints
+- ✅ Gallery page: `/photos` with featured and recent sections
+- ✅ Home page: Featured photos section (up to 6 photos) between trends and detections
+- ✅ Navigation: Added "Photos" link to desktop and mobile menus
+- ✅ Direct S3 URLs: Using `photo.variants.{large|medium|thumbnail}.url` from API response
+- ✅ Stats display: Photo count, featured count, unique species count
+- ✅ Responsive layout: Grid layouts for both featured (3-col) and recent (5-col thumbnail) sections
+
+**Current Data (Live):**
+- 4 photos in system
+- 1 featured photo (Northern Flicker)
+- 2 species: Northern Flicker, Cooper's Hawk
+- All photos fetching and displaying with pre-signed S3 URLs
+
+**Implementation Details:**
+- Photos API returns `variants` object with pre-signed URLs (1 hour expiry)
+- Eleventy builds are cached at 5 minutes for photo data
+- S3 URLs encoded in build output (stable across builds due to CDN/S3 caching)
+- Empty state handling for pages with no photos
+
+### IN PROGRESS
+
+**Phase 2: Detail Pages**
+- Species detail pages with photo strips (future)
+- Photo detail pages with full metadata (future)
+
+**Phase 3: Live Widget** (Not yet prioritized)
+- Client-side fetch for latest detections (optional)
+- Periodic updates to detection feed
+
+### PLANNED
+
+**Phase 4: QA + Optimization**
+- Optimize image loading and lazy-loading
+- Implement lightbox for full-size viewing (optional)
+- Add photo filters by species (optional)
+- Detail pages for individual photos
+
+### Original Phase Plan (Pre-Implementation)
+**Phase 0: Template alignment** ✅ DONE
 - Copy Glasstone structure and strip client-specific content
 - Update `src/_data/site.js`, `package.json`, `README.md`
 - Keep Glasstone integrations enabled initially (can be removed later)
 
-**Phase 1: Core skeleton**
+**Phase 1: Core skeleton** ✅ DONE
 - Set up repo structure, base layout, nav, and global styles
 - Implement data fetching in `_data/`
 - Build static pages for home, species, photos
 
-**Phase 2: Detail pages**
+**Phase 2: Detail pages** (planned)
 - Species detail pages (detections + charts)
 - Photo detail pages (single photo + metadata)
 
-**Phase 3: Live widget**
+**Phase 3: Live widget** (optional)
 - Add small client-side fetch for latest detections
 - Ensure rate limits and cache headers are respected
 
-**Phase 4: QA + deployment**
+**Phase 4: QA + deployment** (in progress)
 - Hook up Netlify build
 - Validate on staging
 - Add analytics + SEO metadata
