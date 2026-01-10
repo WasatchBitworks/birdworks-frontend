@@ -179,7 +179,12 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
   - No more 403 errors for users
 - ✅ **Implementation:** All photo API endpoints updated to return redirect URLs
 - ✅ **Frontend:** No changes needed! Already uses `photo.variants.{variant}.url`
-- ✅ **Deployed:** CMS changes committed (fb37423)
+- ✅ **CORP Header Fix (Jan 10):** Endpoint overrides global security policy
+  - CMS now sets `Cross-Origin-Resource-Policy: cross-origin` for redirect endpoint
+  - Allows frontend to load images via redirect (fixes Firefox CORP blocking)
+  - SecurityHeaders middleware respects route-specific overrides
+  - Other routes remain protected with `same-origin` policy
+- ✅ **Deployed:** CMS changes committed (fb37423, c50c843)
 
 **Current Data (Live):**
 - 4 photos in system

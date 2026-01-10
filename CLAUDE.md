@@ -203,6 +203,8 @@ Detection confidence shown with color-coded badges:
     - Browser/CDN caches redirect (5 min)
     - **Variants:** `thumbnail`, `medium`, `large`
     - **Why:** Frontend URLs never expire; S3 URLs always fresh
+    - **Security:** Sets `Cross-Origin-Resource-Policy: cross-origin` to allow cross-origin loads
+    - **Tested:** Works on localhost:8080, wasatchbirdworks.com, Netlify previews
 
 **Detection response format:**
 ```json
