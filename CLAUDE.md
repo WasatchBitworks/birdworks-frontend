@@ -122,9 +122,31 @@ This is the **Wasatch BirdWorks** public site showcasing:
 ```
 
 **Pages with Photos (NEW - Jan 10, 2026):**
-- `index.html` - Featured photos section (up to 6 photos) between trends and detections
+- `index.html` - Featured photos section (up to 6 photos) + 48px thumbnails in Top Species chart
 - `photos.html` - Full photo gallery page with featured and recent sections
+- `explore.html` - 40px thumbnails in Top Species Activity table (top 15)
+- `species.html` - Medium photo headers on all species cards (3-col grid)
 - Future: Species detail pages, photo detail pages
+
+## Custom Eleventy Filters
+
+**Photo Matching (NEW - Jan 10, 2026):**
+```njk
+{% set photo = birds.photos | findPhotoBySpecies(species.common_name) %}
+```
+- Searches `birds.photos` array for species by name
+- Returns **featured photo first** if available
+- Falls back to first available photo for that species
+- Returns `null` if no photo exists for species
+- Used in Top Species chart, Explore table, Species cards
+
+**Built-in Filters:**
+- `toMountainTime` - UTC to Mountain Time (full datetime)
+- `toMountainTimeShort` - Just time portion
+- `toMountainDate` - Just date portion
+- `json` - Stringify objects for data attributes
+- `slice(start, end)` - Array slicing
+- `reverse` - Array reversal
 
 ## Development Notes
 

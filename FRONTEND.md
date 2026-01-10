@@ -161,10 +161,19 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - ✅ Stats display: Photo count, featured count, unique species count
 - ✅ Responsive layout: Grid layouts for both featured (3-col) and recent (5-col thumbnail) sections
 
+**Phase 1b: Photo Thumbnails in Charts & Species Lists** (Jan 10, 2026)
+- ✅ Custom Eleventy filter: `findPhotoBySpecies` prioritizes featured photos
+- ✅ Home page Top Species: 48px thumbnails next to each of top 10 species
+- ✅ Explore page Top Species Activity: 40px thumbnails in table rows (top 15 species)
+- ✅ Species page cards: Medium (1200px) photo headers on each species card (3-col grid)
+- ✅ Placeholder handling: SVG icon placeholders for species without photos
+- ✅ Featured photo priority: Charts automatically use featured photos when available
+
 **Current Data (Live):**
 - 4 photos in system
-- 1 featured photo (Northern Flicker)
-- 2 species: Northern Flicker, Cooper's Hawk
+- 1 featured photo (Northern Flicker) - used in all charts for that species
+- 2 species with photos: Northern Flicker, Cooper's Hawk
+- 33 species detected (31 without photos, shown with placeholders)
 - All photos fetching and displaying with pre-signed S3 URLs
 
 **Implementation Details:**
@@ -172,6 +181,8 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - Eleventy builds are cached at 5 minutes for photo data
 - S3 URLs encoded in build output (stable across builds due to CDN/S3 caching)
 - Empty state handling for pages with no photos
+- Custom filter intelligently selects best photo for each species
+- Responsive thumbnails scale appropriately on each chart (48px, 40px, full-height)
 
 ### IN PROGRESS
 
