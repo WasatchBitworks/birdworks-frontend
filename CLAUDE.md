@@ -71,9 +71,10 @@ This is the **Wasatch BirdWorks** public site showcasing:
 - `{{ birds.generatedAt }}` - ISO timestamp of when data was fetched
 
 **Available in templates (Photos - NEW):**
-- `{{ birds.photos }}` - Array of all photos with metadata and S3 URLs
+- `{{ birds.photos }}` - Array of all photos with metadata and redirect URLs
   - Each photo includes: id, species, caption, is_featured, taken_at, uploaded_at, variants (large/medium/thumbnail with .url)
-  - Variants include: url (pre-signed S3 URL), width, height, format, size_bytes
+  - Variants include: url (stable redirect URL - never expires!), width, height, format, size_bytes
+  - Redirect URLs format: `https://cms.wasatchbitworks.com/api/birds/wasatch-bitworks/photos/{id}/file?variant={variant}`
 - `{{ birds.featuredPhotos }}` - Array of featured photos only (subset of photos)
   - Same structure as birds.photos
 
@@ -187,13 +188,21 @@ Detection confidence shown with color-coded badges:
 **Birds API (Bitworks CMS):**
 - Base URL: `https://cms.wasatchbitworks.com/api/birds`
 - Slug: `wasatch-bitworks`
-- Endpoints:
+- **Detection Endpoints:**
   - `/wasatch-bitworks/latest?date=today` - All detections for today (Mountain Time)
   - `/wasatch-bitworks/latest?limit=20` - Recent detections (limited)
   - `/wasatch-bitworks/detections/species` - Species with detection counts (**use this for detection data**)
   - `/wasatch-bitworks/daily?days=30` - Daily aggregation
   - `/wasatch-bitworks/audio/:id` - Pre-signed S3 URL for audio file (CORS enabled)
+- **Photo Endpoints:**
+  - `/wasatch-bitworks/photos` - All photos (paginated)
+  - `/wasatch-bitworks/photos/featured` - Featured photos only
   - `/wasatch-bitworks/species` - Species with photo counts (for photo galleries, not detections)
+  - `/wasatch-bitworks/photos/:id/file?variant=large` - Redirect to fresh S3 URL (NEW - Jan 10, 2026)
+    - Returns 302 redirect to pre-signed S3 URL
+    - Browser/CDN caches redirect (5 min)
+    - **Variants:** `thumbnail`, `medium`, `large`
+    - **Why:** Frontend URLs never expire; S3 URLs always fresh
 
 **Detection response format:**
 ```json

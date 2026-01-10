@@ -157,7 +157,6 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - ✅ Gallery page: `/photos` with featured and recent sections
 - ✅ Home page: Featured photos section (up to 6 photos) between trends and detections
 - ✅ Navigation: Added "Photos" link to desktop and mobile menus
-- ✅ Direct S3 URLs: Using `photo.variants.{large|medium|thumbnail}.url` from API response
 - ✅ Stats display: Photo count, featured count, unique species count
 - ✅ Responsive layout: Grid layouts for both featured (3-col) and recent (5-col thumbnail) sections
 
@@ -169,17 +168,31 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - ✅ Placeholder handling: SVG icon placeholders for species without photos
 - ✅ Featured photo priority: Charts automatically use featured photos when available
 
+**Phase 1c: Non-Expiring Photo URLs (Jan 10, 2026)** 🎯 NEW
+- ✅ **Problem Solved:** Photos were disappearing when 1-hour S3 signed URLs expired
+- ✅ **Solution:** CMS redirect endpoint generates fresh S3 URLs on-demand
+- ✅ **New Endpoint:** `GET /api/birds/:slug/photos/:id/file?variant={variant}`
+- ✅ **How it works:**
+  - Frontend contains stable redirect URLs (never expire)
+  - Browser requests redirect → CMS generates fresh S3 URL
+  - 302 Redirect to S3 (cached 5 minutes)
+  - No more 403 errors for users
+- ✅ **Implementation:** All photo API endpoints updated to return redirect URLs
+- ✅ **Frontend:** No changes needed! Already uses `photo.variants.{variant}.url`
+- ✅ **Deployed:** CMS changes committed (fb37423)
+
 **Current Data (Live):**
 - 4 photos in system
 - 1 featured photo (Northern Flicker) - used in all charts for that species
 - 2 species with photos: Northern Flicker, Cooper's Hawk
 - 33 species detected (31 without photos, shown with placeholders)
-- All photos fetching and displaying with pre-signed S3 URLs
+- All photos now fetching via non-expiring redirect URLs ✨
 
 **Implementation Details:**
-- Photos API returns `variants` object with pre-signed URLs (1 hour expiry)
-- Eleventy builds are cached at 5 minutes for photo data
-- S3 URLs encoded in build output (stable across builds due to CDN/S3 caching)
+- Photos API returns `variants` object with redirect URLs (never expire)
+- Redirect endpoint validates photo, generates fresh S3 URL on each request
+- Browser/CDN caches redirect for 5 minutes (efficient)
+- S3 URLs always fresh (1 hour expiry, but never stored in HTML)
 - Empty state handling for pages with no photos
 - Custom filter intelligently selects best photo for each species
 - Responsive thumbnails scale appropriately on each chart (48px, 40px, full-height)
@@ -231,11 +244,14 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - Eleventy + Netlify using the Glasstone template structure.
 - Hybrid data approach: build-time for most pages + a small optional live "Latest detections" widget.
 - No rebuild per detection; rely on scheduled builds + manual build hooks.
-- **Signed URL Strategy:** Public site serves photos/audio via stable CMS URLs that redirect to fresh signed S3 URLs (no signed URLs stored in Eleventy output).
+- **Signed URL Strategy:** ✅ **IMPLEMENTED** (Jan 10, 2026)
+  - Public site serves photos/audio via stable CMS URLs that redirect to fresh signed S3 URLs
+  - No signed URLs stored in Eleventy output (photos never disappear)
   - Frontend requests: `/api/birds/:slug/photos/:photo_id/file?variant=large`
   - CMS responds: `302 Redirect` to fresh pre-signed S3 URL (generated on-demand)
   - Result: URLs in HTML never expire, UX stays solid, static site stays static
-  - CDN can cache redirects for ~5 min (respects cache headers)
+  - CDN caches redirects for 5 minutes (efficient, respects cache headers)
+  - Tested and deployed to production
 
 ## Open Questions
 - Brand/style direction for wasatchbirdworks.com (reuse Bitworks aesthetic vs new look)?
