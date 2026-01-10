@@ -186,6 +186,33 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
   - Other routes remain protected with `same-origin` policy
 - ✅ **Deployed:** CMS changes committed (fb37423, c50c843)
 
+**Phase 1d: Thumbnail Cropping (Jan 10, 2026)** 🎯 NEW
+- ✅ **Problem Solved:** Bird thumbnails were tiny full-frame photos, not close-ups
+- ✅ **Solution:** CMS now crops thumbnails to focus on bird heads
+- ✅ **How it works:**
+  - All new photo uploads get automatic center-square crop (default)
+  - Admins can manually refine crop with CropperJS modal on photo detail page
+  - Crop coordinates stored normalized in meta_json (0.0-1.0 floats)
+  - Thumbnail regenerated on save
+  - Frontend picks up new thumbnail via redirect URLs (no HTML changes needed)
+- ✅ **CropperJS Integration:**
+  - Modal with drag/resize crop box (1:1 aspect ratio)
+  - Load existing crop if available
+  - Save normalized coordinates to backend
+  - Uses image proxy endpoint (avoids CORS/SSL issues)
+  - Auto-reload page after successful save
+- ✅ **Image Proxy Endpoint:**
+  - `GET /library/photos/:id/proxy/:variant` - streams S3 image through CMS
+  - Avoids CORS issues with pre-signed URLs
+  - SSL verification handled correctly (dev vs prod)
+  - Same-origin makes CropperJS work seamlessly
+- ✅ **Backend Enhancements:**
+  - PhotoUploadService crop support (generate_derivative)
+  - S3Handler download_file() for regeneration
+  - Persistence delete_variant() for cleanup
+  - Proper error handling and validation
+- ✅ **Deployed:** CMS changes committed (df5e536, eb62614)
+
 **Current Data (Live):**
 - 4 photos in system
 - 1 featured photo (Northern Flicker) - used in all charts for that species
