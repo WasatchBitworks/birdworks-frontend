@@ -284,27 +284,35 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 
 **Important:** Never manually calculate UTC offsets. Use browser's built-in timezone database via `toLocaleString()` for proper DST handling.
 
-## Current Status (January 9, 2026)
+## Current Status (January 10, 2026)
 
-**Phase 4 Complete** - Charts, Audio & Pagination
+**Phase 5 Complete** - Photo Integration with Non-Expiring URLs & Thumbnail Cropping
 - ✅ All Glasstone artifacts removed
 - ✅ Birds layout and pages implemented
-- ✅ API integration working (detection + audio endpoints)
+- ✅ API integration working (detection + audio + photo endpoints)
 - ✅ Empty states handled
-- ✅ Build optimized (0.60s)
+- ✅ Build optimized
 - ✅ Mountain Time display for all timestamps
 - ✅ **Pagination (20 detections per page)**
 - ✅ **Audio playback with play/pause controls**
 - ✅ **Preserved badge for permanent recordings**
 - ✅ **Dynamic audio column (shows when audio available)**
 - ✅ **One-at-a-time audio playback**
-- ✅ **Charts MVP (Daily Detections + Top Species)**
-- ⏳ Photo integration pending (CMS redirect endpoints needed)
+- ✅ **Charts MVP (Daily Detections + Top Species with thumbnails)**
+- ✅ **Photo Gallery Integration** (featured + recent sections)
+- ✅ **Photo Thumbnails in Charts** (48px/40px bird photos)
+- ✅ **Non-Expiring Photo URLs** (redirect endpoint generates fresh S3 URLs)
+- ✅ **Thumbnail Cropping** (CMS crops photos to show bird close-ups)
 
-**Jan 9, 2026 Updates:**
-- Implemented homepage charts with progressive enhancement
-- Daily detections timeline (14 days, vertical bars)
-- Top species distribution (top 10, horizontal bars)
-- Added `slice` and `reverse` Eleventy filters
-- Charts render as SVG with fallback to server-rendered lists
-- Daily chart shows chronological order (oldest left, newest right)
+**Jan 10, 2026 Updates:**
+- Implemented photo gallery integration with CMS API
+- Non-expiring photo URLs (redirect endpoint never expires)
+- Fixed CORP header for cross-origin image loads
+- Updated CSP to allow S3 connections
+- Implemented thumbnail cropping system
+  - Default center-square crop on upload
+  - CropperJS UI for manual refinement
+  - Normalized crop coordinates in meta_json
+  - Image proxy endpoint (avoids CORS/SSL issues)
+- Bird thumbnails now fill photo areas instead of being tiny
+- All photo URLs via redirect endpoints (no direct S3 exposure)
