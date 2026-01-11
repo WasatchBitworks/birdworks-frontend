@@ -44,13 +44,26 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addFilter("toMountainDate", function(dateString) {
     if (!dateString) return "";
     try {
-      const date = new Date(dateString);
-      return date.toLocaleString("en-US", {
-        timeZone: "America/Denver",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      });
+      // Check if this is a date-only string (YYYY-MM-DD format)
+      // If so, parse it as Mountain Time noon to avoid UTC timezone issues
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        // Append T12:00:00 to ensure it's treated as noon in the specified timezone
+        const date = new Date(dateString + "T12:00:00Z");
+        return date.toLocaleString("en-US", {
+          timeZone: "America/Denver",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+      } else {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-US", {
+          timeZone: "America/Denver",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+      }
     } catch (e) {
       return dateString;
     }
