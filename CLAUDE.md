@@ -22,6 +22,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 - `npm run watch:css` - Watch CSS changes only
 - `npx @11ty/eleventy --serve` - Eleventy dev server only
 
+### Cache Management
+- `npm run cache:clear` - Clear Eleventy's `.cache/` directory (EleventyFetch cache)
+- `npm run dev:fresh` - Clear cache then start dev server (forces fresh data fetch from API)
+
+**When to use:**
+- `cache:clear` - After API changes, to ensure fresh data in next build
+- `dev:fresh` - Troubleshooting data issues, or need guaranteed latest API data
+
 ### Automated Builds & Deployment
 
 **Scheduled Rebuilds:** Site rebuilds hourly (6am–10pm MT) via GitHub Actions

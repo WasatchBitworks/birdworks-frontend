@@ -31,6 +31,8 @@ npm run build
 - `npm run build` - Production build (CSS + static site)
 - `npm run build:css` - Build Tailwind CSS only
 - `npm run watch:css` - Watch CSS changes only
+- `npm run cache:clear` - Clear Eleventy cache (forces fresh API data on next build)
+- `npm run dev:fresh` - Clear cache and start dev server (useful for troubleshooting)
 
 ## Site Structure
 

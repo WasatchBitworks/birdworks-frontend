@@ -8,7 +8,9 @@
     "eleventy": "eleventy --serve",
     "dev": "npm-run-all --parallel watch:css eleventy",
     "start": "npm run dev",
-    "build": "npm run build:css && eleventy"
+    "build": "npm run build:css && eleventy",
+    "cache:clear": "rm -rf .cache",
+    "dev:fresh": "npm run cache:clear && npm run dev"
   },
   "keywords": [
     "birds",
