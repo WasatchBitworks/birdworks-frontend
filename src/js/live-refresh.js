@@ -7,7 +7,7 @@
   'use strict';
 
   // Configuration
-  const REFRESH_INTERVAL = 60000; // 60 seconds
+  const REFRESH_INTERVAL = 300000; // 5 minutes (matches BirdNET-Pi sync frequency)
   const API_SLUG = 'wasatch-bitworks';
   const ITEMS_PER_PAGE = 20;
 
