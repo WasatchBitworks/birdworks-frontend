@@ -72,7 +72,20 @@ npm run build
 - ✅ Build optimized (~0.60s)
 - ✅ Charts (daily detections timeline + top species distribution)
 - ✅ Explore page with 5 advanced charts and table fallbacks
-- ⏳ Photo integration (pending CMS redirect endpoints)
+- ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
+- ✅ Update timestamps on all pages (shows data freshness)
+- ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT)
+
+## Automated Builds
+
+The site rebuilds **hourly during active hours** (6am–10pm Mountain Time) to keep data fresh:
+
+- **17 builds per day** during daytime hours (no overnight waste)
+- **Data freshness:** ≤1 hour old during daytime, snapshot from previous day overnight
+- **Setup:** See [BUILD_HOOK_SETUP.md](./BUILD_HOOK_SETUP.md) for Netlify webhook configuration
+- **Workflow:** `.github/workflows/scheduled-build.yml` (GitHub Actions)
+
+Users can see "Data updated: {timestamp}" footer on all pages to understand freshness.
 
 ## Build Performance
 

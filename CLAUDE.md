@@ -22,6 +22,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 - `npm run watch:css` - Watch CSS changes only
 - `npx @11ty/eleventy --serve` - Eleventy dev server only
 
+### Automated Builds & Deployment
+
+**Scheduled Rebuilds:** Site rebuilds hourly (6am–10pm MT) via GitHub Actions
+- Workflow: `.github/workflows/scheduled-build.yml`
+- Trigger: Posts to Netlify build hook
+- Schedule: 17 builds/day during active hours (no overnight waste)
+- Status: See [BUILD_HOOK_SETUP.md](./BUILD_HOOK_SETUP.md) for configuration
+
+**Initial Setup Required:**
+1. Create Netlify build hook (see BUILD_HOOK_SETUP.md)
+2. Add `NETLIFY_BUILD_HOOK` secret to GitHub
+3. Workflow will then run automatically on schedule
+
 ## Architecture
 
 ### Static Site Structure
