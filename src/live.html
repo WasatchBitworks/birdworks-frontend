@@ -47,8 +47,16 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
           <div class="text-sm text-gray-600">Detections Today</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          <div class="text-2xl font-bold text-blue-700">{{ birds.species.length }}</div>
-          <div class="text-sm text-gray-600">Unique Species</div>
+          <div class="text-2xl font-bold text-blue-700">
+            {% set uniqueSpecies = [] %}
+            {% for det in birds.today %}
+              {% if det.common_name not in uniqueSpecies %}
+                {% set _ = uniqueSpecies.push(det.common_name) %}
+              {% endif %}
+            {% endfor %}
+            {{ uniqueSpecies.length }}
+          </div>
+          <div class="text-sm text-gray-600">Unique Species Today</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
           <div class="text-2xl font-bold text-orange-700">
