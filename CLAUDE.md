@@ -305,7 +305,7 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 
 **Important:** Never manually calculate UTC offsets. Use browser's built-in timezone database via `toLocaleString()` for proper DST handling.
 
-## Current Status (January 10, 2026)
+## Current Status (January 12, 2026)
 
 **Phase 5 Complete** - Photo Integration with Non-Expiring URLs & Thumbnail Cropping
 - ✅ All Glasstone artifacts removed
@@ -325,15 +325,21 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 - ✅ **Non-Expiring Photo URLs** (redirect endpoint generates fresh S3 URLs)
 - ✅ **Thumbnail Cropping** (CMS crops photos to show bird close-ups)
 
-**Jan 10, 2026 Updates:**
-- Implemented photo gallery integration with CMS API
-- Non-expiring photo URLs (redirect endpoint never expires)
-- Fixed CORP header for cross-origin image loads
-- Updated CSP to allow S3 connections
-- Implemented thumbnail cropping system
-  - Default center-square crop on upload
-  - CropperJS UI for manual refinement
-  - Normalized crop coordinates in meta_json
-  - Image proxy endpoint (avoids CORS/SSL issues)
-- Bird thumbnails now fill photo areas instead of being tiny
-- All photo URLs via redirect endpoints (no direct S3 exposure)
+**Jan 12, 2026 Updates (Phase 6 - Developer Experience & Data Visibility):**
+- ✅ **Update Timestamps:** All pages show "Data updated: {timestamp}" footer
+  - Signals snapshot nature (not real-time except /live)
+  - Mountain Time format across all pages
+- ✅ **Hourly Scheduled Rebuilds:** GitHub Actions workflow configured
+  - 17 builds/day during 6am–10pm MT (no overnight waste)
+  - Workflow: `.github/workflows/scheduled-build.yml`
+  - Requires Netlify build hook setup (see BUILD_HOOK_SETUP.md)
+- ✅ **Cache Management Scripts:** Developer ergonomics
+  - `npm run cache:clear` - Clear EleventyFetch cache
+  - `npm run dev:fresh` - Clear cache + start dev server
+- ✅ **Species Page Redesign:** Matches CMS admin layout
+  - 64px thumbnail + species name header
+  - Best/Avg confidence stats
+  - Last seen with full date + time
+  - Mirrors `/admin/birds/detections/species` UI
+- ✅ **Live Page Stats Fix:** "Unique Species" now shows today's data only
+  - Was all-time count (35), now today's count

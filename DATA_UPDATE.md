@@ -489,12 +489,22 @@ plausible('Data Refresh', { props: {
 - **`/live` page provides preview** → Public can see recent activity with 5-minute refresh
 - **Scheduled rebuilds** → Keeps snapshot reasonably current without complexity
 
-**Next Steps:**
-1. ✅ Strategy approved - Hourly rebuilds with snapshot approach (Jan 12, 2026)
-2. Add visible "Updated at" timestamps to all pages (Phase 1)
-3. Setup hourly Netlify rebuilds via GitHub Actions (Phase 2)
-4. Add developer ergonomics (cache:clear commands) (Phase 3)
-5. Update CLAUDE.md and README.md
+**Implementation Complete (Jan 12, 2026):**
+1. ✅ Strategy approved - Hourly rebuilds with snapshot approach
+2. ✅ Phase 1: Add visible "Updated at" timestamps to all pages
+   - Homepage: "Data updated: {timestamp}"
+   - Explore: "Data snapshot as of: {timestamp}"
+   - Species: "Data updated: {timestamp}"
+   - Photos: "Gallery updated: {timestamp}"
+3. ✅ Phase 2: Setup hourly Netlify rebuilds via GitHub Actions
+   - Workflow: `.github/workflows/scheduled-build.yml`
+   - Schedule: 17 builds/day (6am–10pm MT)
+   - Setup guide: `BUILD_HOOK_SETUP.md`
+4. ✅ Phase 3: Add developer ergonomics
+   - `npm run cache:clear` - Clear EleventyFetch cache
+   - `npm run dev:fresh` - Clear cache + start dev server
+   - Documented in CLAUDE.md
+5. ✅ Documentation: Updated CLAUDE.md, README.md, and this file
 
 **Scope Guardrails:**
 - ❌ Do NOT add new client-side polling (except `/live` which exists)
@@ -505,5 +515,5 @@ plausible('Data Refresh', { props: {
 ---
 
 **Decision Date:** January 12, 2026
-**Status:** ✅ APPROVED - Snapshot-first approach with scheduled rebuilds
-**Implementation:** Phase 1 (timestamps) ready to start
+**Status:** ✅ COMPLETE - Snapshot-first approach with scheduled rebuilds fully implemented
+**All Phases:** ✅ Complete and deployed

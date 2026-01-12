@@ -61,22 +61,24 @@ npm run build
 
 ## Project Status
 
-**Phase 4 Complete** (January 9, 2026)
+**Phase 6 Complete** (January 12, 2026) - Developer Experience & Data Visibility
 - ✅ Birds layout with forest green theme
 - ✅ Homepage with stats and recent detections
-- ✅ Live detections page with confidence indicators
+- ✅ Live detections page with confidence indicators (today's stats only)
 - ✅ Pagination (20 detections per page)
 - ✅ Audio playback with play/pause controls
-- ✅ Species index page
+- ✅ Species index page with CMS-like detailed cards
 - ✅ About page with technical details
 - ✅ Empty state handling for zero data
 - ✅ All Glasstone artifacts removed
-- ✅ Build optimized (~0.60s)
+- ✅ Build optimized (~0.50s)
 - ✅ Charts (daily detections timeline + top species distribution)
 - ✅ Explore page with 5 advanced charts and table fallbacks
 - ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
-- ✅ Update timestamps on all pages (shows data freshness)
-- ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT)
+- ✅ **Update timestamps on all pages** (shows data freshness to users)
+- ✅ **Hourly scheduled rebuilds via GitHub Actions** (6am–10pm MT, 17x/day)
+- ✅ **Cache management scripts** (`npm run cache:clear`, `npm run dev:fresh`)
+- ✅ **Species cards redesigned** (thumbnail + best/avg confidence + last seen date)
 
 ## Automated Builds
 
