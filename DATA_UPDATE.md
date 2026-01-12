@@ -204,12 +204,14 @@ Notes:
 2. Configure external cron service (e.g., cron-job.org, EasyCron, GitHub Actions)
 3. Schedule HTTP POST to build hook URL
 
-**Schedule: Hourly Rebuilds**
+**Schedule: Hourly Rebuilds (6am–10pm MT)**
 
 **Configuration:**
-- Trigger: **Every hour on the hour** (24x/day)
-- Freshness: Data up to 1 hour old (excellent for showcase site)
-- Build minutes/month: ~720 minutes
+- Trigger: **Hourly during active hours** (6:00 AM–10:00 PM America/Denver)
+- Frequency: **17 builds/day** (no overnight builds)
+- Freshness (daytime): Data up to ~1 hour old
+- Freshness (overnight): Data may be stale until the 6:00 AM rebuild
+- Build minutes/month: ~510 minutes (assuming ~1 min/build)
 - Build time: ~1 minute per build (fast Eleventy builds)
 
 **Why hourly:**
@@ -217,20 +219,22 @@ Notes:
 - Ample build-minute headroom available
 - No cost optimization needed
 - Keeps site reasonably fresh (1-hour lag is acceptable)
-- Simpler than active-hours scheduling
+- Covers the hours people actually care (and avoids overnight churn)
 
 **Alternative schedules NOT recommended:**
 - ❌ 4x/day: Data can be 6 hours old (too stale)
-- ❌ Active hours only: Adds complexity for minimal benefit
-- ✅ **Hourly: Simple, fresh, acceptable lag**
+- ✅ **Hourly during active hours: Simple, fresh, predictable**
 
-If needed later, rebuilds can be restricted to active hours, but hourly scheduling is preferred initially for simplicity and predictability.
+This schedule is intentionally “set-and-forget”: frequent daytime freshness without wasting builds overnight.
 
 ---
 
 ### Alternative: GitHub Actions (Free)
 
 **Setup:**
+
+> The example below shows a simple hourly trigger. To match the active-hours schedule, adjust the cron expression to run only during 6:00 AM–10:00 PM Mountain Time (America/Denver), converting to UTC as needed.
+
 ```yaml
 # .github/workflows/scheduled-build.yml
 name: Hourly Netlify Build
@@ -325,9 +329,9 @@ jobs:
 - `detections/species`: 5-minute cache
 
 **Build-time data fetching:**
-- Frequency: Hourly scheduled rebuilds (24x/day)
+- Frequency: Hourly scheduled rebuilds during active hours (17x/day)
 - API hits per build: ~4 endpoints (today, species, daily, photos)
-- Total API requests: ~96/day (24 builds × ~4 endpoints)
+- Total API requests: ~68/day (17 builds × ~4 endpoints)
 
 **Live page (client-side):**
 - `/live` page: 5-minute auto-refresh (matches Pi sync frequency)
@@ -336,7 +340,7 @@ jobs:
 - Expected traffic: Very low (few concurrent users)
 
 **Total estimated API load:**
-- Build-time: ~96 requests/day (24 hourly builds × ~4 endpoints)
+- Build-time: ~68 requests/day (17 builds × ~4 endpoints)
 - Client-side: ~576 requests/day per active `/live` user (5-minute refresh)
 - Expected total: <2,000 requests/day (assuming low traffic)
 
@@ -459,7 +463,7 @@ plausible('Data Refresh', { props: {
 - Minimize frontend complexity and maintenance
 
 **Data Freshness Strategy:**
-- **Most pages:** Build-time data with **hourly rebuilds** (data up to 1 hour old)
+- **Most pages:** Build-time data with **hourly rebuilds during active hours** (daytime data up to ~1 hour old)
 - **`/live` page only:** Client-side refresh (5-min interval, matches Pi sync)
 - **Visible timestamps:** "Data updated: {timestamp}" on all snapshot pages
 - **Live monitoring:** Happens in authenticated CMS backend (not public site)
@@ -467,16 +471,17 @@ plausible('Data Refresh', { props: {
 **Key Benefits:**
 - ✅ **Simple architecture** → Minimal JavaScript, easier maintenance
 - ✅ **High performance** → Pure static HTML, CDN-friendly
-- ✅ **Low API load** → Hourly rebuilds (24x/day) + minimal live traffic
+- ✅ **Low API load** → Hourly rebuilds during active hours (17x/day) + minimal live traffic
 - ✅ **Clear separation** → Public showcase vs. admin monitoring
 - ✅ **User expectations** → Timestamps make snapshot nature clear
 - ✅ **Scheduled updates** → Fresh data via hourly rebuilds (≤1 hour old)
 
 **Trade-offs (acceptable):**
-- Data can be up to 1 hour old between rebuilds (hourly schedule)
+- Daytime data can be up to ~1 hour old between rebuilds
+- Overnight data may be stale until the next 6:00 AM rebuild
 - No "instant" updates on homepage/explore/species pages
 - Users wanting live monitoring should use CMS backend
-- Uses ~720 build minutes/month (acceptable with ample headroom)
+- Uses ~510 build minutes/month (acceptable with ample headroom)
 
 **What Makes This Work:**
 - **Low expected traffic** → Public site is primarily showcase/educational
