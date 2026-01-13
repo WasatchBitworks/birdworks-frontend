@@ -165,7 +165,7 @@
 
     // Right side: Play button
     const playButton = document.createElement('button');
-    playButton.className = 'audio-play-btn px-4 py-2 bg-leaf-green text-white rounded-lg hover:bg-forest-green transition inline-flex items-center gap-2';
+    playButton.className = 'audio-play-btn px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition inline-flex items-center gap-2';
     playButton.dataset.audioUrl = detection.audio_url;
     playButton.dataset.detectionId = detection.id;
     playButton.innerHTML = `
@@ -254,8 +254,9 @@
     if (!button._audio) {
       setButtonLoading(button);
 
-      // Fetch pre-signed S3 URL
-      fetch(audioUrl)
+      // Fetch pre-signed S3 URL (prepend apiBase for absolute URL)
+      const fullAudioUrl = audioUrl.startsWith('http') ? audioUrl : `https://cms.wasatchbitworks.com${audioUrl}`;
+      fetch(fullAudioUrl)
         .then(response => response.json())
         .then(data => {
           if (!data.url) {
@@ -313,7 +314,7 @@
 
   function setButtonReady(button) {
     button.disabled = false;
-    button.className = 'audio-play-btn px-4 py-2 bg-leaf-green text-white rounded-lg hover:bg-forest-green transition inline-flex items-center gap-2';
+    button.className = 'audio-play-btn px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition inline-flex items-center gap-2';
     button.innerHTML = `
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
