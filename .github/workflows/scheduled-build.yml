@@ -6,6 +6,7 @@ on:
     # Converted to UTC: 1pm-5am (wraps around midnight)
     # Times in UTC: 13,14,15,16,17,18,19,20,21,22,23,0,1,2,3,4,5 (17 runs/day)
     - cron: '0 13,14,15,16,17,18,19,20,21,22,23,0,1,2,3,4,5 * * *'
+  workflow_dispatch:  # Allow manual trigger for testing
 
 jobs:
   trigger-build:
