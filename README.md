@@ -37,8 +37,9 @@ npm run build
 ## Site Structure
 
 ```
-/                  → Homepage (stats, recent detections, BirdNET intro)
-/live              → Live detections feed
+/                  → Homepage (stats, featured photos, trends, recent detections, BirdNET intro)
+/live              → Live feed with daily stats, hourly species activity chart, all detections
+/photos            → Photo gallery with featured and recent photos
 /species           → Species index with detection counts
 /explore           → Advanced data exploration (multi-chart dashboard)
 /about             → About BirdNET-Pi and how it works
@@ -61,7 +62,7 @@ npm run build
 
 ## Project Status
 
-**Phase 6 Complete** (January 12, 2026) - Developer Experience & Data Visibility
+**Phase 7 Complete** (January 13, 2026) - Live Data Enhancements
 - ✅ Birds layout with forest green theme
 - ✅ Homepage with stats and recent detections
 - ✅ Live detections page with confidence indicators (today's stats only)
@@ -71,14 +72,16 @@ npm run build
 - ✅ About page with technical details
 - ✅ Empty state handling for zero data
 - ✅ All Glasstone artifacts removed
-- ✅ Build optimized (~0.50s)
+- ✅ Build optimized (~0.60s)
 - ✅ Charts (daily detections timeline + top species distribution)
 - ✅ Explore page with 5 advanced charts and table fallbacks
 - ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
-- ✅ **Update timestamps on all pages** (shows data freshness to users)
-- ✅ **Hourly scheduled rebuilds via GitHub Actions** (6am–10pm MT, 17x/day)
-- ✅ **Cache management scripts** (`npm run cache:clear`, `npm run dev:fresh`)
-- ✅ **Species cards redesigned** (thumbnail + best/avg confidence + last seen date)
+- ✅ Update timestamps on all pages (shows data freshness to users)
+- ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT, 17x/day)
+- ✅ Cache management scripts (`npm run cache:clear`, `npm run dev:fresh`)
+- ✅ Species cards redesigned (thumbnail + best/avg confidence + last seen date)
+- ✅ **Dynamic stats cards on /live** (total detections, species count, high confidence - updates with refresh)
+- ✅ **Daily Detections Summary chart on /live** (top 15 species + 24-hour hourly heatmap with live data)
 
 ## Automated Builds
 

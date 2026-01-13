@@ -80,6 +80,12 @@
       }
     }
 
+    // Update stats with initial data
+    updateStatsTotals();
+
+    // Render daily summary chart with initial data
+    updateDailySummaryChart();
+
     // Load auto-refresh preference from localStorage
     const autoRefreshEnabled = localStorage.getItem('birdworks_auto_refresh') === 'true';
     if (autoRefreshEnabled) {
@@ -501,12 +507,284 @@
   }
 
   /**
-   * Update stats cards (if they exist)
+   * Update stats cards based on all detections for the day
+   */
+  function updateStatsTotals() {
+    // Update detection count
+    const detectionsEl = document.getElementById('statDetections');
+    if (detectionsEl) {
+      detectionsEl.textContent = allDetections.length;
+    }
+
+    // Update unique species count
+    const speciesEl = document.getElementById('statSpecies');
+    if (speciesEl) {
+      const uniqueSpecies = new Set(allDetections.map(d => d.common_name));
+      speciesEl.textContent = uniqueSpecies.size;
+    }
+
+    // Update high confidence count
+    const confidenceEl = document.getElementById('statConfidence');
+    if (confidenceEl) {
+      const highConfidence = allDetections.filter(d => d.confidence >= 0.9).length;
+      confidenceEl.textContent = highConfidence;
+    }
+  }
+
+  /**
+   * Update daily summary chart with live data
+   */
+  function updateDailySummaryChart() {
+    const chartContainer = document.getElementById('dailySummaryChart');
+    if (!chartContainer) return;
+
+    // Aggregate species by hour
+    const summaryData = aggregateSpeciesByHour(allDetections);
+    if (summaryData.species.length > 0) {
+      // Get date and updated time
+      const dateStr = new Date().toISOString().split('T')[0]; // Today's date
+      const now = new Date().toISOString();
+
+      // Render the chart
+      renderDailySummary(chartContainer, summaryData, dateStr, now);
+    }
+  }
+
+  /**
+   * Aggregate detections by species and hour
+   */
+  function aggregateSpeciesByHour(detections) {
+    const speciesMap = new Map();
+
+    detections.forEach(detection => {
+      const species = detection.common_name;
+      if (!speciesMap.has(species)) {
+        speciesMap.set(species, {
+          name: species,
+          total: 0,
+          hourly: new Array(24).fill(0)
+        });
+      }
+
+      const speciesData = speciesMap.get(species);
+      speciesData.total++;
+
+      // Extract hour from timestamp
+      try {
+        const date = new Date(detection.detected_at);
+        const hour = date.getHours();
+        speciesData.hourly[hour]++;
+      } catch (e) {
+        // Skip if timestamp parsing fails
+      }
+    });
+
+    // Convert to array and sort by total (descending)
+    const speciesArray = Array.from(speciesMap.values())
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 15); // Top 15 species
+
+    // Find max hourly count for color scaling
+    let maxHourly = 0;
+    speciesArray.forEach(species => {
+      const max = Math.max(...species.hourly);
+      if (max > maxHourly) maxHourly = max;
+    });
+
+    return {
+      species: speciesArray,
+      maxHourly: maxHourly
+    };
+  }
+
+  /**
+   * Render daily summary chart (similar to charts.js but inline for live refresh)
+   */
+  function renderDailySummary(container, data, dateStr, updatedStr) {
+    const numSpecies = data.species.length;
+    const headerHeight = 60;
+    const rowHeight = 32;
+    const barChartWidth = 220;
+    const cellSize = 28;
+    const heatmapWidth = 24 * cellSize;
+    const padding = { top: headerHeight + 10, right: 20, bottom: 20, left: 180 };
+
+    const width = padding.left + barChartWidth + 40 + heatmapWidth + padding.right;
+    const chartHeight = numSpecies * rowHeight;
+    const height = padding.top + chartHeight + padding.bottom;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'w-full h-auto');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Daily detections summary with species ranking and hourly heatmap');
+
+    // Helper: create text element
+    const createText = (x, y, text, fontSize, color, anchor) => {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      el.setAttribute('x', x);
+      el.setAttribute('y', y);
+      el.setAttribute('font-size', fontSize);
+      el.setAttribute('fill', color);
+      el.setAttribute('text-anchor', anchor);
+      el.textContent = text;
+      return el;
+    };
+
+    // Helper: create rect element
+    const createRect = (x, y, width, height, color) => {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      el.setAttribute('x', x);
+      el.setAttribute('y', y);
+      el.setAttribute('width', width);
+      el.setAttribute('height', height);
+      el.setAttribute('fill', color);
+      return el;
+    };
+
+    // Helper: create line element
+    const createLine = (x1, y1, x2, y2, color) => {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      el.setAttribute('x1', x1);
+      el.setAttribute('y1', y1);
+      el.setAttribute('x2', x2);
+      el.setAttribute('y2', y2);
+      el.setAttribute('stroke', color);
+      return el;
+    };
+
+    // Helper: get heatmap color
+    const getHeatmapColor = (intensity) => {
+      if (intensity === 0) return '#f9fafb';
+      const colorStops = [
+        { threshold: 0.0, color: { r: 220, g: 252, b: 231 } },
+        { threshold: 0.25, color: { r: 134, g: 239, b: 172 } },
+        { threshold: 0.5, color: { r: 34, g: 197, b: 94 } },
+        { threshold: 0.65, color: { r: 16, g: 185, b: 129 } },
+        { threshold: 0.75, color: { r: 139, g: 92, b: 246 } },
+        { threshold: 0.85, color: { r: 220, g: 38, b: 127 } },
+        { threshold: 1.0, color: { r: 239, g: 68, b: 68 } }
+      ];
+
+      let lowerStop = colorStops[0];
+      let upperStop = colorStops[1];
+
+      for (let i = 0; i < colorStops.length - 1; i++) {
+        if (intensity >= colorStops[i].threshold && intensity <= colorStops[i + 1].threshold) {
+          lowerStop = colorStops[i];
+          upperStop = colorStops[i + 1];
+          break;
+        }
+      }
+
+      const range = upperStop.threshold - lowerStop.threshold;
+      const normalizedIntensity = (intensity - lowerStop.threshold) / range;
+
+      const r = Math.round(lowerStop.color.r + (upperStop.color.r - lowerStop.color.r) * normalizedIntensity);
+      const g = Math.round(lowerStop.color.g + (upperStop.color.g - lowerStop.color.g) * normalizedIntensity);
+      const b = Math.round(lowerStop.color.b + (upperStop.color.b - lowerStop.color.b) * normalizedIntensity);
+
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    // Metadata
+    const metaY = 45;
+    const lastUpdated = createText(padding.left, metaY, `Last updated: ${formatMountainTime(updatedStr)} MT`, '12px', '#6b7280', 'start');
+    svg.appendChild(lastUpdated);
+
+    // Section divider line
+    const divider = createLine(padding.left, headerHeight, width - padding.right, headerHeight, '#e5e7eb');
+    divider.setAttribute('stroke-width', '2');
+    svg.appendChild(divider);
+
+    // Calculate max total for bar scaling
+    const maxTotal = Math.max(...data.species.map(s => s.total));
+
+    // For each species, render bar + heatmap row
+    data.species.forEach((species, i) => {
+      const y = padding.top + (i * rowHeight);
+
+      // Species name (left aligned)
+      const nameLabel = species.name.length > 22 ? species.name.substring(0, 20) + '...' : species.name;
+      const nameText = createText(padding.left - 10, y + rowHeight / 2, nameLabel, '12px', '#374151', 'end');
+      nameText.setAttribute('dominant-baseline', 'middle');
+      svg.appendChild(nameText);
+
+      // Bar chart
+      const barWidth = maxTotal > 0 ? (species.total / maxTotal) * barChartWidth : 0;
+      const barX = padding.left;
+      const barY = y + 4;
+      const barH = rowHeight - 8;
+
+      const bar = createRect(barX, barY, barWidth, barH, '#4A7C2C');
+      bar.setAttribute('rx', '3');
+      svg.appendChild(bar);
+
+      // Total count label on bar
+      if (species.total > 0) {
+        const countText = createText(barX + barWidth + 5, y + rowHeight / 2, species.total.toString(), '11px', '#374151', 'start');
+        countText.setAttribute('dominant-baseline', 'middle');
+        countText.setAttribute('font-weight', 'bold');
+        svg.appendChild(countText);
+      }
+
+      // Heatmap cells (24 hours)
+      const heatmapStartX = padding.left + barChartWidth + 40;
+      species.hourly.forEach((count, hour) => {
+        const cellX = heatmapStartX + (hour * cellSize);
+        const cellY = y + 2;
+        const cellH = rowHeight - 4;
+
+        if (count > 0) {
+          const intensity = count / data.maxHourly;
+          const color = getHeatmapColor(intensity);
+          const cell = createRect(cellX, cellY, cellSize - 2, cellH, color);
+          cell.setAttribute('rx', '2');
+          svg.appendChild(cell);
+
+          if (cellSize >= 24) {
+            const textColor = intensity > 0.5 ? '#ffffff' : '#374151';
+            const countText = createText(cellX + cellSize / 2 - 1, cellY + cellH / 2, count.toString(), '9px', textColor, 'middle');
+            countText.setAttribute('dominant-baseline', 'middle');
+            countText.setAttribute('font-weight', 'bold');
+            svg.appendChild(countText);
+          }
+        } else {
+          const cell = createRect(cellX, cellY, cellSize - 2, cellH, '#f9fafb');
+          cell.setAttribute('rx', '2');
+          cell.setAttribute('stroke', '#e5e7eb');
+          cell.setAttribute('stroke-width', '1');
+          svg.appendChild(cell);
+        }
+      });
+    });
+
+    // Hour labels (bottom)
+    const hourLabelsY = padding.top + chartHeight + 18;
+    const heatmapStartX = padding.left + barChartWidth + 40;
+    for (let hour = 0; hour < 24; hour += 3) {
+      const hourX = heatmapStartX + (hour * cellSize) + cellSize / 2 - 1;
+      const hourLabel = createText(hourX, hourLabelsY, hour.toString(), '10px', '#6b7280', 'middle');
+      svg.appendChild(hourLabel);
+    }
+
+    // "Hour (MT)" label
+    const hourAxisLabel = createText(heatmapStartX + heatmapWidth / 2, hourLabelsY + 15, 'Hour of Day (MT)', '11px', '#6b7280', 'middle');
+    hourAxisLabel.setAttribute('font-style', 'italic');
+    svg.appendChild(hourAxisLabel);
+
+    container.innerHTML = '';
+    container.appendChild(svg);
+  }
+
+  /**
+   * Update stats cards (called after refresh with new daily detections)
    */
   function updateStats(detections) {
-    // Note: Stats cards show build-time data
-    // We could update them dynamically, but for now we'll leave them static
-    // since they represent broader stats, not just the latest 20 detections
+    // allDetections is already updated by refreshDetections()
+    // Just update the UI to reflect the new totals
+    updateStatsTotals();
+    updateDailySummaryChart();
   }
 
   /**

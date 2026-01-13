@@ -141,7 +141,7 @@ This is the **Wasatch BirdWorks** public site showcasing:
 ```
 / (index.html)         → Homepage with stats, featured photos, trends, recent detections, BirdNET intro
 /photos                → Photo gallery with featured and recent photos, species counts [NEW]
-/live                  → Live feed with all detections, confidence indicators
+/live                  → Live feed with daily stats, hourly species activity chart, all detections [ENHANCED]
 /species               → Species index grid with detection counts
 /explore               → Advanced data exploration with charts and filters
 /about                 → About BirdNET-Pi, how it works, technical details
@@ -348,3 +348,16 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Mirrors `/admin/birds/detections/species` UI
 - ✅ **Live Page Stats Fix:** "Unique Species" now shows today's data only
   - Was all-time count (35), now today's count
+
+**Jan 13, 2026 Updates (Phase 7 - Live Data Enhancements):**
+- ✅ **Dynamic Stats Cards on /live:** Stats update with live refresh
+  - Total detections count (entire day)
+  - Unique species count (entire day)
+  - High confidence detections (≥90%, entire day)
+  - Updates when user clicks "Refresh Now" or auto-refresh triggers
+- ✅ **Daily Detections Summary Chart on /live:** Moved from /explore
+  - Top 15 species with detection counts (bar chart)
+  - 24-hour hourly heatmap per species (color intensity = activity)
+  - Live data updates with fresh API calls
+  - Mountain Time formatting
+  - Species rankings sort dynamically by total detections
