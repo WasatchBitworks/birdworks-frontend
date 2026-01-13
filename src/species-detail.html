@@ -1,0 +1,151 @@
+---
+pagination:
+  data: birds.species
+  size: 1
+  alias: species
+permalink: "/species/{{ species.common_name | slugify }}/"
+layout: layout-birds.njk
+eleventyComputed:
+  title: "{{ species.common_name }} | Wasatch BirdWorks"
+  description: "{{ species.common_name}} ({{ species.scientific_name }}) detections and photos from the Wasatch Front, Utah. {{ species.detection_count }} detections recorded."
+---
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Back Link -->
+  <div class="mb-6">
+    <a href="/species/" class="text-leaf-green hover:text-forest-green transition inline-flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Back to All Species
+    </a>
+  </div>
+
+  <!-- Species Header -->
+  <section class="mb-8">
+    <h1 class="text-4xl font-bold text-forest-green mb-2">{{ species.common_name }}</h1>
+    <p class="text-xl italic text-gray-600">{{ species.scientific_name }}</p>
+  </section>
+
+  <!-- Detection Stats Cards -->
+  <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-md p-6">
+      <div class="text-3xl font-bold text-forest-green mb-1">{{ species.detection_count }}</div>
+      <div class="text-sm text-gray-600">Total Detections</div>
+    </div>
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-md p-6">
+      <div class="text-3xl font-bold text-sky-blue mb-1">{{ (species.max_confidence * 100) | round }}%</div>
+      <div class="text-sm text-gray-600">Best Confidence</div>
+    </div>
+    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg shadow-md p-6">
+      <div class="text-3xl font-bold text-earth-brown mb-1">{{ (species.avg_confidence * 100) | round }}%</div>
+      <div class="text-sm text-gray-600">Avg Confidence</div>
+    </div>
+    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg shadow-md p-6">
+      <div class="text-2xl font-bold text-purple-700 mb-1">{{ species.last_seen | toMountainTimeShort }}</div>
+      <div class="text-sm text-gray-600">Last Seen</div>
+      <div class="text-xs text-gray-500 mt-1">{{ species.last_seen | toMountainDate }}</div>
+    </div>
+  </section>
+
+  <!-- Photo Viewer Section -->
+  {% set speciesPhotos = birds.photos | filterPhotosBySpecies(species.common_name) %}
+  {% if speciesPhotos.length > 0 %}
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold text-forest-green mb-4">Photos ({{ speciesPhotos.length }})</h2>
+
+      <!-- Main Photo Display -->
+      <div id="photoViewer" class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+        <div class="relative bg-gray-100" style="min-height: 400px;">
+          <img id="mainPhoto"
+               src="{{ speciesPhotos[0].variants.large.url }}"
+               alt="{{ speciesPhotos[0].species.common_name }}"
+               class="w-full h-auto max-h-[600px] object-contain"
+               loading="eager">
+          {% if speciesPhotos[0].caption %}
+            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4">
+              <p id="photoCaption" class="text-sm">{{ speciesPhotos[0].caption }}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Thumbnail Navigation -->
+      {% if speciesPhotos.length > 1 %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {% for photo in speciesPhotos %}
+            <button
+              class="thumbnail-btn relative bg-gray-100 rounded-lg overflow-hidden hover:ring-2 hover:ring-leaf-green transition {% if loop.index0 == 0 %}ring-2 ring-leaf-green{% endif %}"
+              data-photo-index="{{ loop.index0 }}"
+              data-large-url="{{ photo.variants.large.url }}"
+              data-caption="{{ photo.caption or '' }}"
+              aria-label="View photo {{ loop.index }}">
+              <img src="{{ photo.variants.thumbnail.url }}"
+                   alt="{{ photo.species.common_name }}"
+                   class="w-full h-32 object-cover"
+                   loading="lazy">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </section>
+  {% else %}
+    <!-- No Photos Empty State -->
+    <section class="mb-8">
+      <div class="bg-gray-50 rounded-lg p-12 text-center">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">No Photos Available</h3>
+        <p class="text-gray-600">No photos have been added for this species yet.</p>
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- Preserved Audio Recordings Section -->
+  <!-- Client-side rendered, fetched on page load -->
+  <section id="audioRecordings" class="mb-8">
+    <h2 class="text-2xl font-bold text-forest-green mb-4">Preserved Recordings</h2>
+
+    <div id="audioList" class="space-y-3">
+      <!-- Loading state -->
+      <div id="audioLoading" class="bg-white rounded-lg shadow-md p-8 text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-leaf-green mx-auto mb-3"></div>
+        <p class="text-gray-600">Loading preserved recordings...</p>
+      </div>
+    </div>
+
+    <!-- Empty state template (hidden by default, shown by JS if no recordings) -->
+    <div id="audioEmpty" class="hidden bg-gray-50 rounded-lg p-12 text-center">
+      <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-700 mb-2">No Preserved Recordings</h3>
+      <p class="text-gray-600 mb-4">
+        No preserved recordings yet. Recordings with ≥90% confidence are permanently saved.
+      </p>
+      <a href="/live/" class="inline-flex items-center text-leaf-green hover:text-forest-green transition">
+        View all detections
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Data timestamp footer -->
+  <footer class="text-center py-4 text-sm text-gray-500 border-t border-gray-200">
+    <p>Data updated: {{ birds.generatedAt | toMountainTime }}</p>
+  </footer>
+</div>
+
+<!-- Pass species data to JavaScript for API call -->
+<script>
+  window.speciesSlug = "{{ species.common_name | slugify }}";
+  window.speciesName = "{{ species.common_name }}";
+  window.apiBase = "{{ birds.apiBase }}";
+</script>
+
+<!-- Species detail page JavaScript (photo viewer + audio fetching) -->
+<script src="/js/species-detail.js"></script>

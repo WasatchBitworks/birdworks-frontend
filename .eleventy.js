@@ -102,6 +102,30 @@ module.exports = function(eleventyConfig) {
     return featuredPhoto || speciesPhotos[0];
   });
 
+  // Filter all photos by species name - returns array of all photos for a species
+  eleventyConfig.addFilter("filterPhotosBySpecies", function(photos, speciesName) {
+    if (!Array.isArray(photos) || !speciesName) return [];
+
+    return photos.filter(photo =>
+      photo.species && photo.species.common_name === speciesName
+    );
+  });
+
+  // Slugify filter - convert text to URL-safe slug
+  eleventyConfig.addFilter("slugify", function(text) {
+    if (!text) return "";
+
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')           // Replace spaces with hyphens
+      .replace(/[^\w\-]+/g, '')       // Remove non-word characters (except hyphens)
+      .replace(/\-\-+/g, '-')         // Replace multiple hyphens with single hyphen
+      .replace(/^-+/, '')             // Trim hyphens from start
+      .replace(/-+$/, '');            // Trim hyphens from end
+  });
+
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
   eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png
