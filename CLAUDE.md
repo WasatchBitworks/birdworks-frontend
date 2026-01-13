@@ -32,16 +32,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ### Automated Builds & Deployment
 
-**Scheduled Rebuilds:** Site rebuilds hourly (6am–10pm MT) via GitHub Actions
+**Scheduled Rebuilds:** ✅ **ACTIVE** - Site rebuilds hourly (6am–10pm MT) via GitHub Actions
 - Workflow: `.github/workflows/scheduled-build.yml`
 - Trigger: Posts to Netlify build hook
 - Schedule: 17 builds/day during active hours (no overnight waste)
-- Status: See [BUILD_HOOK_SETUP.md](./BUILD_HOOK_SETUP.md) for configuration
+- **Status:** Fully configured and running (Jan 12, 2026)
 
-**Initial Setup Required:**
-1. Create Netlify build hook (see BUILD_HOOK_SETUP.md)
-2. Add `NETLIFY_BUILD_HOOK` secret to GitHub
-3. Workflow will then run automatically on schedule
+**Setup Complete:**
+- ✅ Netlify build hook created
+- ✅ GitHub secret `NETLIFY_BUILD_HOOK` configured
+- ✅ Workflow runs automatically on schedule
+
+**Monitoring:**
+- View workflow runs: GitHub → Actions → "Hourly Netlify Build"
+- View builds: Netlify Dashboard → Deploys
+- Data freshness: Users see "Data updated: {timestamp}" on each page
 
 ## Architecture
 

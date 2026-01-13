@@ -2,7 +2,11 @@
 
 This document explains how to set up hourly automated builds on Netlify for the Wasatch BirdWorks frontend.
 
-**Status:** GitHub Actions workflow is ready (`.github/workflows/scheduled-build.yml`). You need to complete the Netlify setup steps below.
+**Status:** ✅ **COMPLETE** (January 12, 2026)
+- GitHub Actions workflow: `.github/workflows/scheduled-build.yml` ✅
+- Netlify build hook: Created ✅
+- GitHub secret `NETLIFY_BUILD_HOOK`: Added ✅
+- Automatic hourly builds: **ACTIVE** 🚀
 
 ---
 

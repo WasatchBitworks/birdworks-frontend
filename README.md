@@ -82,14 +82,18 @@ npm run build
 
 ## Automated Builds
 
-The site rebuilds **hourly during active hours** (6am–10pm Mountain Time) to keep data fresh:
+✅ **ACTIVE** - The site rebuilds **hourly during active hours** (6am–10pm Mountain Time) to keep data fresh:
 
 - **17 builds per day** during daytime hours (no overnight waste)
 - **Data freshness:** ≤1 hour old during daytime, snapshot from previous day overnight
-- **Setup:** See [BUILD_HOOK_SETUP.md](./BUILD_HOOK_SETUP.md) for Netlify webhook configuration
 - **Workflow:** `.github/workflows/scheduled-build.yml` (GitHub Actions)
+- **Build hook:** Configured and running on Netlify
+- **Setup:** See [BUILD_HOOK_SETUP.md](./BUILD_HOOK_SETUP.md) for details
 
-Users can see "Data updated: {timestamp}" footer on all pages to understand freshness.
+**Monitoring:**
+- GitHub Actions: https://github.com/username/Birdworks/actions
+- Netlify Deploys: Dashboard → Deploys tab
+- User-facing: "Data updated: {timestamp}" footer on all pages
 
 ## Build Performance
 
