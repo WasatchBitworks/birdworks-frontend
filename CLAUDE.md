@@ -367,7 +367,10 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Species rankings sort dynamically by total detections
 - ✅ **Species Detail Presence Grid:** GitHub-style yearly activity calendar
   - 365-day grid showing detection presence (binary: detected/not detected)
-  - Rolling 12 months, Monday start, most recent on right
+  - Rolling 12 months, Monday-Sunday rows, most recent on right
+  - Month labels along bottom axis for clarity
   - Client-side fetch from `/api/birds/:slug/species/:species_slug/presence`
   - 24-hour cache on backend (historical data)
   - Hover tooltips with date and detection status
+  - Simple legend: green square = detected, count of days with detections
+  - Placed on species detail page after photos, before audio
