@@ -103,6 +103,32 @@ eleventyComputed:
     </section>
   {% endif %}
 
+  <!-- Yearly Detection Presence Grid -->
+  <!-- Client-side rendered, GitHub-style activity calendar -->
+  <section id="presenceSection" class="mb-8">
+    <h2 class="text-2xl font-bold text-forest-green mb-2">Detection Activity</h2>
+    <p class="text-sm text-gray-500 mb-4">Detected at least once per day (last 12 months)</p>
+
+    <div id="presenceGridContainer" class="bg-white rounded-lg shadow-md p-4 overflow-x-auto">
+      <!-- Loading state -->
+      <div id="presenceLoading" class="text-center py-8">
+        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-leaf-green mx-auto mb-2"></div>
+        <p class="text-sm text-gray-500">Loading activity data...</p>
+      </div>
+
+      <!-- Grid will be rendered here by JavaScript -->
+      <div id="presenceGrid" class="hidden"></div>
+
+      <!-- Empty state (shown if no detections) -->
+      <div id="presenceEmpty" class="hidden text-center py-8">
+        <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="text-gray-600">No detection data available for the last 12 months.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Preserved Audio Recordings Section -->
   <!-- Client-side rendered, fetched on page load -->
   <section id="audioRecordings" class="mb-8">

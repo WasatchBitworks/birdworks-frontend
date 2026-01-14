@@ -219,6 +219,10 @@ Detection confidence shown with color-coded badges:
   - `/wasatch-bitworks/latest?limit=20` - Recent detections (limited)
   - `/wasatch-bitworks/detections/species` - Species with detection counts (**use this for detection data**)
   - `/wasatch-bitworks/daily?days=30` - Daily aggregation
+  - `/wasatch-bitworks/species/:species_slug/presence?days=365` - Presence dates for species (GitHub-style grid) [NEW - Jan 13, 2026]
+    - Returns array of ISO dates (YYYY-MM-DD) when species was detected
+    - 24-hour cache (historical data)
+    - Used by species detail page for activity calendar
   - `/wasatch-bitworks/audio/:id` - Pre-signed S3 URL for audio file (CORS enabled)
 - **Photo Endpoints:**
   - `/wasatch-bitworks/photos` - All photos (paginated)
@@ -361,3 +365,9 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Live data updates with fresh API calls
   - Mountain Time formatting
   - Species rankings sort dynamically by total detections
+- ✅ **Species Detail Presence Grid:** GitHub-style yearly activity calendar
+  - 365-day grid showing detection presence (binary: detected/not detected)
+  - Rolling 12 months, Monday start, most recent on right
+  - Client-side fetch from `/api/birds/:slug/species/:species_slug/presence`
+  - 24-hour cache on backend (historical data)
+  - Hover tooltips with date and detection status
