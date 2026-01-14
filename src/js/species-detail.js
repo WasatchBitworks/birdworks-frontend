@@ -186,6 +186,9 @@
         const cell = document.createElement('div');
         cell.className = 'w-3 h-3 rounded-sm';
 
+        // Check if this is today
+        const isToday = cellDate.toDateString() === today.toDateString();
+
         // Check if this date is in the future or before start
         if (cellDate > today) {
           cell.className += ' bg-gray-50';
@@ -198,6 +201,11 @@
             cell.className += ' bg-green-400 hover:bg-green-500';
           } else {
             cell.className += ' bg-gray-100 hover:bg-gray-200';
+          }
+
+          // Highlight today with darker border
+          if (isToday) {
+            cell.className += ' ring-2 ring-gray-700';
           }
 
           // Add tooltip
@@ -249,7 +257,10 @@
     legend.innerHTML = `
       <div class="w-3 h-3 rounded-sm bg-green-400"></div>
       <span>Detected</span>
-      <span class="ml-2 text-gray-400">•</span>
+      <span class="ml-3 text-gray-400">•</span>
+      <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-gray-700 ml-3"></div>
+      <span>Today</span>
+      <span class="ml-3 text-gray-400">•</span>
       <span class="ml-2">${dates.length} days in last year</span>
     `;
 
