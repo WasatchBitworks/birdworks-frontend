@@ -165,9 +165,9 @@
     `;
     gridHtml.appendChild(dayLabels);
 
-    // Weeks container
+    // Weeks container (reversed so newest data is on left)
     const weeksContainer = document.createElement('div');
-    weeksContainer.className = 'flex gap-1';
+    weeksContainer.className = 'flex gap-1 flex-row-reverse';
 
     // Generate 53 weeks of columns
     let currentDate = new Date(startDate);
@@ -189,6 +189,12 @@
         // Check if this is today
         const isToday = cellDate.toDateString() === today.toDateString();
 
+        // Check if this is the monitoring began date (Dec 22, 2025)
+        // Use local timezone constructor to avoid UTC offset issues
+        const monitoringBeganDate = new Date(2025, 11, 22); // Month is 0-indexed, so 11 = December
+        monitoringBeganDate.setHours(0, 0, 0, 0);
+        const isMonitoringBegan = cellDate.toDateString() === monitoringBeganDate.toDateString();
+
         // Check if this date is in the future or before start
         if (cellDate > today) {
           cell.className += ' bg-gray-50';
@@ -208,8 +214,17 @@
             cell.className += ' ring-2 ring-gray-700';
           }
 
+          // Highlight monitoring began date with blue border
+          if (isMonitoringBegan) {
+            cell.className += ' ring-2 ring-blue-500';
+          }
+
           // Add tooltip
-          cell.title = formatDateTooltip(cellDate, hasDetection);
+          if (isMonitoringBegan) {
+            cell.title = 'Dec 22, 2025 - Monitoring Began';
+          } else {
+            cell.title = formatDateTooltip(cellDate, hasDetection);
+          }
         }
 
         weekColumn.appendChild(cell);
@@ -230,6 +245,10 @@
     monthBar.style.marginLeft = '28px'; // Align with grid (day labels width)
     monthBar.style.height = '16px';
 
+    // Calculate total weeks to determine grid width (for reversed positioning)
+    const totalWeeks = weekCount;
+    const totalWidth = totalWeeks * 16; // 16px = cell width (12px) + gap (4px)
+
     // Calculate month positions
     let labelDate = new Date(startDate);
     let lastMonth = -1;
@@ -243,7 +262,8 @@
         const monthLabel = document.createElement('span');
         monthLabel.textContent = labelDate.toLocaleDateString('en-US', { month: 'short' });
         monthLabel.className = 'absolute text-xs text-gray-400';
-        monthLabel.style.left = `${weeksSinceStart * 16}px`; // 16px = cell width (12px) + gap (4px)
+        // Since grid is reversed (flex-row-reverse), position from right instead of left
+        monthLabel.style.right = `${totalWidth - (weeksSinceStart * 16)}px`;
         monthBar.appendChild(monthLabel);
 
         lastMonth = month;
@@ -253,13 +273,16 @@
 
     // Legend
     const legend = document.createElement('div');
-    legend.className = 'flex items-center gap-2 mt-3 text-xs text-gray-500';
+    legend.className = 'flex flex-wrap items-center gap-2 mt-3 text-xs text-gray-500';
     legend.innerHTML = `
       <div class="w-3 h-3 rounded-sm bg-green-400"></div>
       <span>Detected</span>
       <span class="ml-3 text-gray-400">•</span>
       <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-gray-700 ml-3"></div>
       <span>Today</span>
+      <span class="ml-3 text-gray-400">•</span>
+      <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-blue-500 ml-3"></div>
+      <span>Monitoring Began</span>
       <span class="ml-3 text-gray-400">•</span>
       <span class="ml-2">${dates.length} days in last year</span>
     `;
