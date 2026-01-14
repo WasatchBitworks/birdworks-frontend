@@ -81,8 +81,8 @@ This is the **Wasatch BirdWorks** public site showcasing:
   - /api/birds/wasatch-bitworks/latest?date=today (1m cache)
   - /api/birds/wasatch-bitworks/detections/species (5m cache)
   - /api/birds/wasatch-bitworks/daily?days=30 (5m cache)
-  - /api/birds/wasatch-bitworks/photos?limit=50 (5m cache) [NEW]
-  - /api/birds/wasatch-bitworks/photos/featured (5m cache) [NEW]
+  - /api/birds/wasatch-bitworks/photos?per_page=100 (5m cache) - Fetches all photos (API max 100/page)
+  - /api/birds/wasatch-bitworks/photos/featured (5m cache)
 - Returns: {today, todayDate, species, daily, photos, featuredPhotos, generatedAt, apiBase}
 ```
 

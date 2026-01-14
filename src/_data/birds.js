@@ -9,7 +9,7 @@ module.exports = async function() {
     today: `${API_BASE}/${SLUG}/latest?date=today`,  // All detections for current day (Mountain Time)
     species: `${API_BASE}/${SLUG}/detections/species`,  // Detection species, not photo species
     daily: `${API_BASE}/${SLUG}/daily?days=30`,
-    photos: `${API_BASE}/${SLUG}/photos?limit=50`,  // Recent photos (all, not just featured)
+    photos: `${API_BASE}/${SLUG}/photos?per_page=100`,  // All photos (API max 100/page, currently 23 total)
     featuredPhotos: `${API_BASE}/${SLUG}/photos/featured`  // Featured photos only
   };
 

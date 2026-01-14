@@ -93,7 +93,7 @@ Endpoint reference (exact paths and cache durations)
 | `/:slug/latest?limit=20` | Client pagination / recent items | n/a (client fetch) | Client-side only; returns limited recent detections.
 | `/:slug/detections/species` | `birds.species` (top species counts) | `5m` | Used for Top Species charts and species lists.
 | `/:slug/daily?days=30` | `birds.daily` (daily aggregation for trends) | `5m` | Used for timeline and day-of-week charts.
-| `/:slug/photos` and `/:slug/photos?limit=50` | `birds.photos` (featured & gallery) | `5m` | Photo metadata and variant URLs; images themselves served from API/S3.
+| `/:slug/photos?per_page=100` | `birds.photos` (featured & gallery) | `5m` | Fetches all photos with metadata and variant URLs (API max 100/page). Images served from API/S3 redirect endpoint.
 | `/audio/:id` | Audio pre-signed URL (playback) | n/a | Client fetch by `live-refresh.js` returns `{ url: ... }` for media playback; short-lived pre-signed URLs from backend.
 
 Notes:
