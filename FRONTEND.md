@@ -229,23 +229,28 @@ Reference: `ELEVENTY_NETLIFY_INTEGRATION.md` for standard build hook setup.
 - Custom filter intelligently selects best photo for each species
 - Responsive thumbnails scale appropriately on each chart (48px, 40px, full-height)
 
-### IN PROGRESS
+### ✅ COMPLETED (January 14, 2026)
 
 **Phase 2: Detail Pages**
-- Species detail pages with photo strips (future)
-- Photo detail pages with full metadata (future)
+- ✅ Species detail pages with:
+  - Photo gallery showing all species photos (no limit)
+  - Detection stats cards (total, best/avg confidence, last seen)
+  - Detection Activity grid (GitHub-style calendar showing yearly presence)
+    - Shows detection dates for last 12 months
+    - Newest data on left (reversed chronologically)
+    - Blue marker for monitoring began date (Dec 22, 2025)
+    - Hover tooltips showing detection status per day
+  - Preserved audio recordings list with playback controls
+  - Keyboard navigation (arrow keys for photo gallery)
+- Photo detail pages (future - not yet prioritized)
 
-**Phase 3: Live Widget** (Not yet prioritized)
-- Client-side fetch for latest detections (optional)
-- Periodic updates to detection feed
+### IN PROGRESS / PLANNED
 
-### PLANNED
-
-**Phase 4: QA + Optimization**
+**Phase 3: QA + Optimization**
 - Optimize image loading and lazy-loading
 - Implement lightbox for full-size viewing (optional)
 - Add photo filters by species (optional)
-- Detail pages for individual photos
+- Photo detail pages with metadata (future)
 
 ### Original Phase Plan (Pre-Implementation)
 **Phase 0: Template alignment** ✅ DONE

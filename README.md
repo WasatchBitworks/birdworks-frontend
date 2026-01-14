@@ -41,6 +41,7 @@ npm run build
 /live              → Live feed with daily stats, hourly species activity chart, all detections
 /photos            → Photo gallery with featured and recent photos
 /species           → Species index with detection counts
+/species/:species  → Species detail page (photos, detection activity grid, preserved recordings)
 /explore           → Advanced data exploration (multi-chart dashboard)
 /about             → About BirdNET-Pi and how it works
 /404.html          → 404 page
@@ -82,6 +83,12 @@ npm run build
 - ✅ Species cards redesigned (thumbnail + best/avg confidence + last seen date)
 - ✅ **Dynamic stats cards on /live** (total detections, species count, high confidence - updates with refresh)
 - ✅ **Daily Detections Summary chart on /live** (top 15 species + 24-hour hourly heatmap with live data)
+- ✅ **Species detail pages enhanced** (/species/:species_name)
+  - Photo gallery with all species photos (no limit)
+  - Detection activity grid (GitHub-style) with newest data on left
+  - Blue marker for monitoring began date (Dec 22, 2025)
+  - Preserved audio recordings list
+  - Detection stats (total, best confidence, average confidence, last seen)
 
 ## Automated Builds
 
