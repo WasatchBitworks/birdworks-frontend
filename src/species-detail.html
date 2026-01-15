@@ -184,7 +184,7 @@ eleventyComputed:
 <!-- Photo Lightbox Modal -->
 <div id="photoLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
   <!-- Close Button -->
-  <button id="lightboxClose" class="absolute top-4 right-4 text-white hover:text-gray-300 transition p-2 z-60" aria-label="Close lightbox">
+  <button id="lightboxClose" class="absolute top-4 right-4 text-white hover:text-gray-300 transition p-2" style="z-index: 9999;" aria-label="Close lightbox">
     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
     </svg>
@@ -220,6 +220,16 @@ eleventyComputed:
   window.speciesSlug = "{{ species.common_name | slugify }}";
   window.speciesName = "{{ species.common_name }}";
   window.apiBase = "{{ birds.apiBase }}";
+
+  // Pass photo data for lightbox
+  window.speciesPhotos = [
+    {% for photo in speciesPhotos %}
+    {
+      url: "{{ photo.variants.large.url }}",
+      caption: "{{ photo.caption or '' }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
 </script>
 
 <!-- Species detail page JavaScript (photo viewer + audio fetching) -->

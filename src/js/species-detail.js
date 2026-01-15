@@ -94,16 +94,8 @@
   const lightboxNext = document.getElementById('lightboxNext');
   const lightboxCurrent = document.getElementById('lightboxCurrent');
 
-  // Store photo data from thumbnail buttons for lightbox
-  let lightboxPhotos = [];
-  if (thumbnailButtons.length > 0) {
-    thumbnailButtons.forEach((btn, index) => {
-      lightboxPhotos.push({
-        url: btn.dataset.largeUrl,
-        caption: btn.dataset.caption
-      });
-    });
-  }
+  // Get photo data from window.speciesPhotos (passed from template)
+  const lightboxPhotos = window.speciesPhotos || [];
 
   let lightboxIndex = 0;
 
