@@ -74,6 +74,14 @@
     #mobileMenuOverlay:not(.hidden) {
       opacity: 1;
     }
+
+    /* Header scroll behavior */
+    #mainHeader {
+      transition: transform 0.3s ease-in-out;
+    }
+    #mainHeader.header-hidden {
+      transform: translateY(-100%);
+    }
   </style>
 
   <!-- Plausible Analytics -->
@@ -82,7 +90,7 @@
 
 <body class="bg-gray-50 text-gray-900 font-sans antialiased scroll-smooth">
 
-  <header class="text-white py-6 shadow-lg sticky top-0 z-40" style="background: linear-gradient(135deg, #FFFFFF 0%, var(--color-leaf) 100%);">
+  <header id="mainHeader" class="text-white py-6 shadow-lg sticky top-0 z-40" style="background: linear-gradient(135deg, #FFFFFF 0%, var(--color-leaf) 100%);">
     <nav class="max-w-7xl mx-auto px-4">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
@@ -198,6 +206,36 @@
           }
         });
       }
+
+      // Header scroll behavior: hide on scroll down, show on scroll up
+      const header = document.getElementById('mainHeader');
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+
+      function updateHeaderVisibility() {
+        const currentScrollY = window.scrollY;
+
+        // Don't hide header if we're at the top of the page
+        if (currentScrollY < 10) {
+          header.classList.remove('header-hidden');
+        } else if (currentScrollY > lastScrollY) {
+          // Scrolling down
+          header.classList.add('header-hidden');
+        } else {
+          // Scrolling up
+          header.classList.remove('header-hidden');
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(updateHeaderVisibility);
+          ticking = true;
+        }
+      });
     });
   </script>
 
