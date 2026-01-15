@@ -8,7 +8,7 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
 <section class="bg-gradient-to-r from-purple-700 to-purple-600 text-white py-12">
   <div class="max-w-7xl mx-auto px-4">
     <h1 class="text-4xl font-bold mb-4">About BirdWorks</h1>
-    <p class="text-lg text-purple-100">Real-time bird identification using artificial intelligence</p>
+    <p class="text-lg text-purple-100">High-fidelity field audio capture + AI-powered bird identification</p>
   </div>
 </section>
 
@@ -31,6 +31,22 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
           continuously and non-invasively.
         </p>
       </div>
+    </div>
+
+    <!-- About This Project -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-8">
+      <h3 class="font-semibold text-gray-900 mb-3 text-lg">About This Project</h3>
+      <p class="text-gray-700 mb-3">
+        BirdWorks is a real-world field deployment built and maintained by
+        <a href="https://wasatchbitworks.com" class="text-blue-700 hover:text-blue-800 font-medium underline" target="_blank" rel="noopener">Wasatch Bitworks</a>
+        — a small studio that builds fast, data-driven websites and custom systems for niche applications.
+      </p>
+      <p class="text-gray-600 text-sm">
+        Want something similar for your own project or organization?
+        <a href="https://wasatchbitworks.com/case-studies/birdworks" class="text-blue-700 hover:text-blue-800 underline font-medium" target="_blank" rel="noopener">
+          Read the BirdWorks case study →
+        </a>
+      </p>
     </div>
 
     <!-- How It Works -->
@@ -59,8 +75,7 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
           <div>
             <h3 class="font-semibold text-gray-900 mb-2">AI Analysis</h3>
             <p class="text-gray-600">
-              Each audio segment is analyzed by the BirdNET neural network running on a Raspberry Pi 5.
-              Audio is captured via a USB mixer interface connected directly to the Raspberry Pi.
+              Audio is captured through an Alesis MultiMix 8 USB mixer and analyzed by the BirdNET neural network running on a Raspberry Pi 5.
               The AI identifies potential bird calls and songs, comparing them against its trained model of thousands of species.
             </p>
           </div>
@@ -107,7 +122,7 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
           <div>
             <h4 class="font-semibold text-gray-800 mb-3">Audio Capture</h4>
             <ul class="text-gray-600 space-y-2 text-sm">
-              <li class="flex items-start"><span class="mr-2">•</span><span><strong>3-Microphone Array:</strong> Wired Primo EM272Z1 capsules (matched pair)</span></li>
+              <li class="flex items-start"><span class="mr-2">•</span><span><strong>3-Microphone Array:</strong> Wired Primo EM272Z1 capsules</span></li>
               <li class="flex items-start"><span class="mr-2">•</span><span><strong>Audio Interface:</strong> Alesis MultiMix 8 USB mixer (stereo input to Pi)</span></li>
               <li class="flex items-start"><span class="mr-2">•</span><span><strong>Recording Format:</strong> 16-bit PCM, stereo, 48kHz</span></li>
               <li class="flex items-start"><span class="mr-2">•</span><span><strong>Segment Length:</strong> 15-second continuous recordings</span></li>
@@ -194,12 +209,15 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
         </div>
         <div class="mt-4 p-4 bg-gray-50 rounded">
           <h4 class="font-semibold text-gray-800 mb-2">Public API Endpoints</h4>
+          <p class="text-xs text-gray-500 mb-2">
+            These read-only endpoints power the BirdWorks frontend and are optimized for caching and performance.
+          </p>
           <div class="text-sm text-gray-600 space-y-1">
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/latest</code> - Recent detections (cached 1 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/detections/species</code> - Species with counts (cached 5 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/photos</code> - Photo metadata (cached 5 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/species/:species_slug/presence</code> - Yearly activity grid (cached 24 hr)</div>
-            <div class="text-xs text-gray-500 mt-2">All endpoints include pagination, filtering, and privacy/geoprivacy controls</div>
+            <div class="text-xs text-gray-500 mt-2">All endpoints support pagination and filtering. Privacy and geoprivacy controls are applied where appropriate.</div>
           </div>
         </div>
       </div>

@@ -136,6 +136,15 @@
       {% if birds.generatedAt %}
       <p class="text-xs text-gray-400 mt-2">Data last updated: {{ birds.generatedAt | toMountainTime }} MT</p>
       {% endif %}
+      <p class="text-sm text-gray-300 mt-4 pt-4 border-t border-green-700">
+        Built by
+        <a href="https://wasatchbitworks.com"
+           class="text-white hover:text-green-200 transition font-medium underline decoration-green-600 hover:decoration-green-400"
+           target="_blank"
+           rel="noopener">
+          Wasatch Bitworks
+        </a>
+      </p>
     </div>
   </footer>
 
