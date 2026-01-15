@@ -83,6 +83,99 @@
   }
 
   // ============================================================================
+  // Photo Lightbox
+  // ============================================================================
+
+  const photoViewer = document.getElementById('photoViewer');
+  const photoLightbox = document.getElementById('photoLightbox');
+  const lightboxClose = document.getElementById('lightboxClose');
+  const lightboxImage = document.getElementById('lightboxImage');
+  const lightboxPrev = document.getElementById('lightboxPrev');
+  const lightboxNext = document.getElementById('lightboxNext');
+  const lightboxCurrent = document.getElementById('lightboxCurrent');
+
+  // Store photo data from thumbnail buttons for lightbox
+  let lightboxPhotos = [];
+  if (thumbnailButtons.length > 0) {
+    thumbnailButtons.forEach((btn, index) => {
+      lightboxPhotos.push({
+        url: btn.dataset.largeUrl,
+        caption: btn.dataset.caption
+      });
+    });
+  }
+
+  let lightboxIndex = 0;
+
+  if (photoViewer && photoLightbox) {
+    // Open lightbox when main photo is clicked
+    photoViewer.addEventListener('click', () => {
+      lightboxIndex = currentPhotoIndex;
+      showLightboxPhoto(lightboxIndex);
+      photoLightbox.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // Close lightbox
+    const closeLightbox = () => {
+      photoLightbox.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+
+    lightboxClose.addEventListener('click', closeLightbox);
+
+    // Close on backdrop click
+    photoLightbox.addEventListener('click', (e) => {
+      if (e.target === photoLightbox) {
+        closeLightbox();
+      }
+    });
+
+    // Navigation in lightbox
+    if (lightboxPrev) {
+      lightboxPrev.addEventListener('click', () => {
+        lightboxIndex = (lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length;
+        showLightboxPhoto(lightboxIndex);
+      });
+    }
+
+    if (lightboxNext) {
+      lightboxNext.addEventListener('click', () => {
+        lightboxIndex = (lightboxIndex + 1) % lightboxPhotos.length;
+        showLightboxPhoto(lightboxIndex);
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (photoLightbox.classList.contains('hidden')) return;
+
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (lightboxPrev) {
+          lightboxIndex = (lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length;
+          showLightboxPhoto(lightboxIndex);
+        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (lightboxNext) {
+          lightboxIndex = (lightboxIndex + 1) % lightboxPhotos.length;
+          showLightboxPhoto(lightboxIndex);
+        }
+      }
+    });
+  }
+
+  function showLightboxPhoto(index) {
+    if (index < 0 || index >= lightboxPhotos.length) return;
+
+    lightboxImage.src = lightboxPhotos[index].url;
+    lightboxCurrent.textContent = index + 1;
+  }
+
+  // ============================================================================
   // Presence Grid (GitHub-style activity calendar)
   // ============================================================================
 
@@ -216,7 +309,7 @@
 
           // Highlight monitoring began date with blue border
           if (isMonitoringBegan) {
-            cell.className += ' ring-2 ring-blue-500';
+            cell.className += ' ring-2 ring-orange-500';
           }
 
           // Add tooltip
@@ -281,7 +374,7 @@
       <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-gray-700 ml-3"></div>
       <span>Today</span>
       <span class="ml-3 text-gray-400">•</span>
-      <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-blue-500 ml-3"></div>
+      <div class="w-3 h-3 rounded-sm bg-gray-100 ring-2 ring-orange-500 ml-3"></div>
       <span>Monitoring Began</span>
       <span class="ml-3 text-gray-400">•</span>
       <span class="ml-2">${dates.length} days in last year</span>
