@@ -86,6 +86,17 @@ module.exports = function(eleventyConfig) {
     return [...array].reverse(); // Create a copy to avoid mutating original
   });
 
+  // Shuffle filter for arrays (Fisher-Yates algorithm)
+  eleventyConfig.addFilter("shuffle", function(array) {
+    if (!Array.isArray(array)) return [];
+    const shuffled = [...array]; // Create a copy to avoid mutating original
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  });
+
   // Find photo by species name - prioritizes featured photos
   eleventyConfig.addFilter("findPhotoBySpecies", function(photos, speciesName) {
     if (!Array.isArray(photos) || !speciesName) return null;
