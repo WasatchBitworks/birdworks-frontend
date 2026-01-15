@@ -121,7 +121,7 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
             <div class="space-y-2">
               {% for species in top10Species %}
                 {% set speciesPhoto = birds.photos | findPhotoBySpecies(species.common_name) %}
-                <div class="flex items-center gap-3 py-2 border-b last:border-b-0">
+                <a href="/species/{{ species.common_name | slugify }}/" class="flex items-center gap-3 py-2 border-b last:border-b-0 hover:bg-gray-50 px-2 -mx-2 rounded transition">
                   <!-- Thumbnail -->
                   <div class="flex-shrink-0">
                     {% if speciesPhoto and speciesPhoto.variants and speciesPhoto.variants.thumbnail %}
@@ -146,7 +146,7 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
                   </div>
                   <!-- Count -->
                   <span class="font-semibold text-gray-900 flex-shrink-0">{{ species.detection_count }}</span>
-                </div>
+                </a>
               {% endfor %}
             </div>
           {% else %}
@@ -177,7 +177,11 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       {% for photo in birds.featuredPhotos | slice(0, 6) %}
         <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
-          <a href="{{ photo.variants.large.url }}" target="_blank" class="block">
+          {% if photo.species %}
+          <a href="/species/{{ photo.species.common_name | slugify }}/" class="block">
+          {% else %}
+          <div class="block">
+          {% endif %}
             <div class="aspect-square bg-gray-100">
               <img
                 src="{{ photo.variants.medium.url }}"
@@ -186,7 +190,11 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
                 loading="lazy"
               />
             </div>
+          {% if photo.species %}
           </a>
+          {% else %}
+          </div>
+          {% endif %}
           <div class="p-4">
             {% if photo.species %}
               <h3 class="text-lg font-bold text-gray-900 mb-1">
