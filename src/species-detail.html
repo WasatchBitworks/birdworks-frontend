@@ -64,20 +64,26 @@ eleventyComputed:
       </div>
 
       <!-- Main Photo Display -->
-      <div id="photoViewer" class="bg-white rounded-lg shadow-md overflow-hidden mb-4">
+      <button id="photoViewer" class="w-full bg-white rounded-lg shadow-md overflow-hidden mb-4 hover:shadow-lg transition cursor-pointer group" aria-label="Open photo lightbox">
         <div class="relative bg-gray-100" style="min-height: 400px;">
           <img id="mainPhoto"
                src="{{ speciesPhotos[0].variants.large.url }}"
                alt="{{ speciesPhotos[0].species.common_name }}"
-               class="w-full h-auto max-h-[600px] object-contain"
+               class="w-full h-auto max-h-[600px] object-contain group-hover:opacity-90 transition"
                loading="eager">
+          <!-- Lightbox Icon Overlay -->
+          <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition">
+            <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7M10 7v6"/>
+            </svg>
+          </div>
           {% if speciesPhotos[0].caption %}
             <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4">
               <p id="photoCaption" class="text-sm">{{ speciesPhotos[0].caption }}</p>
             </div>
           {% endif %}
         </div>
-      </div>
+      </button>
 
       <!-- Thumbnail Navigation -->
       {% if speciesPhotos.length > 1 %}
@@ -173,6 +179,40 @@ eleventyComputed:
   <footer class="text-center py-4 text-sm text-gray-500 border-t border-gray-200">
     <p>Data updated: {{ birds.generatedAt | toMountainTime }}</p>
   </footer>
+</div>
+
+<!-- Photo Lightbox Modal -->
+<div id="photoLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+  <!-- Close Button -->
+  <button id="lightboxClose" class="absolute top-4 right-4 text-white hover:text-gray-300 transition p-2 z-60" aria-label="Close lightbox">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <!-- Main Lightbox Image -->
+  <div class="relative w-full h-full flex items-center justify-center p-4">
+    <img id="lightboxImage" src="" alt="Bird photo" class="max-w-full max-h-[90vh] object-contain">
+
+    <!-- Navigation Buttons -->
+    {% if speciesPhotos.length > 1 %}
+      <button id="lightboxPrev" class="absolute left-4 text-white hover:text-gray-300 transition p-3 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full" aria-label="Previous photo">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <button id="lightboxNext" class="absolute right-4 text-white hover:text-gray-300 transition p-3 bg-black bg-opacity-30 hover:bg-opacity-50 rounded-full" aria-label="Next photo">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
+
+  <!-- Photo Counter -->
+  <div id="lightboxCounter" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded">
+    <span id="lightboxCurrent">1</span> / <span id="lightboxTotal">{{ speciesPhotos.length }}</span>
+  </div>
 </div>
 
 <!-- Pass species data to JavaScript for API call -->
