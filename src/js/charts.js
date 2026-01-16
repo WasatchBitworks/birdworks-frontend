@@ -809,12 +809,39 @@
     // Sort days chronologically
     days.sort();
 
+    // Calculate total detections per day and identify top/bottom 10%
+    const dayTotals = {};
+    days.forEach(dayKey => {
+      dayTotals[dayKey] = hourlyByDay[dayKey].reduce((a, b) => a + b, 0);
+    });
+
+    const sortedByActivity = [...days].sort((a, b) => dayTotals[b] - dayTotals[a]);
+    const topTenPercent = Math.ceil(days.length * 0.1);
+    const topDays = new Set(sortedByActivity.slice(0, topTenPercent));
+    const bottomDays = new Set(sortedByActivity.slice(-topTenPercent));
+
     // Calculate rolling average (mean across all days for each hour)
     const rollingAverage = [];
     for (let hour = 0; hour < 24; hour++) {
       const hourValues = days.map(dayKey => hourlyByDay[dayKey][hour]);
       const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
       rollingAverage.push(mean || 0);
+    }
+
+    // Calculate average for top 10% most active days
+    const topAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = Array.from(topDays).map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      topAverage.push(mean || 0);
+    }
+
+    // Calculate average for bottom 10% least active days
+    const bottomAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = Array.from(bottomDays).map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      bottomAverage.push(mean || 0);
     }
 
     // Chart dimensions
@@ -824,8 +851,13 @@
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
-    // Scale calculations
-    const maxValue = Math.max(...days.map(d => Math.max(...hourlyByDay[d])), ...rollingAverage);
+    // Scale calculations (include all lines for proper scaling)
+    const maxValue = Math.max(
+      ...days.map(d => Math.max(...hourlyByDay[d])),
+      ...rollingAverage,
+      ...topAverage,
+      ...bottomAverage
+    );
     const yScale = maxValue > 0 ? chartHeight / maxValue : 1;
     const xStep = chartWidth / 23; // 24 hours, 23 steps
 
@@ -842,7 +874,25 @@
     const xAxis = createLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
     svg.appendChild(xAxis);
 
-    // Draw daily lines (thin, medium opacity)
+    // Helper to draw a line
+    const drawLine = (dataPoints, color, strokeWidth, opacity) => {
+      let pathData = `M ${padding.left} ${height - padding.bottom - (dataPoints[0] * yScale)}`;
+      for (let hour = 1; hour < 24; hour++) {
+        const x = padding.left + (hour * xStep);
+        const y = height - padding.bottom - (dataPoints[hour] * yScale);
+        pathData += ` L ${x} ${y}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', strokeWidth);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', opacity);
+      svg.appendChild(path);
+    };
+
+    // Draw daily lines (thin, low opacity - background layer)
     days.forEach(dayKey => {
       const dayData = hourlyByDay[dayKey];
       let pathData = `M ${padding.left} ${height - padding.bottom - (dayData[0] * yScale)}`;
@@ -858,24 +908,18 @@
       path.setAttribute('stroke', '#9ca3af');
       path.setAttribute('stroke-width', '1.5');
       path.setAttribute('fill', 'none');
-      path.setAttribute('opacity', '0.65');
+      path.setAttribute('opacity', '0.5');
       svg.appendChild(path);
     });
 
-    // Draw rolling average line (bold, high contrast)
-    let avgPathData = `M ${padding.left} ${height - padding.bottom - (rollingAverage[0] * yScale)}`;
-    for (let hour = 1; hour < 24; hour++) {
-      const x = padding.left + (hour * xStep);
-      const y = height - padding.bottom - (rollingAverage[hour] * yScale);
-      avgPathData += ` L ${x} ${y}`;
-    }
+    // Draw top 10% average line (warm orange, secondary layer)
+    drawLine(topAverage, '#f59e0b', '2', '0.85');
 
-    const avgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    avgPath.setAttribute('d', avgPathData);
-    avgPath.setAttribute('stroke', '#2D5016');
-    avgPath.setAttribute('stroke-width', '3');
-    avgPath.setAttribute('fill', 'none');
-    svg.appendChild(avgPath);
+    // Draw bottom 10% average line (cool teal, secondary layer)
+    drawLine(bottomAverage, '#0891b2', '2', '0.85');
+
+    // Draw rolling average line (bold, primary layer - drawn last so it's on top)
+    drawLine(rollingAverage, '#1f3a1f', '3.5', '1');
 
     // Draw data points on rolling average line
     for (let hour = 0; hour < 24; hour++) {
