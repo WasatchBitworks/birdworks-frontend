@@ -446,7 +446,7 @@
       .then(data => {
         // Filter for this species only
         const speciesDetections = (data.detections || []).filter(detection => {
-          const detectionSlug = detection.common_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const detectionSlug = slugify(detection.common_name);
           return detectionSlug === speciesSlug;
         });
 
@@ -460,6 +460,20 @@
         console.error('Error fetching today\'s detections:', error);
         showTodayError();
       });
+  }
+
+  // Slugify function to match Eleventy's slugify filter
+  function slugify(text) {
+    if (!text) return '';
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')           // Replace spaces with hyphens
+      .replace(/[^\w\-]+/g, '')       // Remove non-word characters (except hyphens)
+      .replace(/\-\-+/g, '-')         // Replace multiple hyphens with single hyphen
+      .replace(/^-+/, '')             // Trim hyphens from start
+      .replace(/-+$/, '');            // Trim hyphens from end
   }
 
   function fetchPreservedAudio() {

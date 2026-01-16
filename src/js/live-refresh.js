@@ -59,25 +59,40 @@
       nextPageBtn.addEventListener('click', () => goToPage(currentPage + 1));
     }
 
-    // Load initial detections from build-time data
-    const tableRows = detectionsTableBody.querySelectorAll('tr[data-detection]');
-    if (tableRows.length > 0) {
-      // Extract detection data from build-time rendered rows
-      allDetections = Array.from(tableRows).map(row => {
+    // Load initial detections from chart's data attribute (has ALL detections)
+    const dailySummaryChart = document.getElementById('dailySummaryChart');
+    if (dailySummaryChart) {
+      const detectionsJson = dailySummaryChart.getAttribute('data-detections');
+      if (detectionsJson) {
         try {
-          return JSON.parse(row.dataset.detection);
+          allDetections = JSON.parse(detectionsJson);
         } catch (e) {
-          return null;
+          console.error('Error parsing detections JSON:', e);
+          allDetections = [];
         }
-      }).filter(d => d !== null);
-
-      // Check if any detections have audio
-      const hasAudio = allDetections.some(d => d.audio_url);
-
-      // Re-render if pagination needed OR if audio column should be added
-      if (allDetections.length > ITEMS_PER_PAGE || hasAudio) {
-        updateDetectionsTable();
       }
+    }
+
+    // If no chart data, fall back to table rows
+    if (allDetections.length === 0) {
+      const tableRows = detectionsTableBody.querySelectorAll('tr[data-detection]');
+      if (tableRows.length > 0) {
+        allDetections = Array.from(tableRows).map(row => {
+          try {
+            return JSON.parse(row.dataset.detection);
+          } catch (e) {
+            return null;
+          }
+        }).filter(d => d !== null);
+      }
+    }
+
+    // Check if any detections have audio
+    const hasAudio = allDetections.some(d => d.audio_url);
+
+    // Re-render if pagination needed OR if audio column should be added
+    if (allDetections.length > ITEMS_PER_PAGE || hasAudio) {
+      updateDetectionsTable();
     }
 
     // Update stats with initial data
