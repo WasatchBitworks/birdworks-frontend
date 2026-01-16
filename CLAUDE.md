@@ -374,3 +374,19 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Hover tooltips with date and detection status
   - Simple legend: green square = detected, count of days with detections
   - Placed on species detail page after photos, before audio
+
+**Jan 16, 2026 Updates (Phase 8 - Species-Level Activity Charts):**
+- ✅ **Removed "Typical Hourly Activity" chart from /explore page**
+  - Simplified explore page to focus on most valuable visualizations
+  - Updated "About This Data" section from 3 columns to 2 columns
+- ✅ **Updated monitoring began date:** Changed from 12/22/25 to 12/23/25
+  - Species presence grids now mark 12/23/2025 as monitoring start date
+- ✅ **Species Hourly Activity Patterns Chart:** New chart on species-detail pages
+  - Shows 30-day hourly detection patterns for individual species
+  - Individual daily patterns (thin gray lines) overlaid with group averages
+  - Green line = 30-day rolling average for the species
+  - Orange line = Top 10% most active days (for this species)
+  - Teal line = Bottom 10% least active days (for this species)
+  - Fetches from `/detections/recent?days=30` and filters client-side
+  - Positioned after Detection Activity grid, before Today's Detections
+  - Shows empty state if < 2 days of data for the species

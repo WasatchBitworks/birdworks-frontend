@@ -276,9 +276,9 @@
         // Check if this is today
         const isToday = cellDate.toDateString() === today.toDateString();
 
-        // Check if this is the monitoring began date (Dec 22, 2025)
+        // Check if this is the monitoring began date (Dec 23, 2025)
         // Use local timezone constructor to avoid UTC offset issues
-        const monitoringBeganDate = new Date(2025, 11, 22); // Month is 0-indexed, so 11 = December
+        const monitoringBeganDate = new Date(2025, 11, 23); // Month is 0-indexed, so 11 = December
         monitoringBeganDate.setHours(0, 0, 0, 0);
         const isMonitoringBegan = cellDate.toDateString() === monitoringBeganDate.toDateString();
 
@@ -308,7 +308,7 @@
 
           // Add tooltip
           if (isMonitoringBegan) {
-            cell.title = 'Dec 22, 2025 - Monitoring Began';
+            cell.title = 'Dec 23, 2025 - Monitoring Began';
           } else {
             cell.title = formatDateTooltip(cellDate, hasDetection);
           }
@@ -407,6 +407,292 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
           <p class="text-sm text-gray-500">Unable to load activity data</p>
+        </div>
+      `;
+    }
+  }
+
+  // ============================================================================
+  // Hourly Activity Patterns Chart
+  // ============================================================================
+
+  const hourlyPatternsChart = document.getElementById('hourlyPatternsChart');
+  const hourlyPatternsLoading = document.getElementById('hourlyPatternsLoading');
+  const hourlyPatternsEmpty = document.getElementById('hourlyPatternsEmpty');
+  const hourlyPatternsContent = document.getElementById('hourlyPatternsContent');
+  const hourlyPatternsLegend = document.getElementById('hourlyPatternsLegend');
+
+  // Fetch species-specific detections for hourly patterns
+  if (speciesSlug && hourlyPatternsChart) {
+    fetchHourlyPatterns();
+  }
+
+  function fetchHourlyPatterns() {
+    // Fetch last 30 days of ALL detections, then filter for this species
+    // (same approach as explore page)
+    const url = `${apiBase}/wasatch-bitworks/detections/recent?days=30`;
+
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Filter for this species only
+        const speciesDetections = (data.detections || []).filter(detection => {
+          const detectionSlug = slugify(detection.common_name);
+          return detectionSlug === speciesSlug;
+        });
+
+        if (speciesDetections.length > 0) {
+          renderHourlyPatternsChart(speciesDetections);
+        } else {
+          showHourlyPatternsEmpty();
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching hourly patterns:', error);
+        showHourlyPatternsError();
+      });
+  }
+
+  function renderHourlyPatternsChart(detections) {
+    // Hide loading
+    if (hourlyPatternsLoading) {
+      hourlyPatternsLoading.style.display = 'none';
+    }
+
+    // Aggregate detections by day and hour (same logic as charts.js)
+    const hourlyByDay = {};
+    const days = [];
+
+    detections.forEach(detection => {
+      try {
+        const date = new Date(detection.detected_at);
+        const mtDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Denver' }));
+        const hour = mtDate.getHours();
+        const dayKey = mtDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        if (!hourlyByDay[dayKey]) {
+          hourlyByDay[dayKey] = new Array(24).fill(0);
+          days.push(dayKey);
+        }
+        hourlyByDay[dayKey][hour]++;
+      } catch (e) {
+        console.error('Error parsing date:', detection.detected_at, e);
+      }
+    });
+
+    // Need at least 2 days of data to show patterns
+    if (days.length < 2) {
+      showHourlyPatternsEmpty();
+      return;
+    }
+
+    // Sort days chronologically
+    days.sort();
+
+    // Calculate total detections per day and identify top/bottom 10%
+    const dayTotals = {};
+    days.forEach(dayKey => {
+      dayTotals[dayKey] = hourlyByDay[dayKey].reduce((a, b) => a + b, 0);
+    });
+
+    const sortedByActivity = [...days].sort((a, b) => dayTotals[b] - dayTotals[a]);
+    const topTenPercent = Math.max(1, Math.ceil(days.length * 0.1));
+    const topDays = new Set(sortedByActivity.slice(0, topTenPercent));
+    const bottomDays = new Set(sortedByActivity.slice(-topTenPercent));
+
+    // Calculate rolling average
+    const rollingAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = days.map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      rollingAverage.push(mean || 0);
+    }
+
+    // Calculate average for top 10%
+    const topAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = Array.from(topDays).map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      topAverage.push(mean || 0);
+    }
+
+    // Calculate average for bottom 10%
+    const bottomAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = Array.from(bottomDays).map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      bottomAverage.push(mean || 0);
+    }
+
+    // Create SVG chart
+    const width = 1200;
+    const height = 450;
+    const padding = { top: 30, right: 60, bottom: 80, left: 60 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    const maxValue = Math.max(
+      ...days.map(d => Math.max(...hourlyByDay[d])),
+      ...rollingAverage,
+      ...topAverage,
+      ...bottomAverage
+    );
+    const yScale = maxValue > 0 ? chartHeight / maxValue : 1;
+    const xStep = chartWidth / 23;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'w-full h-auto');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Daily hourly activity patterns chart');
+
+    // Draw axes
+    const yAxis = createSVGLine(padding.left, padding.top, padding.left, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(yAxis);
+    const xAxis = createSVGLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(xAxis);
+
+    // Draw daily lines (thin, gray)
+    days.forEach(dayKey => {
+      const dayData = hourlyByDay[dayKey];
+      let pathData = `M ${padding.left} ${height - padding.bottom - (dayData[0] * yScale)}`;
+
+      for (let hour = 1; hour < 24; hour++) {
+        const x = padding.left + (hour * xStep);
+        const y = height - padding.bottom - (dayData[hour] * yScale);
+        pathData += ` L ${x} ${y}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('stroke', '#9ca3af');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0.5');
+      svg.appendChild(path);
+    });
+
+    // Draw top 10% average line (orange)
+    drawSVGLine(svg, topAverage, '#f59e0b', '2', '0.85', padding, xStep, yScale, height);
+
+    // Draw bottom 10% average line (teal)
+    drawSVGLine(svg, bottomAverage, '#0891b2', '2', '0.85', padding, xStep, yScale, height);
+
+    // Draw rolling average line (green, bold)
+    drawSVGLine(svg, rollingAverage, '#4A7C2C', '3.5', '1', padding, xStep, yScale, height);
+
+    // Draw data points on rolling average
+    for (let hour = 0; hour < 24; hour++) {
+      const x = padding.left + (hour * xStep);
+      const y = height - padding.bottom - (rollingAverage[hour] * yScale);
+
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', x);
+      dot.setAttribute('cy', y);
+      dot.setAttribute('r', '3');
+      dot.setAttribute('fill', '#4A7C2C');
+      svg.appendChild(dot);
+    }
+
+    // X-axis labels (every 3 hours)
+    for (let i = 0; i < 24; i += 3) {
+      const x = padding.left + (i * xStep);
+      const label = createSVGText(x, height - padding.bottom + 20, formatChartHour(i), '11px', '#6b7280', 'middle');
+      svg.appendChild(label);
+    }
+
+    // Y-axis labels
+    const yMid = maxValue / 2;
+    const yMidLabel = createSVGText(padding.left - 10, height - padding.bottom - (yMid * yScale), Math.round(yMid).toString(), '11px', '#6b7280', 'end');
+    yMidLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMidLabel);
+
+    const yMaxLabel = createSVGText(padding.left - 10, padding.top, Math.round(maxValue).toString(), '11px', '#6b7280', 'end');
+    yMaxLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMaxLabel);
+
+    // Y-axis title
+    const yAxisTitle = createSVGText(15, height / 2, 'Detections per hour', '12px', '#9ca3af', 'middle');
+    yAxisTitle.setAttribute('dominant-baseline', 'middle');
+    yAxisTitle.setAttribute('transform', `rotate(-90 15 ${height / 2})`);
+    svg.appendChild(yAxisTitle);
+
+    // Render chart
+    hourlyPatternsContent.innerHTML = '';
+    hourlyPatternsContent.appendChild(svg);
+    hourlyPatternsContent.classList.remove('hidden');
+    hourlyPatternsLegend.classList.remove('hidden');
+  }
+
+  function drawSVGLine(svg, dataPoints, color, strokeWidth, opacity, padding, xStep, yScale, height) {
+    let pathData = `M ${padding.left} ${height - padding.bottom - (dataPoints[0] * yScale)}`;
+    for (let hour = 1; hour < 24; hour++) {
+      const x = padding.left + (hour * xStep);
+      const y = height - padding.bottom - (dataPoints[hour] * yScale);
+      pathData += ` L ${x} ${y}`;
+    }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', strokeWidth);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('opacity', opacity);
+    svg.appendChild(path);
+  }
+
+  function createSVGLine(x1, y1, x2, y2, stroke) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', stroke);
+    line.setAttribute('stroke-width', '1');
+    return line;
+  }
+
+  function createSVGText(x, y, content, fontSize, fill, anchor) {
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', x);
+    text.setAttribute('y', y);
+    text.setAttribute('font-size', fontSize);
+    text.setAttribute('fill', fill);
+    text.setAttribute('text-anchor', anchor);
+    text.setAttribute('font-family', 'Inter, sans-serif');
+    text.textContent = content;
+    return text;
+  }
+
+  function formatChartHour(hour) {
+    if (hour === 0) return '12 AM';
+    if (hour < 12) return `${hour} AM`;
+    if (hour === 12) return '12 PM';
+    return `${hour - 12} PM`;
+  }
+
+  function showHourlyPatternsEmpty() {
+    if (hourlyPatternsLoading) {
+      hourlyPatternsLoading.style.display = 'none';
+    }
+    if (hourlyPatternsEmpty) {
+      hourlyPatternsEmpty.classList.remove('hidden');
+    }
+  }
+
+  function showHourlyPatternsError() {
+    if (hourlyPatternsLoading) {
+      hourlyPatternsLoading.innerHTML = `
+        <div class="text-center py-8">
+          <svg class="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-gray-600">Unable to load activity patterns</p>
         </div>
       `;
     }

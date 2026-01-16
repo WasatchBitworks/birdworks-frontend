@@ -821,10 +821,6 @@ video {
   height: 0.25rem;
 }
 
-.h-1\.5 {
-  height: 0.375rem;
-}
-
 .h-10 {
   height: 2.5rem;
 }
@@ -1861,10 +1857,6 @@ video {
 
 .opacity-0 {
   opacity: 0;
-}
-
-.opacity-20 {
-  opacity: 0.2;
 }
 
 .opacity-25 {

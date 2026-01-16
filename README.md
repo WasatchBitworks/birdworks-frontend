@@ -63,7 +63,7 @@ npm run build
 
 ## Project Status
 
-**Phase 7 Complete** (January 13, 2026) - Live Data Enhancements
+**Phase 8 Complete** (January 16, 2026) - Species-Level Activity Charts
 - ✅ Birds layout with forest green theme
 - ✅ Homepage with stats and recent detections
 - ✅ Live detections page with confidence indicators (today's stats only)
@@ -75,7 +75,7 @@ npm run build
 - ✅ All Glasstone artifacts removed
 - ✅ Build optimized (~0.60s)
 - ✅ Charts (daily detections timeline + top species distribution)
-- ✅ Explore page with 5 advanced charts and table fallbacks
+- ✅ Explore page with advanced charts and table fallbacks (removed Typical Hourly Activity)
 - ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
 - ✅ Update timestamps on all pages (shows data freshness to users)
 - ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT, 17x/day)
@@ -86,7 +86,8 @@ npm run build
 - ✅ **Species detail pages enhanced** (/species/:species_name)
   - Photo gallery with all species photos (no limit)
   - Detection activity grid (GitHub-style) with newest data on left
-  - Blue marker for monitoring began date (Dec 22, 2025)
+  - Orange marker for monitoring began date (Dec 23, 2025)
+  - **Hourly Activity Patterns chart** (30-day species-specific hourly patterns)
   - Preserved audio recordings list
   - Detection stats (total, best confidence, average confidence, last seen)
 
