@@ -141,6 +141,22 @@
         renderSpeciesComparison(comparisonContainer, comparisonData);
       }
     }
+
+    // Initialize hourly average chart (homepage - NEW)
+    const hourlyAverageContainer = document.querySelector('[data-chart="hourly-average"]');
+    if (hourlyAverageContainer) {
+      const recentJson = hourlyAverageContainer.getAttribute('data-recent');
+      if (recentJson) {
+        try {
+          const recentDetections = JSON.parse(recentJson);
+          if (recentDetections.length > 0) {
+            renderHourlyAverage(hourlyAverageContainer, recentDetections);
+          }
+        } catch (e) {
+          console.error('Failed to parse recent detections for hourly average:', e);
+        }
+      }
+    }
   }
 
   /**
@@ -1265,6 +1281,148 @@
     const highLabel = createText(legendX + legendWidth, legendY + legendHeight + 12, 'High', '9px', '#6b7280', 'end');
     svg.appendChild(highLabel);
 
+    container.innerHTML = '';
+    container.appendChild(svg);
+  }
+
+  /**
+   * Render hourly average chart (14-day average by hour)
+   */
+  function renderHourlyAverage(container, detections) {
+    // Filter to last 14 days
+    const now = new Date();
+    const fourteenDaysAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+
+    const recentDetections = detections.filter(detection => {
+      try {
+        const date = new Date(detection.detected_at);
+        return date >= fourteenDaysAgo;
+      } catch (e) {
+        return false;
+      }
+    });
+
+    if (recentDetections.length === 0) {
+      container.innerHTML = '<div class="text-center py-8"><p class="text-gray-600">Not enough data yet</p></div>';
+      return;
+    }
+
+    // Aggregate by hour and day
+    const hourlyByDay = {};
+
+    recentDetections.forEach(detection => {
+      try {
+        const date = new Date(detection.detected_at);
+        const mtDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Denver' }));
+        const hour = mtDate.getHours();
+        const dayKey = mtDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        if (!hourlyByDay[dayKey]) {
+          hourlyByDay[dayKey] = new Array(24).fill(0);
+        }
+        hourlyByDay[dayKey][hour]++;
+      } catch (e) {
+        console.error('Error parsing date:', detection.detected_at, e);
+      }
+    });
+
+    const days = Object.keys(hourlyByDay);
+    const numDays = days.length;
+
+    if (numDays === 0) {
+      container.innerHTML = '<div class="text-center py-8"><p class="text-gray-600">Not enough data yet</p></div>';
+      return;
+    }
+
+    // Calculate average per hour
+    const hourlyAverages = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = days.map(dayKey => hourlyByDay[dayKey][hour]);
+      const sum = hourValues.reduce((a, b) => a + b, 0);
+      const avg = sum / numDays;
+      hourlyAverages.push({
+        hour: hour,
+        label: formatHour(hour),
+        average: avg
+      });
+    }
+
+    // Chart dimensions
+    const width = 1000;
+    const height = 350;
+    const padding = { top: 30, right: 40, bottom: 80, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    const maxAvg = Math.max(...hourlyAverages.map(h => h.average));
+    const barWidth = chartWidth / 24;
+
+    // Create SVG
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'w-full h-auto');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Average hourly activity bar chart');
+
+    // Y-axis line
+    const yAxis = createLine(padding.left, padding.top, padding.left, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(yAxis);
+
+    // X-axis line
+    const xAxis = createLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(xAxis);
+
+    // Draw bars
+    hourlyAverages.forEach((hourData, i) => {
+      const barHeight = maxAvg > 0 ? (hourData.average / maxAvg) * chartHeight : 0;
+      const x = padding.left + (i * barWidth) + (barWidth * 0.1);
+      const y = height - padding.bottom - barHeight;
+      const barWidthActual = barWidth * 0.8;
+
+      // Bar
+      const bar = createRect(x, y, barWidthActual, barHeight, '#4A7C2C');
+      bar.setAttribute('rx', '2');
+      svg.appendChild(bar);
+
+      // Count label on top of bar
+      if (hourData.average > 0) {
+        const avgRounded = Math.round(hourData.average * 10) / 10; // Round to 1 decimal
+        const label = createText(x + barWidthActual / 2, y - 5, avgRounded.toString(), '10px', '#374151', 'middle');
+        svg.appendChild(label);
+      }
+
+      // Hour label (show every 3 hours to avoid crowding)
+      if (i % 3 === 0) {
+        const hourLabel = createText(
+          x + barWidthActual / 2,
+          height - padding.bottom + 15,
+          hourData.label,
+          '11px',
+          '#6b7280',
+          'middle'
+        );
+        hourLabel.setAttribute('transform', `rotate(-45 ${x + barWidthActual / 2} ${height - padding.bottom + 15})`);
+        svg.appendChild(hourLabel);
+      }
+    });
+
+    // Y-axis label
+    const yMid = maxAvg / 2;
+    const yMidLabel = createText(padding.left - 10, height - padding.bottom - (yMid / maxAvg * chartHeight), Math.round(yMid * 10) / 10, '11px', '#6b7280', 'end');
+    yMidLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMidLabel);
+
+    const yMaxLabel = createText(padding.left - 10, padding.top, Math.round(maxAvg * 10) / 10, '11px', '#6b7280', 'end');
+    yMaxLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMaxLabel);
+
+    // Y-axis title
+    const yAxisTitle = createText(15, height / 2, 'Avg detections/hour', '12px', '#9ca3af', 'middle');
+    yAxisTitle.setAttribute('dominant-baseline', 'middle');
+    yAxisTitle.setAttribute('transform', `rotate(-90 15 ${height / 2})`);
+    svg.appendChild(yAxisTitle);
+
+    // Replace content with chart
     container.innerHTML = '';
     container.appendChild(svg);
   }

@@ -29,17 +29,21 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
 <section class="py-12 bg-white">
   <div class="max-w-7xl mx-auto px-4">
     <div class="grid md:grid-cols-3 gap-6">
-      <!-- Today's Detections -->
+      <!-- Total Detections All Time -->
       <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
         <div class="text-4xl font-bold text-green-800 mb-2">
-          {% if birds.today.length > 0 %}
-            {{ birds.today.length }}
+          {% if birds.species.length > 0 %}
+            {% set totalDetections = 0 %}
+            {% for species in birds.species %}
+              {% set totalDetections = totalDetections + species.detection_count %}
+            {% endfor %}
+            {{ totalDetections | round }}
           {% else %}
             0
           {% endif %}
         </div>
-        <div class="text-gray-700 font-medium">Detections Today</div>
-        <div class="text-sm text-gray-600 mt-1">{{ birds.todayDate | toMountainDate }}</div>
+        <div class="text-gray-700 font-medium">Total Detections</div>
+        <div class="text-sm text-gray-600 mt-1">All time</div>
       </div>
 
       <!-- Species Count -->
@@ -75,47 +79,80 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
 <section class="py-12 bg-gray-50">
   <div class="max-w-7xl mx-auto px-4">
     <div class="text-center mb-8">
-      <h2 class="text-3xl font-bold text-slate-800 mb-4">Trends</h2>
-      <p class="text-lg text-gray-600">Detection activity over time</p>
+      <h2 class="text-3xl font-bold text-slate-800 mb-4">Activity Overview</h2>
+      <p class="text-lg text-gray-600">Daily counts, hourly rhythm, and top species</p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
+    <div class="grid md:grid-cols-2 gap-8 md:items-stretch">
 
-      <!-- Daily Detections Card -->
-      <div class="bg-white rounded-lg shadow-md">
-        <div class="p-6 border-b">
-          <h3 class="text-xl font-bold text-gray-900">Daily Detections</h3>
-          <p class="text-sm text-gray-600 mt-1">Last 14 days</p>
+      <!-- Left Column: Daily Detections + Hourly Average -->
+      <div class="flex flex-col">
+        <!-- Daily Detections Card -->
+        <div class="bg-white rounded-lg shadow-md flex-shrink-0 mb-8">
+          <div class="p-6 border-b">
+            <h3 class="text-xl font-bold text-gray-900">Daily Detections</h3>
+            <p class="text-sm text-gray-600 mt-1">Last 14 days</p>
+          </div>
+          <div class="p-6" data-chart="daily">
+            {% if birds.daily.length > 0 %}
+              {% set last14Days = birds.daily | slice(0, 14) | reverse %}
+              <div class="space-y-2">
+                {% for day in last14Days %}
+                  <div class="flex justify-between items-center py-2 border-b last:border-b-0">
+                    <span class="text-sm text-gray-700">{{ day.date }}</span>
+                    <span class="font-semibold text-gray-900">{{ day.count }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="text-center py-8">
+                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <p class="text-gray-600">No daily data available yet</p>
+              </div>
+            {% endif %}
+          </div>
         </div>
-        <div class="p-6" data-chart="daily">
-          {% if birds.daily.length > 0 %}
-            {% set last14Days = birds.daily | slice(0, 14) | reverse %}
-            <div class="space-y-2">
-              {% for day in last14Days %}
-                <div class="flex justify-between items-center py-2 border-b last:border-b-0">
-                  <span class="text-sm text-gray-700">{{ day.date }}</span>
-                  <span class="font-semibold text-gray-900">{{ day.count }}</span>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="text-center py-8">
-              <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-              </svg>
-              <p class="text-gray-600">No daily data available yet</p>
-            </div>
-          {% endif %}
+
+        <!-- Average Hourly Activity Chart -->
+        <div class="bg-white rounded-lg shadow-md flex-1 flex flex-col mb-4">
+          <div class="p-6 border-b flex-shrink-0">
+            <h3 class="text-xl font-bold text-gray-900">Average Hourly Activity</h3>
+            <p class="text-sm text-gray-600 mt-1">Average detections per hour (last 14 days)</p>
+          </div>
+          <div class="p-6 flex-1" data-chart="hourly-average" data-recent="{{ birds.recent | json }}">
+            {% if birds.recent.length > 0 %}
+              <div class="text-sm text-gray-600 text-center py-8">
+                Loading hourly activity chart...
+              </div>
+            {% else %}
+              <div class="text-center py-8">
+                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-600">Not enough data yet</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Link to Explore Page -->
+        <div class="text-center flex-shrink-0">
+          <a href="/explore" class="text-green-700 hover:text-green-900 font-medium text-lg">
+            View Advanced Charts & Analysis →
+          </a>
         </div>
       </div>
 
-      <!-- Top Species Card -->
-      <div class="bg-white rounded-lg shadow-md">
-        <div class="p-6 border-b">
-          <h3 class="text-xl font-bold text-gray-900">Top Species</h3>
-          <p class="text-sm text-gray-600 mt-1">Most detected birds</p>
-        </div>
-        <div class="p-6" data-chart="species">
+      <!-- Right Column: Top Species Card -->
+      <div class="flex flex-col">
+        <div class="bg-white rounded-lg shadow-md flex flex-col flex-1 mb-4">
+          <div class="p-6 border-b flex-shrink-0">
+            <h3 class="text-xl font-bold text-gray-900">Top Species</h3>
+            <p class="text-sm text-gray-600 mt-1">Most detected birds</p>
+          </div>
+          <div class="p-6 flex-1" data-chart="species">
           {% set top10Species = birds.species | slice(0, 10) %}
           {% if top10Species.length > 0 %}
             <div class="space-y-2">
@@ -157,6 +194,14 @@ description: Real-time bird identification from the Wasatch Front, Utah. Powered
               <p class="text-gray-600">No species data available yet</p>
             </div>
           {% endif %}
+          </div>
+        </div>
+
+        <!-- Link to Species Page -->
+        <div class="text-center flex-shrink-0">
+          <a href="/species" class="text-green-700 hover:text-green-900 font-medium text-lg">
+            View All Species ({{ birds.species.length }}) →
+          </a>
         </div>
       </div>
 

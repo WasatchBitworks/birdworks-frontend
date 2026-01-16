@@ -78,6 +78,12 @@ npm run build
 - ✅ Explore page with advanced charts and table fallbacks
   - Daily Hourly Activity Patterns (30-day individual/group average patterns)
   - Removed Typical Hourly Activity chart (simplified page)
+- ✅ **Homepage Activity Overview** (redesigned)
+  - Total Detections All Time (cumulative count across all species)
+  - Average Hourly Activity chart (14-day per-hour vertical bars)
+  - Top Species list (most detected birds)
+  - Navigation links to /explore and /species pages
+  - Balanced 2-column layout with aligned bottoms
 - ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
 - ✅ Update timestamps on all pages (shows data freshness to users)
 - ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT, 17x/day)

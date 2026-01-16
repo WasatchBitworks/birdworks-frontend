@@ -375,7 +375,7 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Simple legend: green square = detected, count of days with detections
   - Placed on species detail page after photos, before audio
 
-**Jan 16, 2026 Updates (Phase 8 - Species-Level Activity Charts):**
+**Jan 16, 2026 Updates (Phase 8 - Species-Level Activity Charts & Homepage Redesign):**
 - ✅ **Daily Hourly Activity Patterns Chart on /explore page** (NEW)
   - Shows individual daily patterns (thin gray lines) for last 30 days
   - Overlaid with group averages: top 10% most active days (orange), bottom 10% (teal), rolling 30-day average (bold green)
@@ -405,3 +405,16 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
 - ✅ **Improved UX for live refresh and species detail cards**
   - Enhanced live refresh functionality on /live page
   - Refined species detail card styling
+- ✅ **Total Detections All Time card** on homepage
+  - Replaced "Detections Today" with cumulative all-time count
+  - Calculated by summing detection_count across all species
+  - Shows historical scope instead of daily snapshot
+- ✅ **Average Hourly Activity Chart** on homepage (NEW)
+  - Vertical bar chart: average detections per hour (14-day rolling average)
+  - Green bars, hour labels every 3 hours (rotated 45°), values on bars
+  - Fetches from `birds.recent` data during build
+- ✅ **Reorganized Activity Overview section** (formerly "Trends")
+  - Left column: Daily Detections + Hourly Activity (stacked, full height)
+  - Right column: Top Species (full height, bottom-aligned)
+  - Navigation links below each: "/explore" and "/species"
+  - Improved layout for balanced visual hierarchy
