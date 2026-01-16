@@ -48,9 +48,9 @@ eleventyComputed:
       <div class="text-sm text-gray-600">Avg Confidence</div>
     </div>
     <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg shadow-md p-6">
-      <div class="text-2xl font-bold text-purple-700 mb-1">{{ species.last_seen | toMountainTimeShort }}</div>
+      <div class="text-2xl font-bold text-gray-900 mb-1">{{ species.last_seen | toMountainDate }}</div>
+      <div class="text-lg font-semibold text-gray-900 mb-2">{{ species.last_seen | toMountainTimeShort }}</div>
       <div class="text-sm text-gray-600">Last Seen</div>
-      <div class="text-xs text-gray-500 mt-1">{{ species.last_seen | toMountainDate }}</div>
     </div>
   </section>
 

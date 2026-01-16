@@ -17,26 +17,31 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
   <div class="max-w-7xl mx-auto px-4">
 
     <!-- Live Refresh Controls (always visible) -->
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6 flex flex-wrap items-center justify-between gap-4" id="liveRefreshControls">
-      <div class="flex items-center gap-4 flex-wrap">
-        <button id="refreshBtn" class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-          <span id="refreshBtnText">Refresh Now</span>
-        </button>
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6" id="liveRefreshControls">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-3">
+        <div class="flex items-center gap-4 flex-wrap">
+          <button id="refreshBtn" class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="refreshBtnText">Refresh Now</span>
+          </button>
 
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="autoRefreshToggle" class="w-4 h-4 text-green-600 rounded">
-          <span class="text-sm text-gray-700">Auto-refresh (5 min)</span>
-        </label>
-      </div>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="autoRefreshToggle" class="w-4 h-4 text-green-600 rounded">
+            <span class="text-sm text-gray-700">Auto-refresh (5 min)</span>
+          </label>
+        </div>
 
-      <div class="flex items-center gap-4 text-sm">
-        <div id="refreshStatus" class="text-gray-600">
-          <span id="statusText">Ready</span>
-        </div>
-        <div id="lastUpdated" class="text-gray-500">
-          Last updated: <span id="lastUpdatedTime">{{ birds.generatedAt | toMountainTime }} MT</span>
+        <div class="flex items-center gap-4 text-sm">
+          <div id="refreshStatus" class="text-gray-600">
+            <span id="statusText">Ready</span>
+          </div>
+          <div id="lastUpdated" class="text-gray-500">
+            Last updated: <span id="lastUpdatedTime">{{ birds.generatedAt | toMountainTime }} MT</span>
+          </div>
         </div>
       </div>
+      <p class="text-sm text-gray-600 italic">
+        Note: Live-fetched detections are transient (a browser refresh returns to the hourly static snapshot). New data persists after the next scheduled hourly rebuild. This approach maintains the site’s static-first architecture.
+      </p>
     </div>
 
     {% if birds.today.length > 0 %}
