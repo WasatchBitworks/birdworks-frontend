@@ -76,6 +76,22 @@
       }
     }
 
+    // Initialize daily hourly activity patterns chart (explore page - ADVANCED)
+    const dailyPatternsContainer = document.querySelector('[data-chart="daily-hourly-patterns"]');
+    if (dailyPatternsContainer) {
+      const recentJson = dailyPatternsContainer.getAttribute('data-recent');
+      if (recentJson) {
+        try {
+          const recentDetections = JSON.parse(recentJson);
+          if (recentDetections.length > 0) {
+            renderDailyHourlyPatterns(dailyPatternsContainer, recentDetections);
+          }
+        } catch (e) {
+          console.error('Failed to parse recent detections for daily hourly patterns:', e);
+        }
+      }
+    }
+
     // Initialize hourly activity chart (explore page - OLD, may be removed)
     const hourlyContainer = document.querySelector('[data-chart="hourly-activity"]');
     if (hourlyContainer) {
@@ -758,6 +774,144 @@
     const yMaxLabel = createText(padding.left - 10, padding.top, Math.round(maxValue).toString(), '11px', '#6b7280', 'end');
     yMaxLabel.setAttribute('dominant-baseline', 'middle');
     svg.appendChild(yMaxLabel);
+
+    // Replace content with chart
+    container.innerHTML = '';
+    container.appendChild(svg);
+  }
+
+  /**
+   * Render daily hourly activity patterns (small-multiples line chart)
+   * Shows individual daily patterns + rolling average
+   */
+  function renderDailyHourlyPatterns(container, detections) {
+    // Aggregate detections by day and hour
+    const hourlyByDay = {};
+    const days = [];
+
+    detections.forEach(detection => {
+      try {
+        const date = new Date(detection.detected_at);
+        const mtDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Denver' }));
+        const hour = mtDate.getHours();
+        const dayKey = mtDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        if (!hourlyByDay[dayKey]) {
+          hourlyByDay[dayKey] = new Array(24).fill(0);
+          days.push(dayKey);
+        }
+        hourlyByDay[dayKey][hour]++;
+      } catch (e) {
+        console.error('Error parsing date:', detection.detected_at, e);
+      }
+    });
+
+    // Sort days chronologically
+    days.sort();
+
+    // Calculate rolling average (mean across all days for each hour)
+    const rollingAverage = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = days.map(dayKey => hourlyByDay[dayKey][hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      rollingAverage.push(mean || 0);
+    }
+
+    // Chart dimensions
+    const width = 1200;
+    const height = 450;
+    const padding = { top: 30, right: 60, bottom: 80, left: 60 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    // Scale calculations
+    const maxValue = Math.max(...days.map(d => Math.max(...hourlyByDay[d])), ...rollingAverage);
+    const yScale = maxValue > 0 ? chartHeight / maxValue : 1;
+    const xStep = chartWidth / 23; // 24 hours, 23 steps
+
+    // Create SVG
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'w-full h-auto');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Daily hourly activity patterns chart');
+
+    // Draw axes
+    const yAxis = createLine(padding.left, padding.top, padding.left, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(yAxis);
+    const xAxis = createLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(xAxis);
+
+    // Draw daily lines (thin, medium opacity)
+    days.forEach(dayKey => {
+      const dayData = hourlyByDay[dayKey];
+      let pathData = `M ${padding.left} ${height - padding.bottom - (dayData[0] * yScale)}`;
+
+      for (let hour = 1; hour < 24; hour++) {
+        const x = padding.left + (hour * xStep);
+        const y = height - padding.bottom - (dayData[hour] * yScale);
+        pathData += ` L ${x} ${y}`;
+      }
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute('stroke', '#9ca3af');
+      path.setAttribute('stroke-width', '1.5');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0.65');
+      svg.appendChild(path);
+    });
+
+    // Draw rolling average line (bold, high contrast)
+    let avgPathData = `M ${padding.left} ${height - padding.bottom - (rollingAverage[0] * yScale)}`;
+    for (let hour = 1; hour < 24; hour++) {
+      const x = padding.left + (hour * xStep);
+      const y = height - padding.bottom - (rollingAverage[hour] * yScale);
+      avgPathData += ` L ${x} ${y}`;
+    }
+
+    const avgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    avgPath.setAttribute('d', avgPathData);
+    avgPath.setAttribute('stroke', '#2D5016');
+    avgPath.setAttribute('stroke-width', '3');
+    avgPath.setAttribute('fill', 'none');
+    svg.appendChild(avgPath);
+
+    // Draw data points on rolling average line
+    for (let hour = 0; hour < 24; hour++) {
+      const x = padding.left + (hour * xStep);
+      const y = height - padding.bottom - (rollingAverage[hour] * yScale);
+
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', x);
+      dot.setAttribute('cy', y);
+      dot.setAttribute('r', '3');
+      dot.setAttribute('fill', '#2D5016');
+      svg.appendChild(dot);
+    }
+
+    // X-axis labels (every 3 hours)
+    for (let i = 0; i < 24; i += 3) {
+      const x = padding.left + (i * xStep);
+      const label = createText(x, height - padding.bottom + 20, formatHour(i), '11px', '#6b7280', 'middle');
+      svg.appendChild(label);
+    }
+
+    // Y-axis labels
+    const yMid = maxValue / 2;
+    const yMidLabel = createText(padding.left - 10, height - padding.bottom - (yMid * yScale), Math.round(yMid).toString(), '11px', '#6b7280', 'end');
+    yMidLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMidLabel);
+
+    const yMaxLabel = createText(padding.left - 10, padding.top, Math.round(maxValue).toString(), '11px', '#6b7280', 'end');
+    yMaxLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMaxLabel);
+
+    // Y-axis title
+    const yAxisTitle = createText(15, height / 2, 'Detections per hour', '12px', '#9ca3af', 'middle');
+    yAxisTitle.setAttribute('dominant-baseline', 'middle');
+    yAxisTitle.setAttribute('transform', `rotate(-90 15 ${height / 2})`);
+    svg.appendChild(yAxisTitle);
 
     // Replace content with chart
     container.innerHTML = '';
