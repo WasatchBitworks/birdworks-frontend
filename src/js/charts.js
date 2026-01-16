@@ -919,7 +919,7 @@
     drawLine(bottomAverage, '#0891b2', '2', '0.85');
 
     // Draw rolling average line (bold, primary layer - drawn last so it's on top)
-    drawLine(rollingAverage, '#1f3a1f', '3.5', '1');
+    drawLine(rollingAverage, '#4A7C2C', '3.5', '1');
 
     // Draw data points on rolling average line
     for (let hour = 0; hour < 24; hour++) {
@@ -930,7 +930,7 @@
       dot.setAttribute('cx', x);
       dot.setAttribute('cy', y);
       dot.setAttribute('r', '3');
-      dot.setAttribute('fill', '#2D5016');
+      dot.setAttribute('fill', '#4A7C2C');
       svg.appendChild(dot);
     }
 
