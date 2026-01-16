@@ -139,7 +139,7 @@ module.exports = function(eleventyConfig) {
 
   // ✅ Add this line to copy the built CSS to _site
   eleventyConfig.addPassthroughCopy("src/styles/main.css");
-  eleventyConfig.addPassthroughCopy("src/favicon.ico"); // or .png
+  eleventyConfig.addPassthroughCopy("src/favicon-96x96.png");
   eleventyConfig.addPassthroughCopy("src/images");
   eleventyConfig.addPassthroughCopy("src/images/og");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
