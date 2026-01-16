@@ -663,10 +663,10 @@
       });
     }
 
-    // Chart dimensions
-    const width = 700;
-    const height = 300;
-    const padding = { top: 20, right: 40, bottom: 60, left: 50 };
+    // Chart dimensions (full-width layout)
+    const width = 1200;
+    const height = 400;
+    const padding = { top: 30, right: 60, bottom: 80, left: 60 };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
