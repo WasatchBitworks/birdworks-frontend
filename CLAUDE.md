@@ -376,17 +376,32 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Placed on species detail page after photos, before audio
 
 **Jan 16, 2026 Updates (Phase 8 - Species-Level Activity Charts):**
+- ✅ **Daily Hourly Activity Patterns Chart on /explore page** (NEW)
+  - Shows individual daily patterns (thin gray lines) for last 30 days
+  - Overlaid with group averages: top 10% most active days (orange), bottom 10% (teal), rolling 30-day average (bold green)
+  - Uses data from `birds.recent` (all detections from last 30 days)
+  - Responsive SVG chart with hour labels and detection count scale
+  - Legend explains line meanings and color coding
+  - Client-side rendered with progressive enhancement
+- ✅ **Improved chart styling and visual hierarchy**
+  - Refined visual hierarchy on hourly activity charts
+  - Improved legend clarity on explore page charts
+  - Lightened green rolling average line for better visibility
 - ✅ **Removed "Typical Hourly Activity" chart from /explore page**
   - Simplified explore page to focus on most valuable visualizations
   - Updated "About This Data" section from 3 columns to 2 columns
 - ✅ **Updated monitoring began date:** Changed from 12/22/25 to 12/23/25
   - Species presence grids now mark 12/23/2025 as monitoring start date
+  - Affects all `/species/:species` detail pages
 - ✅ **Species Hourly Activity Patterns Chart:** New chart on species-detail pages
   - Shows 30-day hourly detection patterns for individual species
   - Individual daily patterns (thin gray lines) overlaid with group averages
   - Green line = 30-day rolling average for the species
   - Orange line = Top 10% most active days (for this species)
   - Teal line = Bottom 10% least active days (for this species)
-  - Fetches from `/detections/recent?days=30` and filters client-side
+  - Fetches from `/detections/recent?days=30` and filters client-side by species
   - Positioned after Detection Activity grid, before Today's Detections
   - Shows empty state if < 2 days of data for the species
+- ✅ **Improved UX for live refresh and species detail cards**
+  - Enhanced live refresh functionality on /live page
+  - Refined species detail card styling

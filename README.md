@@ -75,7 +75,9 @@ npm run build
 - ✅ All Glasstone artifacts removed
 - ✅ Build optimized (~0.60s)
 - ✅ Charts (daily detections timeline + top species distribution)
-- ✅ Explore page with advanced charts and table fallbacks (removed Typical Hourly Activity)
+- ✅ Explore page with advanced charts and table fallbacks
+  - Daily Hourly Activity Patterns (30-day individual/group average patterns)
+  - Removed Typical Hourly Activity chart (simplified page)
 - ✅ Photo integration (featured + gallery, non-expiring URLs, thumbnail cropping)
 - ✅ Update timestamps on all pages (shows data freshness to users)
 - ✅ Hourly scheduled rebuilds via GitHub Actions (6am–10pm MT, 17x/day)
