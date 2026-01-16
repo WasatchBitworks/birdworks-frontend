@@ -50,6 +50,7 @@
 
       // Update main photo
       mainPhoto.src = largeUrl;
+      mainPhoto.alt = speciesName;
 
       // Update caption
       if (photoCaption) {
@@ -164,6 +165,7 @@
     if (index < 0 || index >= lightboxPhotos.length) return;
 
     lightboxImage.src = lightboxPhotos[index].url;
+    lightboxImage.alt = speciesName;
     lightboxCurrent.textContent = index + 1;
   }
 
