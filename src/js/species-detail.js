@@ -416,17 +416,54 @@
   // Audio Fetching & Rendering
   // ============================================================================
 
+  // Today's Detections Section
+  const todayListContainer = document.getElementById('todayList');
+  const todayLoadingEl = document.getElementById('todayLoading');
+  const todayEmptyEl = document.getElementById('todayEmpty');
+
+  // Best Preserved Section
   const audioListContainer = document.getElementById('audioList');
   const audioLoadingEl = document.getElementById('audioLoading');
   const audioEmptyEl = document.getElementById('audioEmpty');
 
-  // Fetch preserved detections on page load
-  if (speciesSlug && audioListContainer) {
-    fetchPreservedAudio();
+  // Fetch both on page load
+  if (speciesSlug) {
+    if (todayListContainer) fetchTodayDetections();
+    if (audioListContainer) fetchPreservedAudio();
+  }
+
+  function fetchTodayDetections() {
+    // Fetch ALL of today's detections and filter for this species
+    const url = `${apiBase}/wasatch-bitworks/latest?date=today`;
+
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Filter for this species only
+        const speciesDetections = (data.detections || []).filter(detection => {
+          const detectionSlug = detection.common_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          return detectionSlug === speciesSlug;
+        });
+
+        // Sort by confidence (highest first) and take top 5
+        speciesDetections.sort((a, b) => b.confidence - a.confidence);
+        const top5 = speciesDetections.slice(0, 5);
+
+        renderTodayList(top5);
+      })
+      .catch(error => {
+        console.error('Error fetching today\'s detections:', error);
+        showTodayError();
+      });
   }
 
   function fetchPreservedAudio() {
-    const url = `${apiBase}/wasatch-bitworks/detections/species/${speciesSlug}?preserved=true&limit=25`;
+    const url = `${apiBase}/wasatch-bitworks/detections/species/${speciesSlug}?preserved=true&limit=10`;
 
     fetch(url)
       .then(response => {
@@ -442,6 +479,29 @@
         console.error('Error fetching preserved audio:', error);
         showAudioError();
       });
+  }
+
+  function renderTodayList(detections) {
+    // Hide loading indicator
+    if (todayLoadingEl) {
+      todayLoadingEl.style.display = 'none';
+    }
+
+    // Show empty state if no detections
+    if (!detections || detections.length === 0) {
+      if (todayEmptyEl) {
+        todayEmptyEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    // Clear container and render audio items
+    todayListContainer.innerHTML = '';
+
+    detections.forEach((detection, index) => {
+      const audioItem = createAudioItem(detection, index + 1);
+      todayListContainer.appendChild(audioItem);
+    });
   }
 
   function renderAudioList(detections) {
@@ -546,6 +606,20 @@
       'first_of_species': 'First of Species'
     };
     return reasons[reason] || reason;
+  }
+
+  function showTodayError() {
+    if (todayLoadingEl) {
+      todayLoadingEl.innerHTML = `
+        <div class="bg-red-50 rounded-lg p-8 text-center">
+          <svg class="w-12 h-12 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <p class="text-red-700 font-medium">Error loading today's detections</p>
+          <p class="text-red-600 text-sm mt-1">Please try refreshing the page</p>
+        </div>
+      `;
+    }
   }
 
   function showAudioError() {
