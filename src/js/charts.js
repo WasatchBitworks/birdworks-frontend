@@ -60,7 +60,23 @@
       }
     }
 
-    // Initialize hourly activity chart (explore page)
+    // Initialize hourly profile chart (explore page - NEW)
+    const profileContainer = document.querySelector('[data-chart="hourly-profile"]');
+    if (profileContainer) {
+      const recentJson = profileContainer.getAttribute('data-recent');
+      if (recentJson) {
+        try {
+          const recentDetections = JSON.parse(recentJson);
+          if (recentDetections.length > 0) {
+            renderHourlyProfile(profileContainer, recentDetections);
+          }
+        } catch (e) {
+          console.error('Failed to parse recent detections for hourly profile:', e);
+        }
+      }
+    }
+
+    // Initialize hourly activity chart (explore page - OLD, may be removed)
     const hourlyContainer = document.querySelector('[data-chart="hourly-activity"]');
     if (hourlyContainer) {
       const detectionsJson = hourlyContainer.getAttribute('data-detections');
@@ -602,6 +618,148 @@
       }
     });
 
+    container.innerHTML = '';
+    container.appendChild(svg);
+  }
+
+  /**
+   * Render hourly profile band (mean + min/max variance)
+   * Shows typical hourly activity over the last 30 days
+   */
+  function renderHourlyProfile(container, detections) {
+    // Aggregate detections by hour and day
+    const hourlyByDay = {};
+
+    detections.forEach(detection => {
+      try {
+        const date = new Date(detection.detected_at);
+        const mtDate = new Date(date.toLocaleString('en-US', { timeZone: 'America/Denver' }));
+        const hour = mtDate.getHours();
+        const dayKey = mtDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        if (!hourlyByDay[dayKey]) {
+          hourlyByDay[dayKey] = new Array(24).fill(0);
+        }
+        hourlyByDay[dayKey][hour]++;
+      } catch (e) {
+        console.error('Error parsing date:', detection.detected_at, e);
+      }
+    });
+
+    // Calculate statistics per hour (mean, min, max)
+    const stats = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourValues = Object.values(hourlyByDay).map(day => day[hour]);
+      const mean = hourValues.reduce((a, b) => a + b, 0) / hourValues.length;
+      const min = Math.min(...hourValues);
+      const max = Math.max(...hourValues);
+
+      stats.push({
+        hour,
+        label: formatHour(hour),
+        mean: mean || 0,
+        min: min || 0,
+        max: max || 0
+      });
+    }
+
+    // Chart dimensions
+    const width = 700;
+    const height = 300;
+    const padding = { top: 20, right: 40, bottom: 60, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    const maxValue = Math.max(...stats.map(s => s.max));
+    const yScale = maxValue > 0 ? chartHeight / maxValue : 1;
+
+    // Create SVG
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('class', 'w-full h-auto');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Hourly activity profile chart');
+
+    // Draw axes
+    const yAxis = createLine(padding.left, padding.top, padding.left, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(yAxis);
+    const xAxis = createLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
+    svg.appendChild(xAxis);
+
+    // Build min/max band path
+    const xStep = chartWidth / 23; // 24 hours, 23 steps
+    let bandPath = `M ${padding.left} ${height - padding.bottom - (stats[0].min * yScale)}`;
+
+    // Draw lower edge (min values)
+    for (let i = 0; i < 24; i++) {
+      const x = padding.left + (i * xStep);
+      const y = height - padding.bottom - (stats[i].min * yScale);
+      bandPath += ` L ${x} ${y}`;
+    }
+
+    // Draw upper edge (max values) in reverse
+    for (let i = 23; i >= 0; i--) {
+      const x = padding.left + (i * xStep);
+      const y = height - padding.bottom - (stats[i].max * yScale);
+      bandPath += ` L ${x} ${y}`;
+    }
+
+    bandPath += ' Z';
+
+    // Create band (filled area)
+    const band = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    band.setAttribute('d', bandPath);
+    band.setAttribute('fill', '#4A7C2C');
+    band.setAttribute('fill-opacity', '0.2');
+    svg.appendChild(band);
+
+    // Build mean line path
+    let meanPath = `M ${padding.left} ${height - padding.bottom - (stats[0].mean * yScale)}`;
+    for (let i = 1; i < 24; i++) {
+      const x = padding.left + (i * xStep);
+      const y = height - padding.bottom - (stats[i].mean * yScale);
+      meanPath += ` L ${x} ${y}`;
+    }
+
+    // Create mean line
+    const meanLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    meanLine.setAttribute('d', meanPath);
+    meanLine.setAttribute('stroke', '#4A7C2C');
+    meanLine.setAttribute('stroke-width', '2');
+    meanLine.setAttribute('fill', 'none');
+    svg.appendChild(meanLine);
+
+    // Draw data points on mean line
+    stats.forEach((stat, i) => {
+      const x = padding.left + (i * xStep);
+      const y = height - padding.bottom - (stat.mean * yScale);
+
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', x);
+      dot.setAttribute('cy', y);
+      dot.setAttribute('r', '3');
+      dot.setAttribute('fill', '#2D5016');
+      svg.appendChild(dot);
+    });
+
+    // X-axis labels (every 3 hours)
+    for (let i = 0; i < 24; i += 3) {
+      const x = padding.left + (i * xStep);
+      const label = createText(x, height - padding.bottom + 20, stats[i].label, '11px', '#6b7280', 'middle');
+      svg.appendChild(label);
+    }
+
+    // Y-axis labels (show max value and midpoint)
+    const yMid = maxValue / 2;
+    const yMidLabel = createText(padding.left - 10, height - padding.bottom - (yMid * yScale), Math.round(yMid).toString(), '11px', '#6b7280', 'end');
+    yMidLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMidLabel);
+
+    const yMaxLabel = createText(padding.left - 10, padding.top, Math.round(maxValue).toString(), '11px', '#6b7280', 'end');
+    yMaxLabel.setAttribute('dominant-baseline', 'middle');
+    svg.appendChild(yMaxLabel);
+
+    // Replace content with chart
     container.innerHTML = '';
     container.appendChild(svg);
   }

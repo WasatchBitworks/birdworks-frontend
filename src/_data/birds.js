@@ -9,6 +9,7 @@ module.exports = async function() {
     today: `${API_BASE}/${SLUG}/latest?date=today`,  // All detections for current day (Mountain Time)
     species: `${API_BASE}/${SLUG}/detections/species`,  // Detection species, not photo species
     daily: `${API_BASE}/${SLUG}/daily?days=30`,
+    recent: `${API_BASE}/${SLUG}/detections/recent?days=30`,  // Individual detections from last 30 days (for hourly profile)
     photos: `${API_BASE}/${SLUG}/photos?per_page=100`,  // All photos (API max 100/page, currently 23 total)
     featuredPhotos: `${API_BASE}/${SLUG}/photos/featured`  // Featured photos only
   };
@@ -17,10 +18,11 @@ module.exports = async function() {
 
   try {
     // Fetch all endpoints in parallel
-    const [todayData, species, daily, photos, featuredPhotos] = await Promise.all([
+    const [todayData, species, daily, recentData, photos, featuredPhotos] = await Promise.all([
       fetchWithCache(endpoints.today, '1m'),
       fetchWithCache(endpoints.species, '5m'),
       fetchWithCache(endpoints.daily, '5m'),
+      fetchWithCache(endpoints.recent, '5m'),
       fetchWithCache(endpoints.photos, '5m'),
       fetchWithCache(endpoints.featuredPhotos, '5m')
     ]);
@@ -31,6 +33,7 @@ module.exports = async function() {
     console.log(`   - ${todayData.detections?.length || 0} detections today (${todayData.date || 'unknown'})`);
     console.log(`   - ${species.species?.length || 0} species`);
     console.log(`   - ${daily.daily?.length || 0} days of data`);
+    console.log(`   - ${recentData.detections?.length || 0} recent detections (last ${recentData.days || 30} days)`);
     console.log(`   - ${photos.photos?.length || 0} photos`);
     console.log(`   - ${featuredPhotos.photos?.length || 0} featured photos`);
     console.log(`   - Generated at: ${generatedAt}`);
@@ -40,6 +43,7 @@ module.exports = async function() {
       todayDate: todayData.date || null,
       species: species.species || [],
       daily: daily.daily || [],  // API returns .daily not .daily_counts
+      recent: recentData.detections || [],  // Individual detections from last 30 days
       photos: photos.photos || [],
       featuredPhotos: featuredPhotos.photos || [],
       generatedAt,
@@ -55,6 +59,7 @@ module.exports = async function() {
       todayDate: null,
       species: [],
       daily: [],
+      recent: [],
       photos: [],
       featuredPhotos: [],
       generatedAt: new Date().toISOString(),
