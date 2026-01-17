@@ -51,8 +51,8 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
           <h2 class="text-2xl font-bold text-gray-900">Daily Detections Summary</h2>
           <p class="text-sm text-gray-600 mt-1">Top species and hourly activity patterns for {{ birds.todayDate | toMountainDate }}</p>
         </div>
-        <div id="dailySummaryChart" data-detections="{{ birds.today | json }}" data-date="{{ birds.todayDate }}" data-updated="{{ birds.generatedAt }}">
-          {% if birds.today.length > 0 %}
+        <div id="dailySummaryChart" data-hourly="{{ birds.hourly | json }}" data-date="{{ birds.todayDate }}" data-updated="{{ birds.generatedAt }}">
+          {% if birds.hourly.length > 0 %}
             <div class="text-sm text-gray-600 text-center py-8">
               Loading interactive chart with species rankings and hourly activity patterns...
             </div>

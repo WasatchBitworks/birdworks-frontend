@@ -61,32 +61,30 @@
       nextPageBtn.addEventListener('click', () => goToPage(currentPage + 1));
     }
 
-    // Load initial detections from chart's data attribute (has ALL detections)
+    // Load initial hourly data from chart's data attribute
     const dailySummaryChart = document.getElementById('dailySummaryChart');
     if (dailySummaryChart) {
-      const detectionsJson = dailySummaryChart.getAttribute('data-detections');
-      if (detectionsJson) {
+      const hourlyJson = dailySummaryChart.getAttribute('data-hourly');
+      if (hourlyJson) {
         try {
-          allDetections = JSON.parse(detectionsJson);
+          hourlyData = JSON.parse(hourlyJson);
         } catch (e) {
-          console.error('Error parsing detections JSON:', e);
-          allDetections = [];
+          console.error('Error parsing hourly JSON:', e);
+          hourlyData = [];
         }
       }
     }
 
-    // If no chart data, fall back to table rows
-    if (allDetections.length === 0) {
-      const tableRows = detectionsTableBody.querySelectorAll('tr[data-detection]');
-      if (tableRows.length > 0) {
-        allDetections = Array.from(tableRows).map(row => {
-          try {
-            return JSON.parse(row.dataset.detection);
-          } catch (e) {
-            return null;
-          }
-        }).filter(d => d !== null);
-      }
+    // Load initial detections from table rows
+    const tableRows = detectionsTableBody.querySelectorAll('tr[data-detection]');
+    if (tableRows.length > 0) {
+      allDetections = Array.from(tableRows).map(row => {
+        try {
+          return JSON.parse(row.dataset.detection);
+        } catch (e) {
+          return null;
+        }
+      }).filter(d => d !== null);
     }
 
     // Check if any detections have audio
@@ -100,8 +98,10 @@
     // Update stats with initial data
     updateStatsTotals();
 
-    // Render daily summary chart with initial data
-    updateDailySummaryChart();
+    // Render daily summary chart with hourly data from API
+    if (hourlyData && hourlyData.length > 0) {
+      updateDailySummaryChartWithHourlyData();
+    }
 
     // Load auto-refresh preference from localStorage
     const autoRefreshEnabled = localStorage.getItem('birdworks_auto_refresh') === 'true';
