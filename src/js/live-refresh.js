@@ -554,12 +554,31 @@
       speciesEl.textContent = uniqueSpecies.size;
     }
 
-    // Update high confidence count from allDetections (limited 200 - approximate)
-    // Note: This is approximate since we only have 200 detections, not the full day
-    const confidenceEl = document.getElementById('statConfidence');
-    if (confidenceEl) {
-      const highConfidence = allDetections.filter(d => d.confidence >= 0.9).length;
-      confidenceEl.textContent = highConfidence;
+    // Update peak hour from hourly data
+    const peakHourEl = document.getElementById('statPeakHour');
+    if (peakHourEl && hourlyData && hourlyData.length > 0) {
+      let peakHour = 0;
+      let peakCount = 0;
+      hourlyData.forEach(hour => {
+        if (hour.total > peakCount) {
+          peakCount = hour.total;
+          peakHour = hour.hour;
+        }
+      });
+
+      // Format hour (0-23 to "12 AM" format)
+      let formattedHour;
+      if (peakHour === 0) {
+        formattedHour = '12 AM';
+      } else if (peakHour < 12) {
+        formattedHour = peakHour + ' AM';
+      } else if (peakHour === 12) {
+        formattedHour = '12 PM';
+      } else {
+        formattedHour = (peakHour - 12) + ' PM';
+      }
+
+      peakHourEl.textContent = formattedHour;
     }
   }
 
@@ -869,10 +888,10 @@
    * Update stats cards (called after refresh with new daily detections)
    */
   function updateStats(detections) {
-    // allDetections is already updated by refreshDetections()
+    // allDetections and hourlyData are already updated by refreshDetections()
     // Just update the UI to reflect the new totals
     updateStatsTotals();
-    updateDailySummaryChart();
+    // Chart is updated separately in refreshDetections() via updateDailySummaryChartWithHourlyData()
   }
 
   /**

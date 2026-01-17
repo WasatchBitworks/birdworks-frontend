@@ -45,25 +45,6 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
     </div>
 
     {% if birds.today.length > 0 %}
-      <!-- Daily Summary Chart (Live Data) -->
-      <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <div class="border-b pb-4 mb-4">
-          <h2 class="text-2xl font-bold text-gray-900">Daily Detections Summary</h2>
-          <p class="text-sm text-gray-600 mt-1">Top species and hourly activity patterns for {{ birds.todayDate | toMountainDate }}</p>
-        </div>
-        <div id="dailySummaryChart" data-hourly="{{ birds.hourly | json }}" data-date="{{ birds.todayDate }}" data-updated="{{ birds.generatedAt }}">
-          {% if birds.hourly.length > 0 %}
-            <div class="text-sm text-gray-600 text-center py-8">
-              Loading interactive chart with species rankings and hourly activity patterns...
-            </div>
-          {% else %}
-            <div class="text-center py-12">
-              <p class="text-gray-600">No detections yet</p>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-
       <!-- Stats Summary -->
       <div class="grid md:grid-cols-4 gap-4 mb-8" id="statsContainer">
         <div class="bg-white rounded-lg shadow p-4 text-center">
@@ -87,14 +68,26 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
           <div class="text-sm text-gray-600">Unique Species</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          {% set highConfidence = 0 %}
-          {% for det in birds.today %}
-            {% if det.confidence >= 0.9 %}
-              {% set highConfidence = highConfidence + 1 %}
+          {% set peakHour = 0 %}
+          {% set peakCount = 0 %}
+          {% for hour in birds.hourly %}
+            {% if hour.total > peakCount %}
+              {% set peakCount = hour.total %}
+              {% set peakHour = hour.hour %}
             {% endif %}
           {% endfor %}
-          <div id="statConfidence" class="text-2xl font-bold text-orange-700">{{ highConfidence }}</div>
-          <div class="text-sm text-gray-600">High Confidence (≥90%)</div>
+          {% set formattedHour = "" %}
+          {% if peakHour == 0 %}
+            {% set formattedHour = "12 AM" %}
+          {% elif peakHour < 12 %}
+            {% set formattedHour = peakHour ~ " AM" %}
+          {% elif peakHour == 12 %}
+            {% set formattedHour = "12 PM" %}
+          {% else %}
+            {% set formattedHour = (peakHour - 12) ~ " PM" %}
+          {% endif %}
+          <div id="statPeakHour" class="text-2xl font-bold text-orange-700">{{ formattedHour }}</div>
+          <div class="text-sm text-gray-600">Peak Hour</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
           <div class="text-2xl font-bold text-purple-700">
@@ -102,6 +95,25 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
             Live
           </div>
           <div class="text-sm text-gray-600">System Active</div>
+        </div>
+      </div>
+
+      <!-- Daily Summary Chart (Live Data) -->
+      <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="border-b pb-4 mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Daily Detections Summary</h2>
+          <p class="text-sm text-gray-600 mt-1">Top species and hourly activity patterns for {{ birds.todayDate | toMountainDate }}</p>
+        </div>
+        <div id="dailySummaryChart" data-hourly="{{ birds.hourly | json }}" data-date="{{ birds.todayDate }}" data-updated="{{ birds.generatedAt }}">
+          {% if birds.hourly.length > 0 %}
+            <div class="text-sm text-gray-600 text-center py-8">
+              Loading interactive chart with species rankings and hourly activity patterns...
+            </div>
+          {% else %}
+            <div class="text-center py-12">
+              <p class="text-gray-600">No detections yet</p>
+            </div>
+          {% endif %}
         </div>
       </div>
 

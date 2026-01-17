@@ -424,3 +424,22 @@ formatMountainTime(detection.detected_at)  // In live-refresh.js
   - Right column: Top Species (full height, bottom-aligned)
   - Navigation links below each: "/explore" and "/species"
   - Improved layout for balanced visual hierarchy
+- ✅ **New hourly aggregation API endpoint** (handles 500+ detection days)
+  - `GET /api/birds/:slug/hourly?date=today` - Hourly species breakdown for entire day
+  - Returns all 24 hours with species counts per hour (complete data regardless of detection volume)
+  - Enables accurate charts even on ultra-busy days (637+ detections tested)
+  - 5-minute cache, CORS enabled for live refresh
+  - Fixed detections limit: `/latest?date=today&limit=200` caps at 200 most recent
+- ✅ **Stats cards on /live page now show complete day totals**
+  - Total Detections: Sum of all hourly totals (entire day, not just 200 detections)
+  - Unique Species: Extracted from hourly breakdown (all species detected today)
+  - Peak Hour: Hour with most detections (e.g., "2 PM", "9 AM")
+  - System Active: Live indicator badge
+  - Stats moved above Daily Detections Summary chart for better visual hierarchy
+  - Updates on refresh with accurate full-day data
+- ✅ **Refresh button now works correctly with hourly data**
+  - Fetches `/latest?limit=200` (most recent detections table) + `/hourly?date=today` (complete day chart) in parallel
+  - Updates stats cards from hourly data (accurate totals)
+  - Updates Daily Detections Summary chart from hourly data (all species/hours)
+  - Updates detections table with latest 200
+  - Properly handles days with 500+ detections

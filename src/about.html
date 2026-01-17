@@ -214,11 +214,14 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
             These read-only endpoints power the BirdWorks frontend and are optimized for caching and performance.
           </p>
           <div class="text-sm text-gray-600 space-y-1">
-            <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/latest</code> - Recent detections (cached 1 min)</div>
+            <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/latest</code> - Recent detections (max 200, cached 1 min)</div>
+            <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/hourly</code> - Hourly species breakdown for day (cached 5 min)</div>
+            <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/daily</code> - Daily detection counts (cached 5 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/detections/species</code> - Species with counts (cached 5 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/photos</code> - Photo metadata (cached 5 min)</div>
             <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/species/:species_slug/presence</code> - Yearly activity grid (cached 24 hr)</div>
-            <div class="text-xs text-gray-500 mt-2">All endpoints support pagination and filtering. Privacy and geoprivacy controls are applied where appropriate.</div>
+            <div><code class="bg-gray-100 px-2 py-1 rounded">/api/birds/:slug/audio/:id</code> - Pre-signed audio URLs (no cache)</div>
+            <div class="text-xs text-gray-500 mt-2">All endpoints support CORS for client-side access. Hourly endpoint provides complete day aggregates to handle high-volume detection days efficiently.</div>
           </div>
         </div>
       </div>
