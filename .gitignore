@@ -31,3 +31,6 @@ Thumbs.db
 # Logs
 logs
 *.log
+
+# Internal documentation (AI assistant guidance, not for public repo)
+CLAUDE.md
