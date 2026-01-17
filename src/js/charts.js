@@ -1286,7 +1286,7 @@
   }
 
   /**
-   * Render hourly average chart (14-day average by hour)
+   * Render hourly average chart (14-day average by hour) - HORIZONTAL BARS
    */
   function renderHourlyAverage(container, detections) {
     // Filter to last 14 days
@@ -1347,15 +1347,16 @@
       });
     }
 
-    // Chart dimensions
-    const width = 1000;
-    const height = 350;
-    const padding = { top: 30, right: 40, bottom: 80, left: 50 };
+    // Chart dimensions (horizontal bars layout)
+    const width = 800;
+    const height = 24 * 30; // 24 hours, 30px per row
+    const padding = { top: 20, right: 60, bottom: 20, left: 80 };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
     const maxAvg = Math.max(...hourlyAverages.map(h => h.average));
-    const barWidth = chartWidth / 24;
+    const barHeight = (chartHeight / 24) * 0.8;
+    const barSpacing = chartHeight / 24;
 
     // Create SVG
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -1364,63 +1365,30 @@
     svg.setAttribute('role', 'img');
     svg.setAttribute('aria-label', 'Average hourly activity bar chart');
 
-    // Y-axis line
-    const yAxis = createLine(padding.left, padding.top, padding.left, height - padding.bottom, '#e5e7eb');
-    svg.appendChild(yAxis);
-
-    // X-axis line
-    const xAxis = createLine(padding.left, height - padding.bottom, width - padding.right, height - padding.bottom, '#e5e7eb');
-    svg.appendChild(xAxis);
-
-    // Draw bars
+    // Draw bars (horizontal)
     hourlyAverages.forEach((hourData, i) => {
-      const barHeight = maxAvg > 0 ? (hourData.average / maxAvg) * chartHeight : 0;
-      const x = padding.left + (i * barWidth) + (barWidth * 0.1);
-      const y = height - padding.bottom - barHeight;
-      const barWidthActual = barWidth * 0.8;
+      const barWidth = maxAvg > 0 ? (hourData.average / maxAvg) * chartWidth : 0;
+      const x = padding.left;
+      const y = padding.top + (i * barSpacing) + ((barSpacing - barHeight) / 2);
 
       // Bar
-      const bar = createRect(x, y, barWidthActual, barHeight, '#4A7C2C');
+      const bar = createRect(x, y, barWidth, barHeight, '#4A7C2C');
       bar.setAttribute('rx', '2');
       svg.appendChild(bar);
 
-      // Count label on top of bar
+      // Hour label (left side)
+      const hourLabel = createText(padding.left - 10, y + barHeight / 2, hourData.label, '11px', '#374151', 'end');
+      hourLabel.setAttribute('dominant-baseline', 'middle');
+      svg.appendChild(hourLabel);
+
+      // Count label (right of bar)
       if (hourData.average > 0) {
         const avgRounded = Math.round(hourData.average * 10) / 10; // Round to 1 decimal
-        const label = createText(x + barWidthActual / 2, y - 5, avgRounded.toString(), '10px', '#374151', 'middle');
-        svg.appendChild(label);
-      }
-
-      // Hour label (show every 3 hours to avoid crowding)
-      if (i % 3 === 0) {
-        const hourLabel = createText(
-          x + barWidthActual / 2,
-          height - padding.bottom + 15,
-          hourData.label,
-          '11px',
-          '#6b7280',
-          'middle'
-        );
-        hourLabel.setAttribute('transform', `rotate(-45 ${x + barWidthActual / 2} ${height - padding.bottom + 15})`);
-        svg.appendChild(hourLabel);
+        const countLabel = createText(x + barWidth + 5, y + barHeight / 2, avgRounded.toString(), '11px', '#374151', 'start');
+        countLabel.setAttribute('dominant-baseline', 'middle');
+        svg.appendChild(countLabel);
       }
     });
-
-    // Y-axis label
-    const yMid = maxAvg / 2;
-    const yMidLabel = createText(padding.left - 10, height - padding.bottom - (yMid / maxAvg * chartHeight), Math.round(yMid * 10) / 10, '11px', '#6b7280', 'end');
-    yMidLabel.setAttribute('dominant-baseline', 'middle');
-    svg.appendChild(yMidLabel);
-
-    const yMaxLabel = createText(padding.left - 10, padding.top, Math.round(maxAvg * 10) / 10, '11px', '#6b7280', 'end');
-    yMaxLabel.setAttribute('dominant-baseline', 'middle');
-    svg.appendChild(yMaxLabel);
-
-    // Y-axis title
-    const yAxisTitle = createText(15, height / 2, 'Avg detections/hour', '12px', '#9ca3af', 'middle');
-    yAxisTitle.setAttribute('dominant-baseline', 'middle');
-    yAxisTitle.setAttribute('transform', `rotate(-90 15 ${height / 2})`);
-    svg.appendChild(yAxisTitle);
 
     // Replace content with chart
     container.innerHTML = '';
