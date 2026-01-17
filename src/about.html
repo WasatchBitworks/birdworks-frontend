@@ -56,58 +56,74 @@ description: Learn how our BirdNET-Pi-based system captures high-quality audio a
     <div class="bg-white rounded-lg shadow-md p-8 mb-8">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">How Our System Works</h2>
       <div class="space-y-6">
-        <!-- Step 1 -->
+        <!-- Step 1: Audio Capture -->
         <div class="flex gap-4">
           <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">
             1
           </div>
           <div>
-            <h3 class="font-semibold text-gray-900 mb-2">Continuous Audio Monitoring</h3>
-            <p class="text-gray-600">
-              A three-microphone array captures ambient audio from our location on the Wasatch Front, Utah. The system records
-              15-second audio segments continuously throughout the day and night.
+            <h3 class="font-semibold text-gray-900 mb-2">Continuous Audio Capture</h3>
+            <p class="text-gray-600 mb-3">
+              A custom three-microphone array mounted at our Wasatch Front location continuously captures high-fidelity audio.
+              The audio flows through an Alesis MultiMix 8 USB mixer and is recorded in 15-second segments at professional quality
+              (48kHz sample rate, 16-bit stereo) around the clock.
+            </p>
+            <p class="text-xs text-gray-500">
+              <strong>Hardware:</strong> Primo EM272Z1 capsules (phantom-powered) • <strong>Format:</strong> 16-bit PCM stereo • <strong>Elevation:</strong> ~4,500 ft
             </p>
           </div>
         </div>
 
-        <!-- Step 2 -->
+        <!-- Step 2: Local Analysis -->
         <div class="flex gap-4">
           <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
             2
           </div>
           <div>
-            <h3 class="font-semibold text-gray-900 mb-2">AI Analysis</h3>
-            <p class="text-gray-600">
-              Audio is captured through an Alesis MultiMix 8 USB mixer and analyzed by the BirdNET neural network running on a Raspberry Pi 5.
-              The AI identifies potential bird calls and songs, comparing them against its trained model of thousands of species.
+            <h3 class="font-semibold text-gray-900 mb-2">Local AI Analysis on Raspberry Pi</h3>
+            <p class="text-gray-600 mb-3">
+              A Raspberry Pi 5 running the BirdNET v2.4 neural network processes each audio segment in real-time.
+              The AI compares detected sounds against a trained model of 6,000+ global bird species and assigns confidence scores
+              (0–100%). Detections below 70% confidence are filtered out to reduce false positives.
+            </p>
+            <p class="text-xs text-gray-500">
+              <strong>Device:</strong> Raspberry Pi 5 • <strong>OS:</strong> Debian 12 • <strong>Threshold:</strong> 70% minimum confidence
             </p>
           </div>
         </div>
 
-        <!-- Step 3 -->
+        <!-- Step 3: Cloud Sync & Storage -->
         <div class="flex gap-4">
           <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
             3
           </div>
           <div>
-            <h3 class="font-semibold text-gray-900 mb-2">Confidence Scoring</h3>
-            <p class="text-gray-600">
-              When a bird is detected, the system assigns a confidence score (0-100%) indicating how certain the AI is
-              about the identification. Higher scores generally indicate more reliable detections.
+            <h3 class="font-semibold text-gray-900 mb-2">Cloud Sync & Permanent Archival</h3>
+            <p class="text-gray-600 mb-3">
+              Every 5 minutes, the Raspberry Pi syncs confirmed detections to our cloud backend—a Sinatra/Ruby CMS with PostgreSQL storage.
+              Audio clips are archived on AWS S3 for permanent preservation. All data is stored in UTC and includes full detection metadata
+              and confidence scores.
+            </p>
+            <p class="text-xs text-gray-500">
+              <strong>Sync interval:</strong> 5 minutes • <strong>Database:</strong> PostgreSQL • <strong>Storage:</strong> AWS S3 with lifecycle management
             </p>
           </div>
         </div>
 
-        <!-- Step 4 -->
+        <!-- Step 4: Public Display -->
         <div class="flex gap-4">
           <div class="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-700 font-bold">
             4
           </div>
           <div>
-            <h3 class="font-semibold text-gray-900 mb-2">Data Storage & Display</h3>
-            <p class="text-gray-600">
-              Detection data is synced to our database every 5 minutes. This website displays the latest detections,
-              species statistics, and historical trends.
+            <h3 class="font-semibold text-gray-900 mb-2">Website & Public Display</h3>
+            <p class="text-gray-600 mb-3">
+              This website fetches fresh data from our public API and regenerates every hour during daytime hours (6am–10pm MT).
+              Built with Eleventy (static site generator) and Tailwind CSS, it displays the latest detections, species trends,
+              activity charts, and curated bird photography. The /live page offers real-time updates with a 5-minute refresh interval.
+            </p>
+            <p class="text-xs text-gray-500">
+              <strong>Generator:</strong> Eleventy v3.1.2 • <strong>Hosting:</strong> Netlify CDN • <strong>Builds:</strong> Hourly during active hours (17/day)
             </p>
           </div>
         </div>
