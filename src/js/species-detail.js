@@ -328,35 +328,43 @@
 
     // Month labels (below grid) - positioned at each month boundary
     const monthBar = document.createElement('div');
-    monthBar.className = 'relative mt-1 text-xs text-gray-400';
-    monthBar.style.marginLeft = '28px'; // Align with grid (day labels width)
-    monthBar.style.height = '16px';
+    monthBar.className = 'flex gap-1 mt-1 text-xs text-gray-400';
+    monthBar.style.marginLeft = '40px'; // Match day labels width + margins
 
-    // Calculate total weeks to determine grid width (for reversed positioning)
-    const totalWeeks = weekCount;
-    const totalWidth = totalWeeks * 16; // 16px = cell width (12px) + gap (4px)
+    // Create container to match grid layout
+    const monthsContainer = document.createElement('div');
+    monthsContainer.className = 'relative';
+    monthsContainer.style.width = `${weekCount * 16}px`; // Match grid width exactly
 
-    // Calculate month positions
-    let labelDate = new Date(startDate);
+    // Calculate month positions (go backwards from today to match reversed grid)
+    let labelDate = new Date(today);
     let lastMonth = -1;
+    const monthPositions = [];
 
-    while (labelDate <= today) {
+    // Work backwards from today to startDate
+    while (labelDate >= startDate) {
       const month = labelDate.getMonth();
       if (month !== lastMonth) {
         const weeksSinceStart = Math.floor((labelDate - startDate) / (7 * 24 * 60 * 60 * 1000));
-
-        // Create month label
-        const monthLabel = document.createElement('span');
-        monthLabel.textContent = labelDate.toLocaleDateString('en-US', { month: 'short' });
-        monthLabel.className = 'absolute text-xs text-gray-400';
-        // Since grid is reversed (flex-row-reverse), position from right instead of left
-        monthLabel.style.right = `${totalWidth - (weeksSinceStart * 16)}px`;
-        monthBar.appendChild(monthLabel);
-
+        monthPositions.push({
+          month: labelDate.toLocaleDateString('en-US', { month: 'short' }),
+          weeksFromEnd: weekCount - weeksSinceStart
+        });
         lastMonth = month;
       }
-      labelDate.setDate(labelDate.getDate() + 7);
+      labelDate.setDate(labelDate.getDate() - 7);
     }
+
+    // Create month labels positioned from left (matching reversed grid visually)
+    monthPositions.forEach(pos => {
+      const monthLabel = document.createElement('span');
+      monthLabel.textContent = pos.month;
+      monthLabel.className = 'absolute text-xs text-gray-400';
+      monthLabel.style.left = `${(pos.weeksFromEnd - 1) * 16}px`;
+      monthsContainer.appendChild(monthLabel);
+    });
+
+    monthBar.appendChild(monthsContainer);
 
     // Legend
     const legend = document.createElement('div');
