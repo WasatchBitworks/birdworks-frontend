@@ -213,7 +213,7 @@
       let lastScrollTime = Date.now();
       let ticking = false;
       const headerHeight = header.offsetHeight;
-      const velocityThreshold = 2; // pixels per millisecond (adjust for sensitivity)
+      const velocityThreshold = 1; // pixels per millisecond (adjust for sensitivity)
 
       function updateHeaderVisibility() {
         const currentScrollY = window.scrollY;
