@@ -78,22 +78,26 @@ This is the **Wasatch BirdWorks** public site showcasing:
 ```javascript
 // src/_data/birds.js
 - Fetches from CMS API:
-  - /api/birds/wasatch-bitworks/latest?date=today (1m cache)
+  - /api/birds/wasatch-bitworks/latest?date=today&limit=200 (1m cache) - 200 most recent detections
   - /api/birds/wasatch-bitworks/detections/species (5m cache)
   - /api/birds/wasatch-bitworks/daily?days=30 (5m cache)
+  - /api/birds/wasatch-bitworks/hourly?date=today (5m cache) - Hourly aggregated species counts
+  - /api/birds/wasatch-bitworks/detections/recent?days=30 (5m cache) - Individual detections for hourly charts
   - /api/birds/wasatch-bitworks/photos?per_page=100 (5m cache) - Fetches all photos (API max 100/page)
   - /api/birds/wasatch-bitworks/photos/featured (5m cache)
-- Returns: {today, todayDate, species, daily, photos, featuredPhotos, generatedAt, apiBase}
+- Returns: {today, todayDate, species, daily, hourly, recent, photos, featuredPhotos, generatedAt, apiBase}
 ```
 
 **Environment variables:**
 - `BIRDS_API_BASE` - API base URL (default: https://cms.wasatchbitworks.com/api/birds)
 
 **Available in templates (Detections):**
-- `{{ birds.today }}` - Array of today's detections (includes id, audio_url, preserved)
+- `{{ birds.today }}` - Array of 200 most recent detections (includes id, audio_url, preserved)
 - `{{ birds.todayDate }}` - Date string for today in Mountain Time
 - `{{ birds.species }}` - Array of species with detection counts
 - `{{ birds.daily }}` - Array of daily aggregations
+- `{{ birds.hourly }}` - **NEW** Array of 24 hours with hourly species breakdown (hour 0-23, each with species counts)
+- `{{ birds.recent }}` - Array of individual detections from last 30 days (for hourly charts)
 - `{{ birds.generatedAt }}` - ISO timestamp of when data was fetched
 
 **Available in templates (Photos - NEW):**
@@ -109,7 +113,9 @@ This is the **Wasatch BirdWorks** public site showcasing:
 - `{{ site.url }}` - "https://wasatchbirdworks.com"
 
 **Client-side features:**
-- Live refresh: Fetches latest detections on demand
+- Live refresh: Fetches latest detections (200) and hourly data on demand
+  - Detections table updates with latest 200 birds
+  - Daily Detections Summary chart updates with full day's hourly breakdown
 - Audio playback: Fetches pre-signed S3 URLs from `/api/birds/:slug/audio/:id`
 - Pagination: Client-side (20 detections per page)
 

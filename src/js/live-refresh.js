@@ -13,13 +13,15 @@
 
   // Get API base from data attribute
   const apiBase = document.documentElement.dataset.apiBase || 'https://cms.wasatchbitworks.com/api/birds';
-  const apiUrl = `${apiBase}/${API_SLUG}/latest?date=today`;  // All detections for today (Mountain Time)
+  const apiUrl = `${apiBase}/${API_SLUG}/latest?date=today&limit=200`;  // Most recent 200 detections for today
+  const hourlyApiUrl = `${apiBase}/${API_SLUG}/hourly?date=today`;  // Hourly aggregated data for the entire day
 
   // State
   let autoRefreshTimer = null;
   let isRefreshing = false;
   let currentPage = 1;
   let allDetections = [];
+  let hourlyData = null;  // NEW: hourly aggregated data from API
   let currentlyPlayingAudio = null;
 
   // DOM elements
@@ -154,7 +156,7 @@
   }
 
   /**
-   * Fetch and update detections
+   * Fetch and update detections + hourly chart data
    */
   async function refreshDetections() {
     if (isRefreshing) return;
@@ -165,21 +167,28 @@
     refreshBtnText.textContent = 'Refreshing...';
 
     try {
-      const response = await fetch(apiUrl, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+      // Fetch both detections and hourly data in parallel
+      const [detectionsResponse, hourlyResponse] = await Promise.all([
+        fetch(apiUrl, { headers: { 'Accept': 'application/json' } }),
+        fetch(hourlyApiUrl, { headers: { 'Accept': 'application/json' } })
+      ]);
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      if (!detectionsResponse.ok) {
+        throw new Error(`Detections API: HTTP ${detectionsResponse.status}`);
       }
 
-      const data = await response.json();
-      const detections = data.detections || [];
+      if (!hourlyResponse.ok) {
+        throw new Error(`Hourly API: HTTP ${hourlyResponse.status}`);
+      }
+
+      const detectionsData = await detectionsResponse.json();
+      const hourlyApiData = await hourlyResponse.json();
+
+      const detections = detectionsData.detections || [];
 
       // Store all detections and reset to page 1
       allDetections = detections;
+      hourlyData = hourlyApiData.hours || [];  // NEW: store hourly data
       currentPage = 1;
 
       // Update table with paginated detections
@@ -187,6 +196,9 @@
 
       // Update stats
       updateStats(detections);
+
+      // Update Daily Detections Summary chart with hourly data
+      updateDailySummaryChartWithHourlyData();
 
       // Update timestamp (formatted to Mountain Time)
       const now = new Date().toISOString();
@@ -547,20 +559,76 @@
   }
 
   /**
-   * Update daily summary chart with live data
+   * Update daily summary chart with hourly data from API
+   * Converts hourly API response to species-by-hour format
+   */
+  function updateDailySummaryChartWithHourlyData() {
+    const chartContainer = document.getElementById('dailySummaryChart');
+    if (!chartContainer || !hourlyData || hourlyData.length === 0) return;
+
+    // Convert hourly API data to species aggregation format
+    // API returns: { hour, total, species: [{ common_name, count }, ...] }
+    // We need: { species: [{ name, total, hourly: [0...24] }, ...], maxHourly }
+
+    const speciesMap = new Map();
+
+    hourlyData.forEach(hourRecord => {
+      const hour = hourRecord.hour;
+      (hourRecord.species || []).forEach(speciesRecord => {
+        const speciesName = speciesRecord.common_name;
+        const count = speciesRecord.count;
+
+        if (!speciesMap.has(speciesName)) {
+          speciesMap.set(speciesName, {
+            name: speciesName,
+            total: 0,
+            hourly: new Array(24).fill(0)
+          });
+        }
+
+        const speciesData = speciesMap.get(speciesName);
+        speciesData.total += count;
+        speciesData.hourly[hour] = count;
+      });
+    });
+
+    // Convert to array and sort by total (descending)
+    const speciesArray = Array.from(speciesMap.values())
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 15); // Top 15 species
+
+    // Find max hourly count for color scaling
+    let maxHourly = 0;
+    speciesArray.forEach(species => {
+      const max = Math.max(...species.hourly);
+      if (max > maxHourly) maxHourly = max;
+    });
+
+    const summaryData = {
+      species: speciesArray,
+      maxHourly: maxHourly
+    };
+
+    if (summaryData.species.length > 0) {
+      const dateStr = new Date().toISOString().split('T')[0]; // Today's date
+      const now = new Date().toISOString();
+      renderDailySummary(chartContainer, summaryData, dateStr, now);
+    }
+  }
+
+  /**
+   * Update daily summary chart with live data (legacy, uses client-side aggregation)
+   * Kept for backwards compatibility if hourly data is not available
    */
   function updateDailySummaryChart() {
     const chartContainer = document.getElementById('dailySummaryChart');
     if (!chartContainer) return;
 
-    // Aggregate species by hour
+    // Aggregate species by hour from detections
     const summaryData = aggregateSpeciesByHour(allDetections);
     if (summaryData.species.length > 0) {
-      // Get date and updated time
       const dateStr = new Date().toISOString().split('T')[0]; // Today's date
       const now = new Date().toISOString();
-
-      // Render the chart
       renderDailySummary(chartContainer, summaryData, dateStr, now);
     }
   }
