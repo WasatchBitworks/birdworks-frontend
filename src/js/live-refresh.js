@@ -82,6 +82,7 @@
         try {
           return JSON.parse(row.dataset.detection);
         } catch (e) {
+          console.error('Failed to parse detection:', e.message);
           return null;
         }
       }).filter(d => d !== null);

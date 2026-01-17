@@ -121,7 +121,7 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
       <div class="bg-white rounded-lg shadow-lg overflow-hidden" id="detectionsTableContainer">
         <div class="p-6 border-b border-gray-200">
           <h2 class="text-2xl font-bold text-gray-900">Recent Detections</h2>
-          <p class="text-sm text-gray-600 mt-1">Most recent detections from today (Up to 200)</p>
+          <p class="text-sm text-gray-600 mt-1">Most recent detections from today ({{ birds.today.length }} loaded)</p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full">
@@ -134,7 +134,7 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
             </thead>
             <tbody class="divide-y divide-gray-200" id="detectionsTableBody">
               {% for detection in birds.today %}
-              <tr class="hover:bg-gray-50 transition" data-detection='{{ detection | json | safe }}'>
+              <tr class="hover:bg-gray-50 transition" data-detection="{{ detection | json }}">
                 <td class="px-6 py-4">
                   <div class="font-semibold text-gray-900">{{ detection.common_name }}</div>
                   <div class="text-sm text-gray-500 italic">{{ detection.scientific_name }}</div>
