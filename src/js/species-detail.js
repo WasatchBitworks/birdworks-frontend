@@ -368,7 +368,7 @@
 
     // Legend
     const legend = document.createElement('div');
-    legend.className = 'flex flex-wrap items-center gap-2 mt-3 text-xs text-gray-500';
+    legend.className = 'flex flex-wrap items-center gap-2 mt-6 text-xs text-gray-500';
     legend.innerHTML = `
       <div class="w-3 h-3 rounded-sm bg-green-400"></div>
       <span>Detected</span>
