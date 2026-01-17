@@ -210,23 +210,33 @@
       // Header scroll behavior: hide on scroll down, show on scroll up
       const header = document.getElementById('mainHeader');
       let lastScrollY = window.scrollY;
+      let lastScrollTime = Date.now();
       let ticking = false;
+      const headerHeight = header.offsetHeight;
+      const velocityThreshold = 2; // pixels per millisecond (adjust for sensitivity)
 
       function updateHeaderVisibility() {
         const currentScrollY = window.scrollY;
+        const currentTime = Date.now();
+        const timeDelta = currentTime - lastScrollTime;
+        const scrollDelta = lastScrollY - currentScrollY;
+        const scrollVelocity = timeDelta > 0 ? scrollDelta / timeDelta : 0;
 
-        // Don't hide header if we're at the top of the page
-        if (currentScrollY < 10) {
+        // Don't hide header until we've scrolled past its own height
+        if (currentScrollY < headerHeight) {
           header.classList.remove('header-hidden');
         } else if (currentScrollY > lastScrollY) {
-          // Scrolling down
+          // Scrolling down - only hide after we've passed the header
           header.classList.add('header-hidden');
-        } else {
-          // Scrolling up
-          header.classList.remove('header-hidden');
+        } else if (currentScrollY < lastScrollY) {
+          // Scrolling up - show only if scrolling fast enough
+          if (scrollVelocity >= velocityThreshold) {
+            header.classList.remove('header-hidden');
+          }
         }
 
         lastScrollY = currentScrollY;
+        lastScrollTime = currentTime;
         ticking = false;
       }
 
