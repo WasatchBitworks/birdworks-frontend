@@ -534,23 +534,28 @@
   }
 
   /**
-   * Update stats cards based on all detections for the day
+   * Update stats cards based on complete hourly data for the day
    */
   function updateStatsTotals() {
-    // Update detection count
+    // Update detection count from hourly data (complete day total)
     const detectionsEl = document.getElementById('statDetections');
-    if (detectionsEl) {
-      detectionsEl.textContent = allDetections.length;
+    if (detectionsEl && hourlyData && hourlyData.length > 0) {
+      const totalDetections = hourlyData.reduce((sum, hour) => sum + hour.total, 0);
+      detectionsEl.textContent = totalDetections;
     }
 
-    // Update unique species count
+    // Update unique species count from hourly data (complete day)
     const speciesEl = document.getElementById('statSpecies');
-    if (speciesEl) {
-      const uniqueSpecies = new Set(allDetections.map(d => d.common_name));
+    if (speciesEl && hourlyData && hourlyData.length > 0) {
+      const uniqueSpecies = new Set();
+      hourlyData.forEach(hour => {
+        (hour.species || []).forEach(s => uniqueSpecies.add(s.common_name));
+      });
       speciesEl.textContent = uniqueSpecies.size;
     }
 
-    // Update high confidence count
+    // Update high confidence count from allDetections (limited 200 - approximate)
+    // Note: This is approximate since we only have 200 detections, not the full day
     const confidenceEl = document.getElementById('statConfidence');
     if (confidenceEl) {
       const highConfidence = allDetections.filter(d => d.confidence >= 0.9).length;

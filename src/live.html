@@ -67,31 +67,33 @@ description: Today's bird detections from the Wasatch Front. See all birds ident
       <!-- Stats Summary -->
       <div class="grid md:grid-cols-4 gap-4 mb-8" id="statsContainer">
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          <div id="statDetections" class="text-2xl font-bold text-green-700">{{ birds.today.length }}</div>
+          {% set totalDetections = 0 %}
+          {% for hour in birds.hourly %}
+            {% set totalDetections = totalDetections + hour.total %}
+          {% endfor %}
+          <div id="statDetections" class="text-2xl font-bold text-green-700">{{ totalDetections }}</div>
           <div class="text-sm text-gray-600">Detections</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          <div id="statSpecies" class="text-2xl font-bold text-blue-700">
-            {% set uniqueSpecies = [] %}
-            {% for det in birds.today %}
-              {% if det.common_name not in uniqueSpecies %}
-                {% set _ = uniqueSpecies.push(det.common_name) %}
+          {% set uniqueSpeciesSet = [] %}
+          {% for hour in birds.hourly %}
+            {% for speciesRecord in hour.species %}
+              {% if speciesRecord.common_name not in uniqueSpeciesSet %}
+                {% set _ = uniqueSpeciesSet.push(speciesRecord.common_name) %}
               {% endif %}
             {% endfor %}
-            {{ uniqueSpecies.length }}
-          </div>
+          {% endfor %}
+          <div id="statSpecies" class="text-2xl font-bold text-blue-700">{{ uniqueSpeciesSet.length }}</div>
           <div class="text-sm text-gray-600">Unique Species</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
-          <div id="statConfidence" class="text-2xl font-bold text-orange-700">
-            {% set highConfidence = 0 %}
-            {% for det in birds.today %}
-              {% if det.confidence >= 0.9 %}
-                {% set highConfidence = highConfidence + 1 %}
-              {% endif %}
-            {% endfor %}
-            {{ highConfidence }}
-          </div>
+          {% set highConfidence = 0 %}
+          {% for det in birds.today %}
+            {% if det.confidence >= 0.9 %}
+              {% set highConfidence = highConfidence + 1 %}
+            {% endif %}
+          {% endfor %}
+          <div id="statConfidence" class="text-2xl font-bold text-orange-700">{{ highConfidence }}</div>
           <div class="text-sm text-gray-600">High Confidence (≥90%)</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4 text-center">
