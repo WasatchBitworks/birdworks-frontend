@@ -32,7 +32,6 @@ Frontend consumes **public, cached** CMS endpoints. Treat the CMS as the source 
 - `GET /api/birds/:slug/photos/:photo_id/file?variant=large` → 302 redirect to S3
 - `GET /api/birds/:slug/photos/:photo_id/file?variant=medium` → 302 redirect to S3
 - `GET /api/birds/:slug/photos/:photo_id/file?variant=thumbnail` → 302 redirect to S3
-- `GET /api/birds/:slug/photos/:photo_id/file?variant=original` → 302 redirect to S3
 
 **Why redirect endpoints:**
 - Stable URLs in HTML (never expire)
@@ -340,7 +339,7 @@ Photo metadata endpoints (`/api/birds/:slug/photos`, `/api/birds/:slug/photos/:i
 
 This endpoint:
 1. Validates photo exists and is public
-2. Generates fresh pre-signed S3 URL (1 hour expiry)
+2. Generates fresh pre-signed S3 URL (10 min expiry)
 3. Returns `302 Redirect` to S3
 4. Sets `Cache-Control: public, max-age=300` (5 min)
 
@@ -355,7 +354,6 @@ This endpoint:
 - `thumbnail` - 400px max-width JPG
 - `medium` - 1200px max-width JPG
 - `large` - 2000px max-width JPG
-- `original` - Full resolution (not recommended for public display)
 
 ### Photo Variants Usage Guide
 | Context | Recommended Variant | URL Example |
@@ -424,18 +422,122 @@ This endpoint:
 
 ---
 
+## Data Strategy & Updates
+
+### Build-Time vs. Live Refresh
+
+**Most Pages (Build-Time Only):**
+- `/` (home), `/photos`, `/species`, `/explore`, `/about`
+- Data fetched during Eleventy build at scheduled times
+- Updated via hourly Netlify rebuilds (6am–10pm MT)
+- Visible timestamp: "Data updated: {timestamp}"
+- Cache durations in `src/_data/birds.js`:
+  - `latest`: 1 minute
+  - `species`, `daily`, `photos`: 5 minutes
+
+**Live Page (Client-Side Refresh):**
+- `/live` page includes real-time refresh capability
+- Manual "Refresh Now" button + optional auto-refresh (5-minute interval)
+- Fetches from API: `GET /api/birds/wasatch-bitworks/latest?date=today`
+- Updates detection table, stats cards, pagination
+- Respects API rate limits (60 req/min general, 100 req/min API)
+
+### Per-Page Data Flow
+
+| Page | Data Source | Update Method | Freshness |
+|------|-------------|---------------|-----------|
+| `/` (home) | Build-time (birds.js) | Hourly rebuild | ≤1 hour old (daytime) |
+| `/live` | Build-time + client refresh | Manual/auto-refresh | Latest 200 detections |
+| `/photos` | Build-time (birds.js) | Hourly rebuild | ≤1 hour old |
+| `/species` | Build-time (birds.js) | Hourly rebuild | ≤1 hour old |
+| `/explore` | Build-time (birds.js) | Hourly rebuild | ≤1 hour old |
+
+### API Load & Performance
+
+**Build-time requests (hourly during 6am–10pm MT):**
+- ~4 endpoints per build × 17 builds/day = ~68 requests/day
+- Cache durations prevent redundant requests during development
+
+**Client-side requests (/live page):**
+- 5-minute auto-refresh interval = ~288 requests/day per active user
+- Only when user manually clicks "Refresh Now"
+
+**Total estimated API load:**
+- Build-time: ~68 requests/day
+- Live page: ~576 requests/day per active user (low expected traffic)
+- Well within rate limits (60/min general, 100/min API)
+
+### Caching Strategy
+
+**EleventyFetch (local development):**
+- Stores responses in `.cache/` directory
+- Cache durations specified in `src/_data/birds.js`
+- Clear with `npm run cache:clear` when API data changes
+- Use `npm run dev:fresh` to clear cache + start dev server
+
+**Production (Netlify):**
+- Fresh API calls on each hourly rebuild
+- Respects upstream cache headers
+- CDN caches static assets (images, CSS, JS)
+
+### Why This Approach?
+
+✅ **Simple** - Minimal client-side logic, easier maintenance
+✅ **Fast** - Static HTML + CDN delivery, ~200ms page loads
+✅ **Reliable** - No real-time polling required, stable infrastructure
+✅ **Clear UX** - Visible timestamps show when data was last updated
+✅ **Sustainable** - Hourly rebuilds balance freshness vs. build costs
+
+---
+
+## Development Guidelines
+
+### Core Principles
+
+- **Progressive Enhancement Required** - All pages must work without JavaScript
+  - Build-time HTML provides complete content
+  - JavaScript enhances experience (charts, live refresh) but isn't required
+  - No JavaScript-only content
+
+- **Keep It Simple** - No heavy frameworks (no React, no Next.js)
+  - Use inline SVG for charts (minimal dependencies, fast builds)
+  - Keep JavaScript modular (e.g., `src/js/charts.js`)
+  - Prefer server-side rendering (Eleventy) over client-side
+
+- **Preserve Infrastructure** - Don't delete working code without verification
+  - Keep Eleventy, Tailwind, PostCSS, and Netlify pipeline intact
+  - Avoid large diffs; prefer incremental changes
+
+### Code Guidelines
+
+- Follow existing patterns in Birds pages
+- Preserve empty state handling
+- Use Nunjucks conditionals, not inline ternaries (no `? :` syntax)
+- Set variables with `{% set var = value %}` before using in expressions
+- Keep nature color palette consistent
+- Maintain mobile-first responsive design
+- Add comments for complex template logic
+
+### Charts & Visualization
+
+- Prefer inline SVG charts for minimal dependencies
+- Render charts client-side from build-time embedded data (not API calls)
+- Always include HTML table fallbacks for no-JS environments
+- Keep chart rendering in dedicated module (`src/js/charts.js`)
+- Tailwind styles containers; JavaScript renders SVG
+
+---
+
 ## Related Documentation
 
 **This Repository (Frontend):**
-- **[CLAUDE.md](CLAUDE.md)** - Development commands and quick reference
-- **[BIRDWORKS.md](BIRDWORKS.md)** - Project guardrails and constraints
 - **[README.md](README.md)** - Project overview and setup
+- **[INTEGRATIONS.md](INTEGRATIONS.md)** - Third-party service setup
 
 **CMS Repository (Backend):** `/Users/zachkane/Wasatch_Bitworks/Bitworks_CMS`
 - **BIRDS.md** - Backend architecture, API contracts, sync strategy
 - **BIRD_PHOTOS.md** - Photo system architecture and implementation
 - **BIRDNET_PI.md** - Device documentation (services, config, queries)
-- **BIRDNET_COMMANDS.md** - Quick reference for Pi commands
 
 **Live URLs:**
 - Frontend: https://wasatchbirdworks.com
@@ -444,4 +546,4 @@ This endpoint:
 
 ---
 
-*Last Updated: January 7, 2026*
+*Last Updated: January 17, 2026*
