@@ -1,5 +1,20 @@
 # Wasatch BirdWorks Frontend Plan (Eleventy)
 
+## 🔴 Top Priority: Fix Hourly Scheduled Builds (2026-03-25)
+
+GitHub Actions stopped running scheduled builds on March 18 due to repo inactivity — GitHub auto-disables scheduled workflows when there are no recent commits.
+
+**Current state:** Manually re-enabled March 21, running again for now. Will break again.
+
+**Fix needed:** Replace GitHub Actions scheduler with a reliable external cron service.
+- **Recommended:** cron-job.org (free) — POSTs directly to `NETLIFY_BUILD_HOOK` on a schedule
+- **Why:** No dependency on GitHub repo activity; zero code changes; survives indefinitely
+- **Schedule to replicate:** Hourly, 6am–10pm MT (UTC: 13,14,15,16,17,18,19,20,21,22,23,0,1,2,3,4,5)
+- **Build hook URL:** stored in GitHub secret `NETLIFY_BUILD_HOOK` — retrieve from Netlify dashboard
+- Once cron-job.org is configured, delete `.github/workflows/scheduled-build.yml`
+
+---
+
 ## Goal
 Build a public, read-only Eleventy site for wasatchbirdworks.com that presents BirdNET detections, species information, and bird photos using the existing CMS public APIs and the proven Bitworks CMS → Netlify workflow.
 
@@ -339,9 +354,11 @@ Photo metadata endpoints (`/api/birds/:slug/photos`, `/api/birds/:slug/photos/:i
 
 This endpoint:
 1. Validates photo exists and is public
-2. Generates fresh pre-signed S3 URL (10 min expiry)
+2. Generates fresh pre-signed S3 URL (15 min expiry)
 3. Returns `302 Redirect` to S3
-4. Sets `Cache-Control: public, max-age=300` (5 min)
+4. Sets `Cache-Control: no-cache` — Cloudflare revalidates every request, always gets a fresh presigned URL
+
+**Why no-cache:** Previously used `max-age=300` (5 min), but Cloudflare serving stale cached redirects caused intermittent 403s when the presigned URL expired before the cache refreshed. `no-cache` fixes this. 15-min expiry limits the window if someone extracts a presigned URL to hammer S3 directly.
 
 **Frontend implementation:**
 ```html
@@ -440,7 +457,7 @@ This endpoint:
 - Manual "Refresh Now" button + optional auto-refresh (5-minute interval)
 - Fetches from API: `GET /api/birds/wasatch-bitworks/latest?date=today`
 - Updates detection table, stats cards, pagination
-- Respects API rate limits (60 req/min general, 100 req/min API)
+- No API rate limits on birds endpoints (read-only public API; auth endpoints still protected)
 
 ### Per-Page Data Flow
 
@@ -465,7 +482,7 @@ This endpoint:
 **Total estimated API load:**
 - Build-time: ~68 requests/day
 - Live page: ~576 requests/day per active user (low expected traffic)
-- Well within rate limits (60/min general, 100/min API)
+- No rate limits on birds API endpoints
 
 ### Caching Strategy
 
